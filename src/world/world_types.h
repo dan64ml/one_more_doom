@@ -2,6 +2,7 @@
 #define WORLD_TYPES_H_
 
 #include <string>
+#include <list>
 
 namespace world {
 
@@ -45,8 +46,37 @@ struct Line {
   SideDef* sides[2];
 };
 
+// BSP related types
+
+// BSP splits lines into segments. We use these segments for rendering
+// the scene in right order (BSP guarantee the order)
+struct Segment {
+  int x1;
+  int y1;
+  int x2;
+  int y2;
+
+  // The Line from which the segment was produced
+  Line* linedef;
+  // Related side of the line
+  SideDef* side;
+
+  int angle;    // Направление сегмента. Из v1. Восток - 0. Север - 16384. Юг - -16384.
+  int offset;   // Offset: distance along linedef to start of seg
+};
+
+// Modified BSP tree leaf. Contains pointers to segments (world::Segment) that produced
+// this subsector.
+struct SubSector {
+  std::vector<Segment*> segs;
+  // Objects located in this subsector
+  // std::list<MapObject*> mobjs;
+  // Parent sector
+  Sector* sector;
+};
 
 // Helper types for lump operations
+
 struct LumpPos {
   int position;
   int size;

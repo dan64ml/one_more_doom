@@ -6,6 +6,8 @@
 #include <unordered_map>
 
 #include "world_types.h"
+#include "fast_bsp.h"
+#include "block_map.h"
 
 namespace world {
 
@@ -27,13 +29,23 @@ class World {
   std::vector<Sector> sectors_;
   std::vector<SideDef> sides_;
   std::vector<Line> lines_;
+  std::vector<Segment> segs_;
+  std::vector<SubSector> sub_sectors_;
 
-private:
- void ClearLevel();
+  wad::FastBsp bsp_;
+  
+  BlockMap blocks_;
 
- void LoadSectors(std::ifstream& fin);
- void LoadSideDefs(std::ifstream& fin);
- void LoadLines(std::ifstream& fin, RawVertex* vertexex);
+ private:
+  void ClearLevel();
+  void LoadSectors(std::ifstream& fin);
+  void LoadSideDefs(std::ifstream& fin);
+  void LoadLines(std::ifstream& fin, RawVertex* vertexes);
+  void LoadSegments(std::ifstream& fin, RawVertex* vertexes);
+  void LoadSubSectors(std::ifstream& fin);
+  // Loads things from .wad and creates list of MapObjects
+  void CreateMapObjectList(std::ifstream& fin);
+
 };
 
 } // namespace world
