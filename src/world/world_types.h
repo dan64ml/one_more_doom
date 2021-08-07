@@ -3,8 +3,19 @@
 
 #include <string>
 #include <list>
+#include <vector>
+
+#include "objects/map_object.h"
 
 namespace world {
+
+// Just boundary box
+struct BBox {
+  int left;
+  int right;
+  int top;
+  int bottom;
+};
 
 struct Sector {
   int floor_height;
@@ -70,7 +81,7 @@ struct Segment {
 struct SubSector {
   std::vector<Segment*> segs;
   // Objects located in this subsector
-  // std::list<MapObject*> mobjs;
+  std::list<mobj::MapObject*> mobjs;
   // Parent sector
   Sector* sector;
 };

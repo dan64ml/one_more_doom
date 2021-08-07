@@ -4,6 +4,13 @@
 //#include "renderer/plane_utils.h"
 #include <cstdint>
 
+namespace world {
+  class World;
+  class Line;
+  class SubSector;
+}
+
+
 namespace mobj {
 
 // The original DOOM flags, no point to change...
@@ -93,12 +100,17 @@ enum MapObjectFlag : std::uint32_t {
     MF_TRANSSHIFT	= 26
 };
 
+const int kMaxRadius = 32;
+
 /*=========================================================================
 Need access to:
 - BlockMap class data
-
+- FastBsp
 ===========================================================================*/
 struct MapObject {
+ public:
+  MapObject(world::World* world) : world_(world) {}
+
   // World coordinates of the object
   int x;
   int y;
@@ -125,9 +137,21 @@ struct MapObject {
   int floor_z;
   int ceiling_z;
   // The lowest floor. Necessary for falling check
-  int dropoff_z;
+  //int dropoff_z;
+
+  // Current subsector
+  world::SubSector* ss;
 
   bool TimeTick();
+
+ private:
+  struct Opening {
+    int ceiling;
+    int floor;
+    int dropoff;
+
+    world::SubSector* ss;
+  };
   
  private:
   void MoveObject();
@@ -139,28 +163,30 @@ struct MapObject {
   // false if moving impossible
   bool TryMoveTo(int new_x, int new_y);
   // Iterates over all mobjs and lines in current and adjacent BlockMaps
-  bool CheckPosition(int new_x, int new_y);
+  bool CheckPosition(int new_x, int new_y, Opening& op);
 
   // Invoked if the object run into sth. XYMove() will be interrupted
-  // immediately if return false
+  // immediately if return false.
+  // Defines common action after hit, e.g. sliding for player, missile explosion etc...
   virtual bool RunIntoAction();
   // Contains logic for object speed reducing
   virtual void SlowDown();
 
-
-
   // Applied to each touched MapObject until return false
-  virtual bool InfluenceObject(MapObject) {}
+  virtual bool InfluenceObject(MapObject*) { return true; }
   
-  // moves this object if the position (x, y) is reachable
-  // and returns true, returns false otherwise
-  // Applyes InfluenceObject()...
-  virtual bool TryPosition(int x, int y) {}
+  // Applied to each crossed line until return false.
+  // False means it's impossible to cross the line.
+  virtual bool ProcessLine(const world::Line* line);
 
-  virtual bool DamageObject(MapObject source, int damage) {}
+  void UpdateOpening(Opening& op, const world::Line* line);
+  // Change current subsector
+  bool ChangeSubSector(world::SubSector* new_ss);
 
   const double kMaxMove = 30;
   const int kMaxStepSize = 24;
+
+  world::World* world_;
 };
 
 } // namespace mobj

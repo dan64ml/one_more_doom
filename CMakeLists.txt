@@ -18,5 +18,5 @@ include_directories(${SDL2_INCLUDE_DIRS} ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}
 add_subdirectory(src/app)
 add_subdirectory(src/objects)
 #add_subdirectory(renderer)
-#add_subdirectory(things)
+add_subdirectory(src/utils)
 add_subdirectory(src/world)

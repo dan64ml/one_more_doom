@@ -1,5 +1,12 @@
 #include "map_object.h"
 
+#include <cassert>
+#include <algorithm>
+
+#include "world/world.h"
+//#include "world/fast_bsp.h"
+#include "utils/plane_utils.h"
+
 namespace mobj {
 
 bool MapObject::TimeTick() {
@@ -77,40 +84,146 @@ void MapObject::SlowDown() {
   mom_x = mom_y = 0;
 }
 
+// By default - find walls and ignore portals
+bool MapObject::ProcessLine(const world::Line* line) {
+  if (line->sides[1] == nullptr) {
+    return false;
+  }
+
+  return true;
+}
+
+// There is two step check: CheckPosition() checks obstacles and returns
+// true if the position is clear. Also it updates lowest ceiling and 
+// highest floor. It's necessary for second step - heights check.
+// If both steps are OK, the foo changes current position of the mobs.
 bool MapObject::TryMoveTo(int new_x, int new_y) {
   // check if the new position empty
-  if (!CheckPosition(new_x, new_y)) {
+  Opening op;
+  if (!CheckPosition(new_x, new_y, op)) {
     return false;
   }
 
   // Check heights. Keep original behavior
-  if (ceiling_z - floor_z < height) {
+  if (op.ceiling - op.floor < height) {
     // mobj too high
     return false;
   }
-  if (!(flags & MF_TELEPORT) && (ceiling_z - z < height)) {
+  if (!(flags & MF_TELEPORT) && (op.ceiling - z < height)) {
     // hit the ceiling by the head :)))
     return false;
   }
-  if (!(flags & MF_TELEPORT) && (floor_z - z > kMaxStepSize)) {
+  if (!(flags & MF_TELEPORT) && (op.floor - z > kMaxStepSize)) {
     // The step too high
     return false;
   }
-  if (!(flags & (MF_DROPOFF|MF_FLOAT)) && (floor_z - dropoff_z > height)) {
+  if (!(flags & (MF_DROPOFF|MF_FLOAT)) && (op.floor - op.dropoff > height)) {
     // prevent falling
     return false;
   }
 
-  // TODO: rebind the mobj and change x and y
+  // New position is OK, update coordinates
+  floor_z = op.floor;
+  ceiling_z = op.ceiling;
+
+  // Rebind the mobj and change x and y
+  world_->blocks_.MoveMapObject(this, new_x, new_y);
+  x = new_x;
+  y = new_y;
+  ChangeSubSector(op.ss);
 
   // TODO: ??? Act special lines ???
 
   return true;
 }
 
-bool MapObject::CheckPosition(int new_x, int new_y) {
-  // fill here floor_z, ceiling_z and dropoff_z...
-  // p_map.c
+bool MapObject::CheckPosition(int new_x, int new_y, Opening& op) {
+  int ss_idx = world_->bsp_.GetSubSectorIdx(new_x, new_y);
+  auto* ss = &world_->sub_sectors_[ss_idx];
+
+  op.floor = op.dropoff = ss->sector->floor_height;
+  op.ceiling = ss->sector->ceiling_height;
+  op.ss = ss;
+
+  // Possible area where collision of mobjs can happen
+  int dist = kMaxRadius + radius;
+  world::BBox bbox;
+  bbox.left = x - dist;
+  bbox.right = x + dist;
+  bbox.top = y + dist;
+  bbox.bottom = y - dist;
+
+  for (auto mobj : world_->blocks_.GetMapObjects(bbox)) {
+    int collision_dist = radius + mobj->radius;
+    if (abs(x - mobj->x) >= collision_dist || abs(y - mobj->y) >= collision_dist) {
+      // Didn't hit
+      continue;
+    }
+    if (mobj == this) {
+      continue;
+    }
+
+    if (!InfluenceObject(mobj)) {
+      return false;
+    }
+  }
+
+  // Possible area where collision of mobj and line can happen
+  bbox.left = x - radius;
+  bbox.right = x + radius;
+  bbox.top = y + radius;
+  bbox.bottom = y - radius;
+
+  for (auto line : world_->blocks_.GetLines(bbox)) {
+    if (math::LineBBoxPosition(line, &bbox) != math::kCross) {
+      // Didn't cross
+      continue;
+    }
+
+    if (!ProcessLine(line)) {
+      return false;
+    }
+
+    // Every line can change current opening. We are looking for the smallest
+    UpdateOpening(op, line);
+  }
+
+  return true;
+}
+
+void MapObject::UpdateOpening(Opening& op, const world::Line* line) {
+  if (line->sides[1] == nullptr) {
+    // ProcessLine() should interrupt checking for a wall
+    assert(false);
+    return;
+  }
+
+  int fl = std::max(line->sides[0]->sector->floor_height, line->sides[1]->sector->floor_height);
+  int low_fl = std::min(line->sides[0]->sector->floor_height, line->sides[1]->sector->floor_height);
+  int ceil = std::min(line->sides[0]->sector->ceiling_height, line->sides[1]->sector->ceiling_height);
+
+  if (ceil < op.ceiling) {
+    op.ceiling = ceil;
+  }
+  if (fl > op.floor) {
+    op.floor = fl;
+  }
+  if (low_fl < op.dropoff) {
+    op.dropoff = low_fl;
+  }
+}
+
+bool MapObject::ChangeSubSector(world::SubSector* new_ss) {
+  auto it = std::find(begin(ss->mobjs), end(ss->mobjs), this);
+  if (it == end(ss->mobjs)) {
+    return false;
+  }
+
+  ss->mobjs.erase(it);
+
+  new_ss->mobjs.push_back(this);
+
+  return true;
 }
 
 } // namespace mobj

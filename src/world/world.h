@@ -9,6 +9,10 @@
 #include "fast_bsp.h"
 #include "block_map.h"
 
+namespace mobj {
+  class MapObject;
+}
+
 namespace world {
 
 class World {
@@ -46,6 +50,8 @@ class World {
   // Loads things from .wad and creates list of MapObjects
   void CreateMapObjectList(std::ifstream& fin);
 
+
+  friend class mobj::MapObject;
 };
 
 } // namespace world
