@@ -14,6 +14,8 @@ void AppClass::InitInstance() {
   //map_.Open("/home/dan/tmp/DOOM2.WAD");
   //map_.Open("/usr/share/games/doom/DOOM2.WAD");
   
+  gm_.Load("/home/dan/tmp/DOOM2.WAD");
+
   world_.OpenWad("/home/dan/tmp/DOOM2.WAD");
   world_.LoadLevel(0);
 

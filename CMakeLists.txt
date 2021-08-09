@@ -16,6 +16,7 @@ include_directories(${SDL2_INCLUDE_DIRS} ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}
 #find_package(GTest REQUIRED)
 
 add_subdirectory(src/app)
+add_subdirectory(src/graphics)
 add_subdirectory(src/objects)
 #add_subdirectory(renderer)
 add_subdirectory(src/utils)

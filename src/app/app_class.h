@@ -4,6 +4,7 @@
 #include "sdl_base_class.h"
 
 #include "world/world.h"
+#include "graphics/graphics_manager.h"
 
 struct Keys {
   bool up = false;
@@ -25,6 +26,7 @@ class AppClass : public sdl2::SdlBaseClass {
   sdl2::SdlWindow wnd_ {"One More Doom", 1024, 768};
 
   world::World world_;
+  graph::GraphicsManager gm_;
 };
 
 #endif  // APP_CLASS_H_
