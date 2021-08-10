@@ -57,6 +57,9 @@ struct Line {
   SideDef* sides[2];
 };
 
+const int16_t kLDFUpperUnpegged = 0x0008;
+const int16_t kLDFLowerUnpegged = 0x0010;
+
 // BSP related types
 
 // BSP splits lines into segments. We use these segments for rendering
@@ -70,7 +73,8 @@ struct Segment {
   // The Line from which the segment was produced
   Line* linedef;
   // Related side of the line
-  SideDef* side;
+  //SideDef* side;
+  int side;
 
   int angle;    // Направление сегмента. Из v1. Восток - 0. Север - 16384. Юг - -16384.
   int offset;   // Offset: distance along linedef to start of seg

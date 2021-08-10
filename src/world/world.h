@@ -9,6 +9,8 @@
 #include "fast_bsp.h"
 #include "block_map.h"
 
+#include "objects/player.h"
+
 namespace mobj {
   class MapObject;
 }
@@ -23,6 +25,9 @@ class World {
   void LoadLevel(size_t level);
 
   void TickTime();
+
+  const wad::FastBsp* GetBsp() const { return &bsp_; };
+  const mobj::Player* GetPlayer() const { return &player_; };
 
  private:
   std::string wad_file_name_;
@@ -39,6 +44,8 @@ class World {
   wad::FastBsp bsp_;
   
   BlockMap blocks_;
+
+  mobj::Player player_ {this};
 
  private:
   void ClearLevel();

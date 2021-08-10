@@ -81,6 +81,7 @@ void World::LoadLevel(size_t level) {
 
   const auto bsp_lump = levels_[level].second.at("NODES");
   bsp_.LoadBsp(fin, bsp_lump.position, bsp_lump.size);
+  bsp_.SetSubSectors(&sub_sectors_);
 
   const auto block_map_lump = levels_[level].second.at("BLOCKMAP");
   blocks_.Load(fin, block_map_lump.position, block_map_lump.size, lines_);
@@ -184,7 +185,8 @@ void World::LoadSegments(std::ifstream& fin, RawVertex* vertexes) {
     seg.offset = segments[i].offset;
 
     seg.linedef = &lines_[segments[i].linedef];
-    seg.side = seg.linedef->sides[segments[i].side];
+    //seg.side = seg.linedef->sides[segments[i].side];
+    seg.side = segments[i].side;
 
     segs_.push_back(std::move(seg));
   }
@@ -203,7 +205,8 @@ void World::LoadSubSectors(std::ifstream& fin) {
       subsec.segs.push_back(&segs_[ss[i].firstseg + j]);
     }
 
-    subsec.sector = subsec.segs.front()->side->sector;
+    const Segment* seg = subsec.segs.front(); 
+    subsec.sector = seg->linedef->sides[seg->side]->sector;
 
     sub_sectors_.push_back(std::move(subsec));
   }
@@ -216,6 +219,15 @@ void World::CreateMapObjectList(std::ifstream& fin) {
   auto items = wad::LoadLump<wad::WadMapThing>(fin, lump.position, lump.size);
   for (size_t i = 0; i < len; ++i) {
     // TODO: create MapObject
+    if (items[i].type == 1) {
+      player_.x = items[i].x;
+      player_.y = items[i].y;
+
+      int ss_idx = bsp_.GetSubSectorIdx(player_.x, player_.y);
+      player_.z = sub_sectors_[ss_idx].sector->floor_height;
+
+      player_.angle = items[i].angle;
+    }
   }
 }
 

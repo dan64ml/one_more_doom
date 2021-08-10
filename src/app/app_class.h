@@ -5,6 +5,7 @@
 
 #include "world/world.h"
 #include "graphics/graphics_manager.h"
+#include "renderer/renderer.h"
 
 struct Keys {
   bool up = false;
@@ -22,11 +23,12 @@ class AppClass : public sdl2::SdlBaseClass {
   virtual void RenderScene() override;
 
  private:
-  //sdl2::SdlWindow wnd_ {"One More Doom", rend::kScreenXResolution, rend::kScreenYResolution};
-  sdl2::SdlWindow wnd_ {"One More Doom", 1024, 768};
+  sdl2::SdlWindow wnd_ {"One More Doom", rend::kScreenXResolution, rend::kScreenYResolution};
+  //sdl2::SdlWindow wnd_ {"One More Doom", 1024, 768};
 
   world::World world_;
   graph::GraphicsManager gm_;
+  rend::Renderer renderer_;
 };
 
 #endif  // APP_CLASS_H_

@@ -6,8 +6,7 @@
 using namespace std;
 
 AppClass::AppClass() {
-//  wnd_doom_.SetYUp(true);
-//  wnd_doom_.MoveOrigin(0, rend::kScreenYResolution);
+  //wnd_.;
 }
 
 void AppClass::InitInstance() {
@@ -17,7 +16,9 @@ void AppClass::InitInstance() {
   gm_.Load("/home/dan/tmp/DOOM2.WAD");
 
   world_.OpenWad("/home/dan/tmp/DOOM2.WAD");
-  world_.LoadLevel(0);
+  world_.LoadLevel(17);
+
+  renderer_.SetDrawWindow(&wnd_);
 
   // 17 - right texture alignment error; 4 - floor has wrong direction
   // 25 and angle - 45: switch is shifted
@@ -98,4 +99,5 @@ void AppClass::ProcessScene([[maybe_unused]] int ms_elapsed) {
 }
 
 void AppClass::RenderScene() {
+  renderer_.RenderScene(world_.GetBsp(), &gm_, world_.GetPlayer());
 }

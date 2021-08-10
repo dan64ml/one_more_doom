@@ -36,7 +36,7 @@ class GraphicsManager {
   const Palette& GetPalette(int idx) const { return palette_[idx]; }
   const LightMap* GetLightMap() const { return light_maps_; }
 
-  Texture GetTexture(std::string texture_name);
+  Texture GetTexture(std::string texture_name) const;
   Texture GetSprite(std::string sprite_name);
   Flat GetFlat(std::string flat_name);
 

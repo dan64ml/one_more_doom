@@ -101,6 +101,16 @@ void SdlWindow::RenderFBPoint(int x, int y, uint8_t r, uint8_t g, uint8_t b) {
   frame_buf_.data()[idx] = pixel;
 }
 
+/*inline
+void SdlWindow::RenderFBPointAlpha(int x, int y, uint32_t c) {
+  if (!(0xFF000000 & c)) {
+    return;
+  }
+
+  int idx = (y_size_ - (y + 1)) * x_size_ + x; 
+  frame_buf_.data()[idx] = c;
+}*/
+
 void SdlWindow::ShowFBRender() {
 	  SDL_Texture* mTexture = SDL_CreateTextureFromSurface(render_, sdl_surface_);
 

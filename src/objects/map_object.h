@@ -1,8 +1,9 @@
 #ifndef MAP_OBJECT_
 #define MAP_OBJECT_
 
-//#include "renderer/plane_utils.h"
 #include <cstdint>
+
+//#include "renderer/plane_utils.h"
 
 namespace world {
   class World;
@@ -119,6 +120,7 @@ struct MapObject {
   // View direction
   // TODO: select angle units...
   //rend::BamAngle angle;
+  int angle;
 
   // Sizes of the mobj
   int height;

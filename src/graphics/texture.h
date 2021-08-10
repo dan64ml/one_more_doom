@@ -10,7 +10,7 @@ template<class TImage>
 class PaletteImage {
  public:
   PaletteImage() {}
-  PaletteImage(GraphicsManager* gm, const TImage* pp)
+  PaletteImage(const GraphicsManager* gm, const TImage* pp)
     : gm_(gm), picture_(pp) {}
 
   //bool GetPixel(int u, int v, int& r, int& g, int& b) const;
@@ -24,7 +24,7 @@ class PaletteImage {
 
   operator bool() const { return picture_; }
  private:
-  GraphicsManager* gm_ = nullptr;
+  const GraphicsManager* gm_ = nullptr;
   const TImage* picture_ = nullptr;
 
   int palette_idx_ = 0;

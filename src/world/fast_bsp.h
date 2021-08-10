@@ -5,6 +5,13 @@
 #include <memory>
 #include <vector>
 
+#include "world_types.h"
+#include "bsp_iterator.h"
+
+//namespace world {
+//  class BspIterator;
+//}
+
 namespace wad {
 
 class FastBsp {
@@ -12,8 +19,17 @@ class FastBsp {
   FastBsp() = default;
 
   void LoadBsp(std::ifstream& fin, int offset, int size);
+  void SetSubSectors(const std::vector<world::SubSector>* ss) { ss_ = ss; }
 
   int GetSubSectorIdx(int x, int y) const;
+
+  void SetViewPoint(int x, int y) const { vp_x_ = x; vp_y_ = y; }
+
+  world::BspIterator begin() const;
+  world::BspIterator end() const;
+  world::BspIterator cbegin() const;
+  world::BspIterator cend() const;
+
 
  private:
   // BSP tree node
@@ -29,14 +45,20 @@ class FastBsp {
     uint16_t children[2];
   };
   // Marker bit for leafs
-  const uint16_t kNfSubsector = 0x8000;
+  const static uint16_t kNfSubsector = 0x8000;
 
  private:
   std::vector<BspNode> nodes_;
 
+  const std::vector<world::SubSector>* ss_ = nullptr;
+  mutable int vp_x_ = 0;
+  mutable int vp_y_ = 0;
+
   // Defines the position of the view point (x, y) relatively the partition line. 
   // 0 - front(right), 1 - back(left)
   int DefineVpSide(int x, int y, int node_idx) const;
+
+  friend class world::BspIterator;
 };
 
 } // namespace wad

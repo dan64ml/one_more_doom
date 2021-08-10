@@ -1,7 +1,25 @@
 #include "fast_bsp.h"
+
 #include "wad_utils.h"
+#include "bsp_iterator.h"
 
 namespace wad {
+
+world::BspIterator FastBsp::begin() const {
+  return world::BspIterator(this);
+}
+
+world::BspIterator FastBsp::end() const {
+  return world::BspIterator();
+}
+
+world::BspIterator FastBsp::cbegin() const {
+  return begin();
+}
+
+world::BspIterator FastBsp::cend() const {
+  return end();
+}
 
 void FastBsp::LoadBsp(std::ifstream& fin, int offset, int size) {
   int node_number = size / sizeof(BspNode);

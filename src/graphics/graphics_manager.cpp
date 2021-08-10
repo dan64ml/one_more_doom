@@ -4,6 +4,7 @@
 #include <cassert>
 #include <memory>
 #include <algorithm>
+#include <iostream>
 
 #include "texture.h"
 #include "world/wad_raw_types.h"
@@ -133,17 +134,17 @@ void GraphicsManager::LoadColorMap(std::ifstream& fin, const wad::WadDirectoryEn
 }
 
 void GraphicsManager::LoadPlayPal(std::ifstream& fin, const wad::WadDirectoryEntry& entry) {
-  std::unique_ptr<char[]> buf(new char[entry.size]);
+  std::unique_ptr<uint8_t[]> buf(new uint8_t[entry.size]);
 
   fin.seekg(entry.offset);
-  fin.read(buf.get(), entry.size);
+  fin.read(reinterpret_cast<char*>(buf.get()), entry.size);
 
   int idx = 0;
   for (int p = 0; p < kPalettesNumber; ++p) {
     for (int c = 0; c < kPaletteSize; ++c) {
       palette_[p][c] = buf[idx++];
-      palette_[p][c] |= buf[idx++] >> 8;
-      palette_[p][c] |= buf[idx++] >> 16;
+      palette_[p][c] |= buf[idx++] << 8;
+      palette_[p][c] |= buf[idx++] << 16;
       palette_[p][c] |= 0xFF000000;   // fully opaque by default
     }
   }
@@ -198,7 +199,7 @@ void GraphicsManager::LoadPNames(std::ifstream& fin, const wad::WadDirectoryEntr
   }
 }
 
-Texture GraphicsManager::GetTexture(std::string texture_name) {
+Texture GraphicsManager::GetTexture(std::string texture_name) const {
   if (texture_name == "-") {
     return {};
   }
@@ -207,7 +208,7 @@ Texture GraphicsManager::GetTexture(std::string texture_name) {
     //std::cout << "Texture " + texture_name + " not found!" << std::endl;
     return {};
   } else {
-    return {this, &textures2_[texture_name]};
+    return {this, &textures2_.at(texture_name)};
   }
 }
 

@@ -33,6 +33,7 @@ public:
   // Fast pixel operations
   // Draw point at {x, y}. Origin is fixed in the lower left corner.
   void RenderFBPoint(int x, int y, uint8_t r, uint8_t g, uint8_t b);
+  void RenderFBPointAlpha(int x, int y, uint32_t c);
   void PrintString(const std::string& str);
   void ShowFBRender();
 
@@ -83,6 +84,16 @@ private:
   std::vector<uint32_t> frame_buf_;
   SDL_Surface* sdl_surface_ = nullptr;
 };
+
+inline
+void SdlWindow::RenderFBPointAlpha(int x, int y, uint32_t c) {
+  if (!(0xFF000000 & c)) {
+    return;
+  }
+
+  int idx = (y_size_ - (y + 1)) * x_size_ + x; 
+  frame_buf_.data()[idx] = c;
+}
 
 }   // namespace sdl2
  
