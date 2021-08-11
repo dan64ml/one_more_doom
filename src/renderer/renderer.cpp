@@ -479,7 +479,12 @@ void Renderer::FillCommonContext(const world::Segment* bsp_segment, const DPoint
   ctx_.top_texture = bsp_segment->linedef->sides[bsp_segment->side]->top_texture;
   ctx_.bottom_texture = bsp_segment->linedef->sides[bsp_segment->side]->bottom_texture;
 
-  ctx_.front_sector = bsp_segment->linedef->sides[bsp_segment->side]->sector;
+  //ctx_.front_sector = bsp_segment->linedef->sides[bsp_segment->side]->sector;
+  ctx_.front_light_level = bsp_segment->linedef->sides[bsp_segment->side]->sector->light_level;
+  ctx_.front_ceiling_height = bsp_segment->linedef->sides[bsp_segment->side]->sector->ceiling_height;
+  ctx_.front_floor_height = bsp_segment->linedef->sides[bsp_segment->side]->sector->floor_height;
+  ctx_.front_ceiling_pic = bsp_segment->linedef->sides[bsp_segment->side]->sector->ceiling_pic;
+  ctx_.front_floor_pic = bsp_segment->linedef->sides[bsp_segment->side]->sector->floor_pic;
 
   // Distances
   ctx_.left_distance = sqrt((vp_.x - left.x)*(vp_.x - left.x) +
@@ -502,9 +507,9 @@ void Renderer::FillCommonContext(const world::Segment* bsp_segment, const DPoint
   }
   top_visplane_->min_x = -1;
   top_visplane_->max_x = -1;
-  top_visplane_->light_level = ctx_.front_sector->light_level;
-  top_visplane_->height = ctx_.front_sector->ceiling_height;
-  top_visplane_->texture = ctx_.front_sector->ceiling_pic;
+  top_visplane_->light_level = ctx_.front_light_level;
+  top_visplane_->height = ctx_.front_ceiling_height;
+  top_visplane_->texture = ctx_.front_ceiling_pic;
 
   if (!bottom_visplane_) {
     bottom_visplane_.reset(new  Visplane);
@@ -512,9 +517,9 @@ void Renderer::FillCommonContext(const world::Segment* bsp_segment, const DPoint
   }
   bottom_visplane_->min_x = -1;
   bottom_visplane_->max_x = -1;
-  bottom_visplane_->light_level = ctx_.front_sector->light_level;
-  bottom_visplane_->height = ctx_.front_sector->floor_height;
-  bottom_visplane_->texture = ctx_.front_sector->floor_pic;
+  bottom_visplane_->light_level = ctx_.front_light_level;
+  bottom_visplane_->height = ctx_.front_floor_height;
+  bottom_visplane_->texture = ctx_.front_floor_pic;
 }
 
 std::tuple<int, int, double, double> Renderer::CreateCoefs(int h_low, int h_high) {
@@ -537,13 +542,13 @@ std::tuple<int, int, double, double> Renderer::CreateCoefs(int h_low, int h_high
 
 void Renderer::FillWallContext(const DPoint& left, const DPoint& right) {
   // Data to calculate screen coordinates 
-  ctx_.pixel_height = ctx_.front_sector->ceiling_height - ctx_.front_sector->floor_height;
+  ctx_.pixel_height = ctx_.front_ceiling_height - ctx_.front_floor_height;
 
   std::tie(ctx_.mid_y_bottom, ctx_.mid_y_top, ctx_.mid_dy_bottom, ctx_.mid_dy_top) 
-        = CreateCoefs(ctx_.front_sector->floor_height, ctx_.front_sector->ceiling_height);
+        = CreateCoefs(ctx_.front_floor_height, ctx_.front_ceiling_height);
 
   // Textures
-  ctx_.pixel_height = ctx_.front_sector->ceiling_height - ctx_.front_sector->floor_height;
+  ctx_.pixel_height = ctx_.front_ceiling_height - ctx_.front_floor_height;
   ctx_.pixel_texture_y_shift = 0;
 }
 
@@ -553,20 +558,20 @@ void Renderer::FillPortalContext(const world::Segment* bsp_segment) {
   ctx_.back_sector = bsp_segment->linedef->sides[bsp_segment->side ^ 1]->sector;
 
   // Data to calculate screen coordinates 
-  if (ctx_.front_sector->ceiling_height > ctx_.back_sector->ceiling_height) {
+  if (ctx_.front_ceiling_height > ctx_.back_sector->ceiling_height) {
     std::tie(ctx_.top_y_bottom, ctx_.top_y_top, ctx_.top_dy_bottom, ctx_.top_dy_top) 
-          = CreateCoefs(ctx_.back_sector->ceiling_height, ctx_.front_sector->ceiling_height);
+          = CreateCoefs(ctx_.back_sector->ceiling_height, ctx_.front_ceiling_height);
   } else {
     std::tie(ctx_.top_y_bottom, ctx_.top_y_top, ctx_.top_dy_bottom, ctx_.top_dy_top) 
-          = CreateCoefs(ctx_.front_sector->ceiling_height, ctx_.back_sector->ceiling_height);
+          = CreateCoefs(ctx_.front_ceiling_height, ctx_.back_sector->ceiling_height);
   }
 
-  if (ctx_.front_sector->floor_height < ctx_.back_sector->floor_height) {
+  if (ctx_.front_floor_height < ctx_.back_sector->floor_height) {
     std::tie(ctx_.bottom_y_bottom, ctx_.bottom_y_top, ctx_.bottom_dy_bottom, ctx_.bottom_dy_top)
-          = CreateCoefs(ctx_.front_sector->floor_height, ctx_.back_sector->floor_height);
+          = CreateCoefs(ctx_.front_floor_height, ctx_.back_sector->floor_height);
   } else {
     std::tie(ctx_.bottom_y_bottom, ctx_.bottom_y_top, ctx_.bottom_dy_bottom, ctx_.bottom_dy_top)
-          = CreateCoefs(ctx_.back_sector->floor_height, ctx_.front_sector->floor_height);
+          = CreateCoefs(ctx_.back_sector->floor_height, ctx_.front_floor_height);
   }
 
   ctx_.mid_y_bottom = ctx_.bottom_y_top + 1;
@@ -637,7 +642,7 @@ void Renderer::UpdateCeiling(int screen_x, int from_y) {
 
 void Renderer::TexurizePortal() {
   ctx_.texture = gm_->GetTexture(ctx_.bottom_texture);
-  ctx_.pixel_height = abs(ctx_.front_sector->floor_height - ctx_.back_sector->floor_height);
+  ctx_.pixel_height = abs(ctx_.front_floor_height - ctx_.back_sector->floor_height);
   ctx_.pixel_texture_y_shift = 0;
   for (auto [left, right] : visible_fragments_) {
     TexurizeBottomFragment(left, right);
@@ -646,7 +651,7 @@ void Renderer::TexurizePortal() {
   }
 
   ctx_.texture = gm_->GetTexture(ctx_.top_texture);
-  ctx_.pixel_height = abs(ctx_.front_sector->ceiling_height - ctx_.back_sector->ceiling_height);
+  ctx_.pixel_height = abs(ctx_.front_ceiling_height - ctx_.back_sector->ceiling_height);
   ctx_.pixel_texture_y_shift = 0;
   for (auto [left, right] : visible_fragments_) {
     TexurizeTopFragment(left, right);
@@ -657,7 +662,7 @@ void Renderer::TexurizePortal() {
   if (!ctx_.texture) {
     return;
   }
-  ctx_.pixel_height = abs(ctx_.front_sector->ceiling_height - ctx_.front_sector->floor_height);
+  ctx_.pixel_height = abs(ctx_.front_ceiling_height - ctx_.front_floor_height);
   ctx_.pixel_texture_y_shift = 0;
 
   // Create pseudo-vissprite
@@ -713,7 +718,7 @@ void Renderer::DrawColumn(int screen_x, int screen_top_y, int screen_bottom_y, b
   // Light
   int light = 0;
   if (opt_.sector_light_enable) {
-    light = (255 - ctx_.front_sector->light_level);
+    light = (255 - ctx_.front_light_level);
   }
   if (opt_.distance_light_enable) {
     light += kDiminishFactor * screen_bottom_y / kScaleCoef;
@@ -776,7 +781,7 @@ void Renderer::DrawMaskedColumn(int screen_x, int screen_top_y, int screen_botto
   // Light
   int light = 0;
   if (opt_.sector_light_enable) {
-    light = (255 - ctx_.front_sector->light_level);
+    light = (255 - ctx_.front_light_level);
   }
   if (opt_.distance_light_enable) {
     light += kDiminishFactor * screen_bottom_y / kScaleCoef;
@@ -837,11 +842,11 @@ void Renderer::TexurizeBottomFragment(int left, int right) {
     int top = ctx_.bottom_dy_top * (x - ctx_.sx_leftmost) + ctx_.bottom_y_top;
     int bottom = ctx_.bottom_dy_bottom * (x - ctx_.sx_leftmost) + ctx_.bottom_y_bottom;
     ctx_.pixel_texture_y_shift = (ctx_.line_def_flags & world::kLDFLowerUnpegged) 
-      ? (ctx_.front_sector->ceiling_height - ctx_.back_sector->floor_height) : 0;
+      ? (ctx_.front_ceiling_height - ctx_.back_sector->floor_height) : 0;
 
     bottom_clip_[x] = std::max(top, bottom_clip_[x]);
 
-    if (ctx_.front_sector->floor_height < ctx_.back_sector->floor_height) {
+    if (ctx_.front_floor_height < ctx_.back_sector->floor_height) {
       DrawColumn(x, top, bottom, true);
       UpdateBottomVisplane(x, bottom - 1);
     } else {
@@ -860,7 +865,7 @@ void Renderer::TexurizeTopFragment(int left, int right) {
 
     top_clip_[x] = std::min(bottom, top_clip_[x]);
 
-    if (ctx_.front_sector->ceiling_height > ctx_.back_sector->ceiling_height) {
+    if (ctx_.front_ceiling_height > ctx_.back_sector->ceiling_height) {
       DrawColumn(x, top, bottom, (ctx_.line_def_flags & world::kLDFUpperUnpegged));
       UpdateTopVisplane(x, top + 1);
     } else {

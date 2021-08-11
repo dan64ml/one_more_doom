@@ -43,7 +43,12 @@ struct SegmentRendContext {
   uint32_t line_def_flags;
 
   //const world::SideDef* front_side_def;
-  const world::Sector* front_sector;
+  //const world::Sector* front_sector;
+  int front_light_level;
+  int front_ceiling_height;
+  int front_floor_height;
+  std::string front_ceiling_pic;
+  std::string front_floor_pic;
 
   // Valid for portals only
   //const world::SideDef* back_side_def;
