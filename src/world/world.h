@@ -47,6 +47,9 @@ class World {
 
   mobj::Player player_ {this};
 
+  // TMP!!!!
+  std::list<mobj::MapObject> mobjs_;
+  
  private:
   void ClearLevel();
   void LoadSectors(std::ifstream& fin);

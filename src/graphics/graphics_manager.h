@@ -37,8 +37,8 @@ class GraphicsManager {
   const LightMap* GetLightMap() const { return light_maps_; }
 
   Texture GetTexture(std::string texture_name) const;
-  Texture GetSprite(std::string sprite_name);
-  Flat GetFlat(std::string flat_name);
+  Texture GetSprite(std::string sprite_name) const;
+  Flat GetFlat(std::string flat_name) const;
 
  private:
   // Set of all MapTextureRaw. MapTextureRaw has variable size, so we need

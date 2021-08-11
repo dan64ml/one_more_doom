@@ -12,6 +12,7 @@
 #include "graphics/texture.h"
 
 #include "plane_utils.h"
+#include "masked_object.h"
 
 namespace rend {
 
@@ -155,8 +156,8 @@ class Renderer {
  private:
   void ClearRenderer();
   void RenderWalls();
-  //void RenderFlats();
-  //void RenderMasked();
+  void RenderFlats();
+  void RenderMasked();
 
   // Segment can be partially closed by other elements. This foo creates a list
   // of visible fragments and some extra params. Returns false if all the segment
@@ -225,7 +226,7 @@ class Renderer {
   int min_vsp_y_;
   int max_vsp_y_;
   void CreateRanges(const Visplane& vs);
-  //void DrawPixelRange(const Visplane& vs);
+  void DrawPixelRange(const Visplane& vs);
 
   // Vissprites
   //std::list<Vissprite> vissprites_;
@@ -247,6 +248,19 @@ class Renderer {
     MidPortalVisplane& mpv);
 
   std::vector<MidPortalVisplane> mid_portals_;
+
+  std::list<MaskedObject> masked_;
+  // top_clip[i] == -1 means fully closed column
+  std::vector<int> top_clip_;
+  std::vector<int> bottom_clip_;
+
+  // Returns false if the object is invisible
+  bool FillMaskedObject(MaskedObject& msk, const mobj::MapObject* mobj);
+  // Fills using contex
+  bool FillMaskedObject(MaskedObject& msk);
+
+  void DrawMaskedObject(const MaskedObject& msk);
+  void FillContext(const MaskedObject& msk);
 };
 
 } // namespace rend

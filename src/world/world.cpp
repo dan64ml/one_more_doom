@@ -227,6 +227,20 @@ void World::CreateMapObjectList(std::ifstream& fin) {
       player_.z = sub_sectors_[ss_idx].sector->floor_height;
 
       player_.angle = items[i].angle;
+    } else if (items[i].type == 45 || items[i].type == 46) {
+      mobj::MapObject torch(this);
+      torch.x = items[i].x;
+      torch.y = items[i].y;
+
+      //torch.height = 
+
+      int ss_idx = bsp_.GetSubSectorIdx(torch.x, torch.y);
+      torch.z = sub_sectors_[ss_idx].sector->floor_height;
+
+      torch.texture = "TGRNA0";
+
+      mobjs_.push_back(torch);
+      sub_sectors_[ss_idx].mobjs.push_back(&mobjs_.back());
     }
   }
 }

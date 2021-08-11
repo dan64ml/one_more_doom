@@ -2,6 +2,7 @@
 #define MAP_OBJECT_
 
 #include <cstdint>
+#include <string>
 
 //#include "renderer/plane_utils.h"
 
@@ -109,6 +110,8 @@ Need access to:
 - FastBsp
 ===========================================================================*/
 struct MapObject {
+  // TMP!!!
+  std::string texture;
  public:
   MapObject(world::World* world) : world_(world) {}
 

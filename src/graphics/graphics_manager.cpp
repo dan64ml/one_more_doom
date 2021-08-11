@@ -212,21 +212,21 @@ Texture GraphicsManager::GetTexture(std::string texture_name) const {
   }
 }
 
-Texture GraphicsManager::GetSprite(std::string sprite_name) {
+Texture GraphicsManager::GetSprite(std::string sprite_name) const {
   if (sprites_.count(sprite_name) == 0) {
     //std::cout << "Sprite " + sprite_name + " not found!" << std::endl;
     return {};
   } else {
-    return {this, &sprites_[sprite_name]};
+    return {this, &sprites_.at(sprite_name)};
   }
 }
 
-Flat GraphicsManager::GetFlat(std::string flat_name) {
+Flat GraphicsManager::GetFlat(std::string flat_name) const {
   if (flats_.count(flat_name) == 0) {
     //std::cout << "Flat " + flat_name + " not found!" << std::endl;
     return {};
   } else {
-    return {this, &flats_[flat_name]};
+    return {this, &flats_.at(flat_name)};
   }
 }
 
