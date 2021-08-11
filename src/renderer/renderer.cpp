@@ -444,7 +444,7 @@ void Renderer::RenderWalls() {
   
       // TODO: it should be in FillCommonContext()...
       //ctx_.bsp_segment = seg;
-      ctx_.full_offset = seg->offset + sqrt((p1.x - seg->x1)*(p1.x - seg->x1) + (p1.y - seg->y1)*(p1.y - seg->y1));
+//      ctx_.full_offset = seg->offset + sqrt((p1.x - seg->x1)*(p1.x - seg->x1) + (p1.y - seg->y1)*(p1.y - seg->y1));
       FillCommonContext(seg, p1, p2);
   
       if (seg->linedef->sides[1] == nullptr) {
@@ -469,8 +469,17 @@ void Renderer::FillCommonContext(const world::Segment* bsp_segment, const DPoint
   // Common pointers
   ctx_.line_def_flags = bsp_segment->linedef->flags;
 
-  ctx_.front_side_def = bsp_segment->linedef->sides[bsp_segment->side];
-  ctx_.front_sector = ctx_.front_side_def->sector;
+//  ctx_.front_side_def = bsp_segment->linedef->sides[bsp_segment->side];
+  ctx_.full_offset = bsp_segment->offset + SegmentLength(ctx_.p1.x, ctx_.p1.y, bsp_segment->x1, bsp_segment->y1)
+    + bsp_segment->linedef->sides[bsp_segment->side]->texture_offset; //sqrt((p1.x - seg->x1)*(p1.x - seg->x1) + (p1.y - seg->y1)*(p1.y - seg->y1));
+  
+  ctx_.row_offset = bsp_segment->linedef->sides[bsp_segment->side]->row_offset;
+
+  ctx_.mid_texture = bsp_segment->linedef->sides[bsp_segment->side]->mid_texture;
+  ctx_.top_texture = bsp_segment->linedef->sides[bsp_segment->side]->top_texture;
+  ctx_.bottom_texture = bsp_segment->linedef->sides[bsp_segment->side]->bottom_texture;
+
+  ctx_.front_sector = bsp_segment->linedef->sides[bsp_segment->side]->sector;
 
   // Distances
   ctx_.left_distance = sqrt((vp_.x - left.x)*(vp_.x - left.x) +
@@ -567,7 +576,7 @@ void Renderer::FillPortalContext(const world::Segment* bsp_segment) {
 }
 
 void Renderer::TexurizeWall() {
-  ctx_.texture = gm_->GetTexture(ctx_.front_side_def->mid_texture);
+  ctx_.texture = gm_->GetTexture(ctx_.mid_texture);
 
   for (auto [left, right] : visible_fragments_) {
     TexurizeWallFragment(left, right);
@@ -627,7 +636,7 @@ void Renderer::UpdateCeiling(int screen_x, int from_y) {
 }
 
 void Renderer::TexurizePortal() {
-  ctx_.texture = gm_->GetTexture(ctx_.front_side_def->bottom_texture);
+  ctx_.texture = gm_->GetTexture(ctx_.bottom_texture);
   ctx_.pixel_height = abs(ctx_.front_sector->floor_height - ctx_.back_sector->floor_height);
   ctx_.pixel_texture_y_shift = 0;
   for (auto [left, right] : visible_fragments_) {
@@ -636,7 +645,7 @@ void Renderer::TexurizePortal() {
     //UpdateVssMaskByPortal(left, right);
   }
 
-  ctx_.texture = gm_->GetTexture(ctx_.front_side_def->top_texture);
+  ctx_.texture = gm_->GetTexture(ctx_.top_texture);
   ctx_.pixel_height = abs(ctx_.front_sector->ceiling_height - ctx_.back_sector->ceiling_height);
   ctx_.pixel_texture_y_shift = 0;
   for (auto [left, right] : visible_fragments_) {
@@ -644,7 +653,7 @@ void Renderer::TexurizePortal() {
   }
 
 
-  ctx_.texture = gm_->GetTexture(ctx_.front_side_def->mid_texture);
+  ctx_.texture = gm_->GetTexture(ctx_.mid_texture);
   if (!ctx_.texture) {
     return;
   }
@@ -720,15 +729,16 @@ void Renderer::DrawColumn(int screen_x, int screen_top_y, int screen_bottom_y, b
 
   // Texture map coords (u, v)
   // Common texture offset + offset from the start of line to bsp segment + column offset
-  int u = (ctx_.front_side_def->texture_offset + ctx_.full_offset 
-          + ScreenXtoTextureU(screen_x)) % ctx_.texture.GetXSize();
+//  int u = (ctx_.front_side_def->texture_offset + ctx_.full_offset 
+//          + ScreenXtoTextureU(screen_x)) % ctx_.texture.GetXSize();
+  int u = (ctx_.full_offset + ScreenXtoTextureU(screen_x)) % ctx_.texture.GetXSize();
 
   double delta_v = static_cast<double>(ctx_.pixel_height) / (screen_top_y - screen_bottom_y + 1);
 
   int texture_y_size = ctx_.texture.GetYSize();
   if (up_to_down) {
     for (int y = high; y >= low; --y) {
-      int v = static_cast<int>((screen_top_y - y) * delta_v + ctx_.pixel_texture_y_shift + ctx_.front_side_def->row_offset) // TODO:!!!
+      int v = static_cast<int>((screen_top_y - y) * delta_v + ctx_.pixel_texture_y_shift + ctx_.row_offset) // TODO:!!!
               % texture_y_size;
 
       uint32_t c = ctx_.texture.GetPixel(u, v);
@@ -736,7 +746,7 @@ void Renderer::DrawColumn(int screen_x, int screen_top_y, int screen_bottom_y, b
     }
   } else {
     for (int y = low; y <= high; ++y) {
-      int v = static_cast<int>((y - screen_bottom_y) * delta_v + ctx_.pixel_texture_y_shift + ctx_.front_side_def->row_offset) % texture_y_size;
+      int v = static_cast<int>((y - screen_bottom_y) * delta_v + ctx_.pixel_texture_y_shift + ctx_.row_offset) % texture_y_size;
 
       uint32_t c = ctx_.texture.GetPixel(u, texture_y_size - v - 1);
       wnd_->RenderFBPointAlpha(screen_x, y, c);
@@ -782,8 +792,9 @@ void Renderer::DrawMaskedColumn(int screen_x, int screen_top_y, int screen_botto
 
   // Texture map coords (u, v)
   // Common texture offset + offset from the start of line to bsp segment + column offset
-  int u = (ctx_.front_side_def->texture_offset + ctx_.full_offset 
-          + ScreenXtoTextureU(screen_x)) % ctx_.texture.GetXSize();
+//  int u = (ctx_.front_side_def->texture_offset + ctx_.full_offset 
+//          + ScreenXtoTextureU(screen_x)) % ctx_.texture.GetXSize();
+  int u = (ctx_.full_offset + ScreenXtoTextureU(screen_x)) % ctx_.texture.GetXSize();
 
   double delta_v = static_cast<double>(ctx_.pixel_height) / (screen_top_y - screen_bottom_y + 1);
 
@@ -794,7 +805,7 @@ void Renderer::DrawMaskedColumn(int screen_x, int screen_top_y, int screen_botto
       if (mpv.mask[screen_x - ctx_.sx_leftmost][y]) {
         continue;
       }
-      int v = static_cast<int>((screen_top_y - y) * delta_v + ctx_.pixel_texture_y_shift + ctx_.front_side_def->row_offset) // TODO:!!!
+      int v = static_cast<int>((screen_top_y - y) * delta_v + ctx_.pixel_texture_y_shift + ctx_.row_offset) // TODO:!!!
               % texture_y_size;
 
       //if (ctx_.texture.GetPixel(u, v, r, g, b)) {
@@ -808,7 +819,7 @@ void Renderer::DrawMaskedColumn(int screen_x, int screen_top_y, int screen_botto
       if (mpv.mask[screen_x - ctx_.sx_leftmost][y]) {
         continue;
       }
-      int v = static_cast<int>((y - screen_bottom_y) * delta_v + ctx_.pixel_texture_y_shift + ctx_.front_side_def->row_offset) % texture_y_size;
+      int v = static_cast<int>((y - screen_bottom_y) * delta_v + ctx_.pixel_texture_y_shift + ctx_.row_offset) % texture_y_size;
 
       //if (ctx_.texture.GetPixel(u, texture_y_size - v - 1, r, g, b)) {
       //  wnd_->RenderFBPoint(screen_x, y, r, g, b);

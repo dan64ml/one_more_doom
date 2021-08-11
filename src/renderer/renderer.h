@@ -41,8 +41,10 @@ struct SegmentRendContext {
   //const world::Segment* bsp_segment;
   //const world::Line* line_def;
   uint32_t line_def_flags;
-  const world::SideDef* front_side_def;
+
+  //const world::SideDef* front_side_def;
   const world::Sector* front_sector;
+
   // Valid for portals only
   const world::SideDef* back_side_def;
   const world::Sector* back_sector;
@@ -50,8 +52,17 @@ struct SegmentRendContext {
   // Distances to visible ends of the segment
   double left_distance;
   double right_distance;
+
   // Distance from the start of linedef to the left end of the segment
-  int full_offset;  
+  // NB! MUST includes SideDef::texture_offset
+  int full_offset;
+  // Instead of SideDef::row_offset
+  int row_offset;
+
+  std::string mid_texture;
+  std::string top_texture;
+  std::string bottom_texture;
+
   // And their coordinates
   DPoint p1;
   DPoint p2;
@@ -68,6 +79,7 @@ struct SegmentRendContext {
   // Data to calculate screen coordinates (screen x of seg's ends)
   int sx_leftmost;
   int sx_rightmost;
+
   // For walls and middle part of portals
   int mid_y_top;
   int mid_y_bottom;
