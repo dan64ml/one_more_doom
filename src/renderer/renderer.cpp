@@ -443,15 +443,15 @@ void Renderer::RenderWalls() {
       }
   
       // TODO: it should be in FillCommonContext()...
-      ctx_.bsp_segment = seg;
+      //ctx_.bsp_segment = seg;
       ctx_.full_offset = seg->offset + sqrt((p1.x - seg->x1)*(p1.x - seg->x1) + (p1.y - seg->y1)*(p1.y - seg->y1));
-      FillCommonContext(p1, p2);
+      FillCommonContext(seg, p1, p2);
   
       if (seg->linedef->sides[1] == nullptr) {
         FillWallContext(p1, p2);
         TexurizeWall();
       } else {
-        FillPortalContext();
+        FillPortalContext(seg);
         TexurizePortal();
       }
   
@@ -461,14 +461,14 @@ void Renderer::RenderWalls() {
   }
 }
 
-void Renderer::FillCommonContext(const DPoint& left, const DPoint& right) {
+void Renderer::FillCommonContext(const world::Segment* bsp_segment, const DPoint& left, const DPoint& right) {
   // Ends of segment
   ctx_.p1 = left;
   ctx_.p2 = right;
 
   // Common pointers
-  ctx_.line_def = ctx_.bsp_segment->linedef;
-  ctx_.front_side_def = ctx_.bsp_segment->linedef->sides[ctx_.bsp_segment->side];
+  ctx_.line_def = bsp_segment->linedef;
+  ctx_.front_side_def = bsp_segment->linedef->sides[bsp_segment->side];
   ctx_.front_sector = ctx_.front_side_def->sector;
 
   // Distances
@@ -537,9 +537,9 @@ void Renderer::FillWallContext(const DPoint& left, const DPoint& right) {
   ctx_.pixel_texture_y_shift = 0;
 }
 
-void Renderer::FillPortalContext() {
+void Renderer::FillPortalContext(const world::Segment* bsp_segment) {
   // Portal pointers
-  ctx_.back_side_def = ctx_.bsp_segment->linedef->sides[ctx_.bsp_segment->side ^ 1];
+  ctx_.back_side_def = bsp_segment->linedef->sides[bsp_segment->side ^ 1];
   ctx_.back_sector = ctx_.back_side_def->sector;
 
   // Data to calculate screen coordinates 

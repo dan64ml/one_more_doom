@@ -38,7 +38,7 @@ struct RendererOptions {
 
 struct SegmentRendContext {
   // Data related to the current segment
-  const world::Segment* bsp_segment;
+  //const world::Segment* bsp_segment;
   const world::Line* line_def;
   const world::SideDef* front_side_def;
   const world::Sector* front_sector;
@@ -165,9 +165,11 @@ class Renderer {
   bool CreateUnclippedFragments(const DPoint& left, const DPoint& right);
   void UpdateClipList(int first, int last);
 
-  void FillCommonContext(const DPoint& left, const DPoint& right);
+  //void FillCommonContext(const DPoint& left, const DPoint& right);
+  void FillCommonContext(const world::Segment* bsp_segment, const DPoint& left, const DPoint& right);
   void FillWallContext(const DPoint& left, const DPoint& right);
-  void FillPortalContext();
+  //void FillPortalContext();
+  void FillPortalContext(const world::Segment* bsp_segment);
 
   void TexurizeWall();
   void TexurizeWallFragment(int left, int right);
