@@ -36,72 +36,83 @@ struct RendererOptions {
   bool distance_light_enable = false;
 };
 
+// Context for rendering world::Segments
 struct SegmentRendContext {
-  // Data related to the current segment
-  //const world::Segment* bsp_segment;
-  //const world::Line* line_def;
-  uint32_t line_def_flags;
-
-  //const world::SideDef* front_side_def;
-  //const world::Sector* front_sector;
-  int front_light_level;
-  int front_ceiling_height;
-  int front_floor_height;
-  std::string front_ceiling_pic;
-  std::string front_floor_pic;
-
-  // Valid for portals only
-  //const world::SideDef* back_side_def;
-//  const world::Sector* back_sector;
-  int back_ceiling_height;
-  int back_floor_height;
-
-  // Distances to visible ends of the segment
-  double left_distance;
-  double right_distance;
-
-  // Distance from the start of linedef to the left end of the segment
-  // NB! MUST includes SideDef::texture_offset
-  int full_offset;
-  // Instead of SideDef::row_offset
-  int row_offset;
-
-  std::string mid_texture;
-  std::string top_texture;
-  std::string bottom_texture;
-
-  // And their coordinates
+  // Left and right ends of visible part of the segment
   DPoint p1;
   DPoint p2;
 
-  // Height of current element in map pixels
-  int pixel_height;
-  // Vertical shift, used with lower unpegged bottom texture 
-  int pixel_texture_y_shift;
-  // Current texture (can be empty)
-  graph::Texture texture;
-  // Visible segment phys lenght. Necessary for texturing
-  double segment_len;
-
-  // Data to calculate screen coordinates (screen x of seg's ends)
+  // Screen coordinates of p1 and p2
   int sx_leftmost;
   int sx_rightmost;
 
-  // For walls and middle part of portals
+  // Distances from view point to p1 and p2
+  double left_distance;
+  double right_distance;
+
+  // world::Line::flags of the parent Line for the segment;
+  uint32_t line_def_flags;
+
+  // Distance from the left end of the parent Line to p1
+  // NB! MUST includes SideDef::texture_offset and invisible 
+  // part of the segment!
+  int full_offset;
+  // Instead of front SideDef::row_offset
+  int row_offset;
+
+  // Height of current element in map pixels. It can be height of
+  // the wall, or any part of portal (middle, top...) or the height
+  // of masked
+  int pixel_height;
+
+  // Front sector data
+  int front_light_level;
+  int front_ceiling_height;
+  int front_floor_height;
+
+  std::string front_ceiling_pic;
+  std::string front_floor_pic;
+
+  // Texture name for walls and middle part of portals
+  // Also used for drawing Masked
+  std::string mid_texture;
+
+  // Lenght of segment (p1, p2). For speed up only.
+  double segment_len;
+
+  // Precalculated coefs for walls, middle part of portals and Masked
   int mid_y_top;
   int mid_y_bottom;
   double mid_dy_top;
   double mid_dy_bottom;
-  // For bottom part of portals
+
+  // Vertical shift, used with lower unpegged bottom texture
+  // TODO: looks like a candidate to combine with row_offset
+  int pixel_texture_y_shift;
+
+
+  // ! This part makes sense ONLY for portals !
+  int back_ceiling_height;
+  int back_floor_height;
+
+  // Texture names for top and bottom parts of the portal
+  std::string top_texture;
+  std::string bottom_texture;
+
+  // Precalculated coefs for bottom part of portals
   int bottom_y_top;
   int bottom_y_bottom;
   double bottom_dy_top;
   double bottom_dy_bottom;
-  // For top part of portals
+  // Precalculated coefs for top part of portals
   int top_y_top;
   int top_y_bottom;
   double top_dy_top;
   double top_dy_bottom;
+
+
+  // Current texture (can be empty). Just cache.
+  graph::Texture texture;
 };
 
 struct PixelRange {

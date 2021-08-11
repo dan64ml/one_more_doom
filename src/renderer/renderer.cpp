@@ -548,7 +548,6 @@ void Renderer::FillWallContext(const DPoint& left, const DPoint& right) {
         = CreateCoefs(ctx_.front_floor_height, ctx_.front_ceiling_height);
 
   // Textures
-  ctx_.pixel_height = ctx_.front_ceiling_height - ctx_.front_floor_height;
   ctx_.pixel_texture_y_shift = 0;
 }
 
