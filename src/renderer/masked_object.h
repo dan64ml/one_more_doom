@@ -17,6 +17,11 @@ namespace rend {
 //struct DPoint;
 
 struct MaskedObject {
+  int x1;
+  int y1;
+  int x2;
+  int y2;
+  
   std::string text;
   // Current texture
   //graph::Texture texture;

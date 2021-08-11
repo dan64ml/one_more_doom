@@ -82,37 +82,33 @@ void Renderer::FillContext(const MaskedObject& msk) {
   ctx_.p1 = msk.p1;
   ctx_.p2 = msk.p2;
 
-  // Common pointers
-  //ctx_.line_def = ctx_.bsp_segment->linedef;
-  //ctx_.front_side_def = ctx_.bsp_segment->linedef->sides[ctx_.bsp_segment->side];
-  //ctx_.front_sector = ctx_.front_side_def->sector;
+  // Data to calculate screen coordinates
+  ctx_.sx_leftmost = msk.sx_leftmost;
+  ctx_.sx_rightmost = msk.sx_rightmost;
 
   // Distances
-  ctx_.left_distance = sqrt((vp_.x - ctx_.p1.x)*(vp_.x - ctx_.p1.x) +
-    (vp_.y - ctx_.p1.y)*(vp_.y - ctx_.p1.y)) * rend::BamCos(ctx_.p1.angle - rend::kBamAngle45);
-  ctx_.right_distance = sqrt((vp_.x - ctx_.p2.x)*(vp_.x - ctx_.p2.x) +
-    (vp_.y - ctx_.p2.y)*(vp_.y - ctx_.p2.y)) * rend::BamCos(ctx_.p2.angle - rend::kBamAngle45);
+  ctx_.left_distance = SegmentLength(vp_, ctx_.p1) * rend::BamCos(ctx_.p1.angle - rend::kBamAngle45);
+  ctx_.right_distance = SegmentLength(vp_, ctx_.p2) * rend::BamCos(ctx_.p2.angle - rend::kBamAngle45);
 
-  // Data to calculate screen coordinates
-  ctx_.sx_leftmost = bam_to_screen_x_table_[ctx_.p1.angle];
-  ctx_.sx_rightmost = bam_to_screen_x_table_[ctx_.p2.angle];
+  ctx_.line_def_flags = 0;
+  ctx_.full_offset = SegmentLength(msk.x1, msk.y1, ctx_.p1.x, ctx_.p1.y);
+  ctx_.row_offset = 0;
+
+  // TODO: ???
+  ctx_.texture = gm_->GetSprite(msk.text);
+  ctx_.pixel_height = ctx_.texture.GetYSize();
+
+  // TODO: ??? light_level and floor_height (for flying mobjs)
+
+  // TODO: ??? Redundunt - name and Texture...
+  ctx_.mid_texture = msk.text;
 
   // For texturing
-  ctx_.segment_len = sqrt((ctx_.p1.x - ctx_.p2.x)*(ctx_.p1.x - ctx_.p2.x) + (ctx_.p1.y - ctx_.p2.y)*(ctx_.p1.y - ctx_.p2.y));
-  ctx_.pixel_texture_y_shift = 0;
-
-  ctx_.texture = gm_->GetSprite(msk.text);
-  //msk.height = ctx_.texture.GetYSize();
-
-  // Data to calculate screen coordinates 
-  ctx_.pixel_height = ctx_.texture.GetYSize();  //msk.height;
+  ctx_.segment_len = SegmentLength(ctx_.p1, ctx_.p2); //sqrt((ctx_.p1.x - ctx_.p2.x)*(ctx_.p1.x - ctx_.p2.x) + (ctx_.p1.y - ctx_.p2.y)*(ctx_.p1.y - ctx_.p2.y));
 
   std::tie(ctx_.mid_y_bottom, ctx_.mid_y_top, ctx_.mid_dy_bottom, ctx_.mid_dy_top) 
         = CreateCoefs(msk.z, msk.z + ctx_.pixel_height);
-        //= CreateCoefs(ctx_.front_sector->floor_height, ctx_.front_sector->ceiling_height);
 
-  // Textures
-  //ctx_.pixel_height = ctx_.front_sector->ceiling_height - ctx_.front_sector->floor_height;
   ctx_.pixel_texture_y_shift = 0;
 }
 
@@ -442,19 +438,12 @@ void Renderer::RenderWalls() {
         continue;
       }
   
-      // TODO: it should be in FillCommonContext()...
-      //ctx_.bsp_segment = seg;
-//      ctx_.full_offset = seg->offset + sqrt((p1.x - seg->x1)*(p1.x - seg->x1) + (p1.y - seg->y1)*(p1.y - seg->y1));
-      //FillCommonContext(seg, p1, p2);
-
       FillSegmentContext(seg, p1, p2);
       CreateVisplanes();
   
       if (seg->linedef->sides[1] == nullptr) {
-        //FillWallContext(p1, p2);
         TexurizeWall();
       } else {
-        //FillPortalContext(seg);
         TexurizePortal();
       }
   
@@ -556,67 +545,6 @@ void Renderer::CreateVisplanes() {
   bottom_visplane_->texture = ctx_.front_floor_pic;
 }
 
-/*void Renderer::FillCommonContext(const world::Segment* bsp_segment, const DPoint& left, const DPoint& right) {
-  // Ends of segment
-  ctx_.p1 = left;
-  ctx_.p2 = right;
-
-  // Common pointers
-  ctx_.line_def_flags = bsp_segment->linedef->flags;
-
-//  ctx_.front_side_def = bsp_segment->linedef->sides[bsp_segment->side];
-  ctx_.full_offset = bsp_segment->offset + SegmentLength(ctx_.p1.x, ctx_.p1.y, bsp_segment->x1, bsp_segment->y1)
-    + bsp_segment->linedef->sides[bsp_segment->side]->texture_offset; //sqrt((p1.x - seg->x1)*(p1.x - seg->x1) + (p1.y - seg->y1)*(p1.y - seg->y1));
-  
-  ctx_.row_offset = bsp_segment->linedef->sides[bsp_segment->side]->row_offset;
-
-  ctx_.mid_texture = bsp_segment->linedef->sides[bsp_segment->side]->mid_texture;
-  ctx_.top_texture = bsp_segment->linedef->sides[bsp_segment->side]->top_texture;
-  ctx_.bottom_texture = bsp_segment->linedef->sides[bsp_segment->side]->bottom_texture;
-
-  //ctx_.front_sector = bsp_segment->linedef->sides[bsp_segment->side]->sector;
-  ctx_.front_light_level = bsp_segment->linedef->sides[bsp_segment->side]->sector->light_level;
-  ctx_.front_ceiling_height = bsp_segment->linedef->sides[bsp_segment->side]->sector->ceiling_height;
-  ctx_.front_floor_height = bsp_segment->linedef->sides[bsp_segment->side]->sector->floor_height;
-  ctx_.front_ceiling_pic = bsp_segment->linedef->sides[bsp_segment->side]->sector->ceiling_pic;
-  ctx_.front_floor_pic = bsp_segment->linedef->sides[bsp_segment->side]->sector->floor_pic;
-
-  // Distances
-  ctx_.left_distance = sqrt((vp_.x - left.x)*(vp_.x - left.x) +
-    (vp_.y - left.y)*(vp_.y - left.y)) * rend::BamCos(left.angle - rend::kBamAngle45);
-  ctx_.right_distance = sqrt((vp_.x - right.x)*(vp_.x - right.x) +
-    (vp_.y - right.y)*(vp_.y - right.y)) * rend::BamCos(right.angle - rend::kBamAngle45);
-
-  // Data to calculate screen coordinates
-  ctx_.sx_leftmost = bam_to_screen_x_table_[left.angle];
-  ctx_.sx_rightmost = bam_to_screen_x_table_[right.angle];
-
-  // For texturing
-  ctx_.segment_len = sqrt((ctx_.p1.x - ctx_.p2.x)*(ctx_.p1.x - ctx_.p2.x) + (ctx_.p1.y - ctx_.p2.y)*(ctx_.p1.y - ctx_.p2.y));
-  ctx_.pixel_texture_y_shift = 0;
-
-  // Create visplanes
-  if (!top_visplane_) {
-    top_visplane_.reset(new Visplane);
-    top_visplane_->bottom.fill(-1);
-  }
-  top_visplane_->min_x = -1;
-  top_visplane_->max_x = -1;
-  top_visplane_->light_level = ctx_.front_light_level;
-  top_visplane_->height = ctx_.front_ceiling_height;
-  top_visplane_->texture = ctx_.front_ceiling_pic;
-
-  if (!bottom_visplane_) {
-    bottom_visplane_.reset(new  Visplane);
-    bottom_visplane_->bottom.fill(-1);
-  }
-  bottom_visplane_->min_x = -1;
-  bottom_visplane_->max_x = -1;
-  bottom_visplane_->light_level = ctx_.front_light_level;
-  bottom_visplane_->height = ctx_.front_floor_height;
-  bottom_visplane_->texture = ctx_.front_floor_pic;
-}*/
-
 std::tuple<int, int, double, double> Renderer::CreateCoefs(int h_low, int h_high) {
   int horizon = player_feet_height_ + kPlayerHeight;
 
@@ -633,47 +561,6 @@ std::tuple<int, int, double, double> Renderer::CreateCoefs(int h_low, int h_high
   double dy_bottom = static_cast<double>(right_bottom - left_bottom) / (ctx_.sx_rightmost - ctx_.sx_leftmost + 1);
 
   return {left_bottom, left_top, dy_bottom, dy_top};
-}
-
-void Renderer::FillWallContext(const DPoint& left, const DPoint& right) {
-  // Data to calculate screen coordinates 
-  ctx_.pixel_height = ctx_.front_ceiling_height - ctx_.front_floor_height;
-
-  std::tie(ctx_.mid_y_bottom, ctx_.mid_y_top, ctx_.mid_dy_bottom, ctx_.mid_dy_top) 
-        = CreateCoefs(ctx_.front_floor_height, ctx_.front_ceiling_height);
-
-  // Textures
-  ctx_.pixel_texture_y_shift = 0;
-}
-
-void Renderer::FillPortalContext(const world::Segment* bsp_segment) {
-  // Portal pointers
-  //ctx_.back_side_def = bsp_segment->linedef->sides[bsp_segment->side ^ 1];
-  //ctx_.back_sector = bsp_segment->linedef->sides[bsp_segment->side ^ 1]->sector;
-  ctx_.back_ceiling_height = bsp_segment->linedef->sides[bsp_segment->side ^ 1]->sector->ceiling_height;
-  ctx_.back_floor_height = bsp_segment->linedef->sides[bsp_segment->side ^ 1]->sector->floor_height;
-
-  // Data to calculate screen coordinates 
-  if (ctx_.front_ceiling_height > ctx_.back_ceiling_height) {
-    std::tie(ctx_.top_y_bottom, ctx_.top_y_top, ctx_.top_dy_bottom, ctx_.top_dy_top) 
-          = CreateCoefs(ctx_.back_ceiling_height, ctx_.front_ceiling_height);
-  } else {
-    std::tie(ctx_.top_y_bottom, ctx_.top_y_top, ctx_.top_dy_bottom, ctx_.top_dy_top) 
-          = CreateCoefs(ctx_.front_ceiling_height, ctx_.back_ceiling_height);
-  }
-
-  if (ctx_.front_floor_height < ctx_.back_floor_height) {
-    std::tie(ctx_.bottom_y_bottom, ctx_.bottom_y_top, ctx_.bottom_dy_bottom, ctx_.bottom_dy_top)
-          = CreateCoefs(ctx_.front_floor_height, ctx_.back_floor_height);
-  } else {
-    std::tie(ctx_.bottom_y_bottom, ctx_.bottom_y_top, ctx_.bottom_dy_bottom, ctx_.bottom_dy_top)
-          = CreateCoefs(ctx_.back_floor_height, ctx_.front_floor_height);
-  }
-
-  ctx_.mid_y_bottom = ctx_.bottom_y_top + 1;
-  ctx_.mid_y_top = ctx_.top_y_bottom - 1;
-  ctx_.mid_dy_bottom = ctx_.bottom_dy_top;
-  ctx_.mid_dy_top = ctx_.top_dy_bottom;
 }
 
 void Renderer::TexurizeWall() {
@@ -1084,9 +971,6 @@ void Renderer::ClearRenderer() {
 }
 
 bool Renderer::FillMaskedObject(MaskedObject& msk, const mobj::MapObject* mobj) {
-    //auto [sp_x, sp_y] = item.GetPosition();
-//    int sp_x = mobj->x;
-//    int sp_y = mobj->y;
     //int width = mobj->radius;
     msk.height = mobj->height;
     msk.z = mobj->z;
@@ -1096,13 +980,20 @@ bool Renderer::FillMaskedObject(MaskedObject& msk, const mobj::MapObject* mobj) 
     //auto [width, height] = item.GetSpriteSize(vp_.angle);
 
     auto angle = CalcAngle(vp_.x, vp_.y, mobj->x, mobj->y);
-    int dx = mobj->radius * BamCos(kBamAngle90 - angle);
-    int dy = mobj->radius * BamSin(kBamAngle90 - angle);
-    int lx = mobj->x - dx / 2;
-    int ly = mobj->y + dy / 2;
-    //int lx = mobj->x - dx;
-    //int ly = mobj->y + dy;
-    auto [visible, p1, p2] = GetVisibleSegment(vp_, lx, ly, lx + dx, ly - dy);
+//    int dx = mobj->radius * BamCos(kBamAngle90 - angle);
+//    int dy = mobj->radius * BamSin(kBamAngle90 - angle);
+    int dx = 26 * BamCos(kBamAngle90 - angle);
+    int dy = 26 * BamSin(kBamAngle90 - angle);
+
+//    int lx = mobj->x - dx / 2;
+//    int ly = mobj->y + dy / 2;
+    
+    msk.x1 = mobj->x - dx / 2;
+    msk.y1 = mobj->y + dy / 2;
+    msk.x2 = msk.x1 + dx;
+    msk.y2 = msk.y1 - dy;
+
+    auto [visible, p1, p2] = GetVisibleSegment(vp_, msk.x1, msk.y1, msk.x2, msk.y2);
     if (!visible) {
       return false;
     }

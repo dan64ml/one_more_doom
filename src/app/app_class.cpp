@@ -16,7 +16,7 @@ void AppClass::InitInstance() {
   gm_.Load("/home/dan/tmp/DOOM2.WAD");
 
   world_.OpenWad("/home/dan/tmp/DOOM2.WAD");
-  world_.LoadLevel(9); //27
+  world_.LoadLevel(25); //27
 
   renderer_.SetDrawWindow(&wnd_);
 

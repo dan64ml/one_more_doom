@@ -196,14 +196,7 @@ class Renderer {
   bool CreateUnclippedFragments(const DPoint& left, const DPoint& right);
   void UpdateClipList(int first, int last);
 
-  //void FillCommonContext(const DPoint& left, const DPoint& right);
-//  void FillCommonContext(const world::Segment* bsp_segment, const DPoint& left, const DPoint& right);
   void FillSegmentContext(const world::Segment* bsp_segment, const DPoint& left, const DPoint& right);
-
-  void FillWallContext(const DPoint& left, const DPoint& right);
-  //void FillPortalContext();
-  void FillPortalContext(const world::Segment* bsp_segment);
-  // Uses context!
   void CreateVisplanes();
 
   void TexurizeWall();
