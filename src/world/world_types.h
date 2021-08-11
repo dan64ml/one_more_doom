@@ -49,7 +49,8 @@ struct Line {
   int x2;
   int y2;
 
-  int flags;
+  // See kLDFxxx flags
+  uint32_t flags;
   int specials;   // Special Type
   int tag;
 
@@ -57,8 +58,15 @@ struct Line {
   SideDef* sides[2];
 };
 
-const int16_t kLDFUpperUnpegged = 0x0008;
-const int16_t kLDFLowerUnpegged = 0x0010;
+const uint32_t kLDFBlockEveryOne = 0x0001;
+const uint32_t kLDFBlockMonsters = 0x0002;
+const uint32_t kLDFTwoSided      = 0x0004;
+const uint32_t kLDFUpperUnpegged = 0x0008;
+const uint32_t kLDFLowerUnpegged = 0x0010;
+const uint32_t kLDFSecret        = 0x0020;
+const uint32_t kLDFBlockSound    = 0x0040;
+const uint32_t kLDFNeverShowMap  = 0x0080;
+const uint32_t kLDFAlwaysShowMap = 0x0100;
 
 // BSP related types
 

@@ -73,7 +73,7 @@ void Renderer::DrawMaskedObject(const MaskedObject& msk) {
     int top = ctx_.mid_dy_top * (x - ctx_.sx_leftmost) + ctx_.mid_y_top;
     int bottom = ctx_.mid_dy_bottom * (x - ctx_.sx_leftmost) + ctx_.mid_y_bottom;
 
-    DrawColumn(x, top, bottom, !(ctx_.line_def->flags & world::kLDFLowerUnpegged));
+    DrawColumn(x, top, bottom, !(ctx_.line_def_flags & world::kLDFLowerUnpegged));
   }
 }
 
@@ -467,7 +467,8 @@ void Renderer::FillCommonContext(const world::Segment* bsp_segment, const DPoint
   ctx_.p2 = right;
 
   // Common pointers
-  ctx_.line_def = bsp_segment->linedef;
+  ctx_.line_def_flags = bsp_segment->linedef->flags;
+
   ctx_.front_side_def = bsp_segment->linedef->sides[bsp_segment->side];
   ctx_.front_sector = ctx_.front_side_def->sector;
 
@@ -676,7 +677,7 @@ void Renderer::TexurizeWallFragment(int left, int right) {
     int top = ctx_.mid_dy_top * (x - ctx_.sx_leftmost) + ctx_.mid_y_top;
     int bottom = ctx_.mid_dy_bottom * (x - ctx_.sx_leftmost) + ctx_.mid_y_bottom;
 
-    DrawColumn(x, top, bottom, !(ctx_.line_def->flags & world::kLDFLowerUnpegged));
+    DrawColumn(x, top, bottom, !(ctx_.line_def_flags & world::kLDFLowerUnpegged));
 
     UpdateTopVisplane(x, top + 1);
     UpdateBottomVisplane(x, bottom - 1);
@@ -824,7 +825,7 @@ void Renderer::TexurizeBottomFragment(int left, int right) {
     // Screen top and bottom ends of current column
     int top = ctx_.bottom_dy_top * (x - ctx_.sx_leftmost) + ctx_.bottom_y_top;
     int bottom = ctx_.bottom_dy_bottom * (x - ctx_.sx_leftmost) + ctx_.bottom_y_bottom;
-    ctx_.pixel_texture_y_shift = (ctx_.line_def->flags & world::kLDFLowerUnpegged) 
+    ctx_.pixel_texture_y_shift = (ctx_.line_def_flags & world::kLDFLowerUnpegged) 
       ? (ctx_.front_sector->ceiling_height - ctx_.back_sector->floor_height) : 0;
 
     bottom_clip_[x] = std::max(top, bottom_clip_[x]);
@@ -849,7 +850,7 @@ void Renderer::TexurizeTopFragment(int left, int right) {
     top_clip_[x] = std::min(bottom, top_clip_[x]);
 
     if (ctx_.front_sector->ceiling_height > ctx_.back_sector->ceiling_height) {
-      DrawColumn(x, top, bottom, (ctx_.line_def->flags & world::kLDFUpperUnpegged));
+      DrawColumn(x, top, bottom, (ctx_.line_def_flags & world::kLDFUpperUnpegged));
       UpdateTopVisplane(x, top + 1);
     } else {
       UpdateTopVisplane(x, bottom);
@@ -870,7 +871,7 @@ void Renderer::TexurizeMidFragment(MidPortalVisplane& mpv) {
       int top = ctx_.mid_dy_top * (x - ctx_.sx_leftmost) + ctx_.mid_y_top;
       int bottom = ctx_.mid_dy_bottom * (x - ctx_.sx_leftmost) + ctx_.mid_y_bottom;
   
-      DrawMaskedColumn(x, top, bottom, !(ctx_.line_def->flags & world::kLDFLowerUnpegged), 
+      DrawMaskedColumn(x, top, bottom, !(ctx_.line_def_flags & world::kLDFLowerUnpegged), 
         mpv);
     }
   }

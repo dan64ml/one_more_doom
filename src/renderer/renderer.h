@@ -39,7 +39,8 @@ struct RendererOptions {
 struct SegmentRendContext {
   // Data related to the current segment
   //const world::Segment* bsp_segment;
-  const world::Line* line_def;
+  //const world::Line* line_def;
+  uint32_t line_def_flags;
   const world::SideDef* front_side_def;
   const world::Sector* front_sector;
   // Valid for portals only
