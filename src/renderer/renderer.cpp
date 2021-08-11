@@ -445,13 +445,16 @@ void Renderer::RenderWalls() {
       // TODO: it should be in FillCommonContext()...
       //ctx_.bsp_segment = seg;
 //      ctx_.full_offset = seg->offset + sqrt((p1.x - seg->x1)*(p1.x - seg->x1) + (p1.y - seg->y1)*(p1.y - seg->y1));
-      FillCommonContext(seg, p1, p2);
+      //FillCommonContext(seg, p1, p2);
+
+      FillSegmentContext(seg, p1, p2);
+      CreateVisplanes();
   
       if (seg->linedef->sides[1] == nullptr) {
-        FillWallContext(p1, p2);
+        //FillWallContext(p1, p2);
         TexurizeWall();
       } else {
-        FillPortalContext(seg);
+        //FillPortalContext(seg);
         TexurizePortal();
       }
   
@@ -461,7 +464,99 @@ void Renderer::RenderWalls() {
   }
 }
 
-void Renderer::FillCommonContext(const world::Segment* bsp_segment, const DPoint& left, const DPoint& right) {
+void Renderer::FillSegmentContext(const world::Segment* bsp_segment, const DPoint& left, const DPoint& right) {
+  ctx_.p1 = left;
+  ctx_.p2 = right;
+
+  ctx_.sx_leftmost = bam_to_screen_x_table_[left.angle];
+  ctx_.sx_rightmost = bam_to_screen_x_table_[right.angle];
+
+  ctx_.left_distance = SegmentLength(vp_, left) * BamCos(left.angle - rend::kBamAngle45);
+  ctx_.right_distance = SegmentLength(vp_, right) * BamCos(right.angle - rend::kBamAngle45);
+
+  ctx_.line_def_flags = bsp_segment->linedef->flags;
+
+  ctx_.full_offset = bsp_segment->offset + SegmentLength(ctx_.p1.x, ctx_.p1.y, bsp_segment->x1, bsp_segment->y1)
+    + bsp_segment->linedef->sides[bsp_segment->side]->texture_offset;
+  ctx_.row_offset = bsp_segment->linedef->sides[bsp_segment->side]->row_offset;
+
+  ctx_.front_light_level = bsp_segment->linedef->sides[bsp_segment->side]->sector->light_level;
+  ctx_.front_ceiling_height = bsp_segment->linedef->sides[bsp_segment->side]->sector->ceiling_height;
+  ctx_.front_floor_height = bsp_segment->linedef->sides[bsp_segment->side]->sector->floor_height;
+
+  ctx_.front_ceiling_pic = bsp_segment->linedef->sides[bsp_segment->side]->sector->ceiling_pic;
+  ctx_.front_floor_pic = bsp_segment->linedef->sides[bsp_segment->side]->sector->floor_pic;
+
+  // NB! Such a value is valid only for walls. It must be changed for each part of portals!
+  ctx_.pixel_height = ctx_.front_ceiling_height - ctx_.front_floor_height;
+
+  ctx_.segment_len = SegmentLength(ctx_.p1, ctx_.p2);
+
+  ctx_.pixel_texture_y_shift = 0;
+
+  // This part varies depending on the type of the secment
+
+  ctx_.mid_texture = bsp_segment->linedef->sides[bsp_segment->side]->mid_texture;
+  if (ctx_.line_def_flags & world::kLDFTwoSided) {
+    ctx_.top_texture = bsp_segment->linedef->sides[bsp_segment->side]->top_texture;
+    ctx_.bottom_texture = bsp_segment->linedef->sides[bsp_segment->side]->bottom_texture;
+  }
+
+  if (!(ctx_.line_def_flags & world::kLDFTwoSided)) {
+    std::tie(ctx_.mid_y_bottom, ctx_.mid_y_top, ctx_.mid_dy_bottom, ctx_.mid_dy_top) 
+          = CreateCoefs(ctx_.front_floor_height, ctx_.front_ceiling_height);
+  } else {
+    ctx_.back_ceiling_height = bsp_segment->linedef->sides[bsp_segment->side ^ 1]->sector->ceiling_height;
+    ctx_.back_floor_height = bsp_segment->linedef->sides[bsp_segment->side ^ 1]->sector->floor_height;
+
+    // Data to calculate screen coordinates 
+    if (ctx_.front_ceiling_height > ctx_.back_ceiling_height) {
+      std::tie(ctx_.top_y_bottom, ctx_.top_y_top, ctx_.top_dy_bottom, ctx_.top_dy_top) 
+            = CreateCoefs(ctx_.back_ceiling_height, ctx_.front_ceiling_height);
+    } else {
+      std::tie(ctx_.top_y_bottom, ctx_.top_y_top, ctx_.top_dy_bottom, ctx_.top_dy_top) 
+            = CreateCoefs(ctx_.front_ceiling_height, ctx_.back_ceiling_height);
+    }
+  
+    if (ctx_.front_floor_height < ctx_.back_floor_height) {
+      std::tie(ctx_.bottom_y_bottom, ctx_.bottom_y_top, ctx_.bottom_dy_bottom, ctx_.bottom_dy_top)
+            = CreateCoefs(ctx_.front_floor_height, ctx_.back_floor_height);
+    } else {
+      std::tie(ctx_.bottom_y_bottom, ctx_.bottom_y_top, ctx_.bottom_dy_bottom, ctx_.bottom_dy_top)
+            = CreateCoefs(ctx_.back_floor_height, ctx_.front_floor_height);
+    }
+  
+    ctx_.mid_y_bottom = ctx_.bottom_y_top + 1;
+    ctx_.mid_y_top = ctx_.top_y_bottom - 1;
+    ctx_.mid_dy_bottom = ctx_.bottom_dy_top;
+    ctx_.mid_dy_top = ctx_.top_dy_bottom;
+  }
+}
+
+void Renderer::CreateVisplanes() {
+  // Create visplanes
+  if (!top_visplane_) {
+    top_visplane_.reset(new Visplane);
+    top_visplane_->bottom.fill(-1);
+  }
+  top_visplane_->min_x = -1;
+  top_visplane_->max_x = -1;
+  top_visplane_->light_level = ctx_.front_light_level;
+  top_visplane_->height = ctx_.front_ceiling_height;
+  top_visplane_->texture = ctx_.front_ceiling_pic;
+
+  if (!bottom_visplane_) {
+    bottom_visplane_.reset(new  Visplane);
+    bottom_visplane_->bottom.fill(-1);
+  }
+  bottom_visplane_->min_x = -1;
+  bottom_visplane_->max_x = -1;
+  bottom_visplane_->light_level = ctx_.front_light_level;
+  bottom_visplane_->height = ctx_.front_floor_height;
+  bottom_visplane_->texture = ctx_.front_floor_pic;
+}
+
+/*void Renderer::FillCommonContext(const world::Segment* bsp_segment, const DPoint& left, const DPoint& right) {
   // Ends of segment
   ctx_.p1 = left;
   ctx_.p2 = right;
@@ -520,7 +615,7 @@ void Renderer::FillCommonContext(const world::Segment* bsp_segment, const DPoint
   bottom_visplane_->light_level = ctx_.front_light_level;
   bottom_visplane_->height = ctx_.front_floor_height;
   bottom_visplane_->texture = ctx_.front_floor_pic;
-}
+}*/
 
 std::tuple<int, int, double, double> Renderer::CreateCoefs(int h_low, int h_high) {
   int horizon = player_feet_height_ + kPlayerHeight;

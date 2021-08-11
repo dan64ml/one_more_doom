@@ -46,7 +46,7 @@ struct SegmentRendContext {
   int sx_leftmost;
   int sx_rightmost;
 
-  // Distances from view point to p1 and p2
+  // Distances from view point to p1 and p2 with angle correction
   double left_distance;
   double right_distance;
 
@@ -62,7 +62,7 @@ struct SegmentRendContext {
 
   // Height of current element in map pixels. It can be height of
   // the wall, or any part of portal (middle, top...) or the height
-  // of masked
+  // of a masked.
   int pixel_height;
 
   // Front sector data
@@ -197,10 +197,14 @@ class Renderer {
   void UpdateClipList(int first, int last);
 
   //void FillCommonContext(const DPoint& left, const DPoint& right);
-  void FillCommonContext(const world::Segment* bsp_segment, const DPoint& left, const DPoint& right);
+//  void FillCommonContext(const world::Segment* bsp_segment, const DPoint& left, const DPoint& right);
+  void FillSegmentContext(const world::Segment* bsp_segment, const DPoint& left, const DPoint& right);
+
   void FillWallContext(const DPoint& left, const DPoint& right);
   //void FillPortalContext();
   void FillPortalContext(const world::Segment* bsp_segment);
+  // Uses context!
+  void CreateVisplanes();
 
   void TexurizeWall();
   void TexurizeWallFragment(int left, int right);

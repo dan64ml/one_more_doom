@@ -297,4 +297,8 @@ double SegmentLength(int x1, int y1, int x2, int y2) {
   return sqrt((x1 - x2)*(x1 - x2) + (y1 - y2)*(y1 - y2));
 }
 
+double SegmentLength(DPoint p1, DPoint p2) {
+  return sqrt((p1.x - p2.x)*(p1.x - p2.x) + (p1.y - p2.y)*(p1.y - p2.y));
+}
+
 } // namespace rend
