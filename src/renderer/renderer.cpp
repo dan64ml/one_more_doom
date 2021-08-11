@@ -549,8 +549,8 @@ void Renderer::FillWallContext(const DPoint& left, const DPoint& right) {
 
 void Renderer::FillPortalContext(const world::Segment* bsp_segment) {
   // Portal pointers
-  ctx_.back_side_def = bsp_segment->linedef->sides[bsp_segment->side ^ 1];
-  ctx_.back_sector = ctx_.back_side_def->sector;
+  //ctx_.back_side_def = bsp_segment->linedef->sides[bsp_segment->side ^ 1];
+  ctx_.back_sector = bsp_segment->linedef->sides[bsp_segment->side ^ 1]->sector;
 
   // Data to calculate screen coordinates 
   if (ctx_.front_sector->ceiling_height > ctx_.back_sector->ceiling_height) {

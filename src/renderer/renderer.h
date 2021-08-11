@@ -46,7 +46,7 @@ struct SegmentRendContext {
   const world::Sector* front_sector;
 
   // Valid for portals only
-  const world::SideDef* back_side_def;
+  //const world::SideDef* back_side_def;
   const world::Sector* back_sector;
 
   // Distances to visible ends of the segment
