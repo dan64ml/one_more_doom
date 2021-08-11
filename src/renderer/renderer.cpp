@@ -555,23 +555,25 @@ void Renderer::FillWallContext(const DPoint& left, const DPoint& right) {
 void Renderer::FillPortalContext(const world::Segment* bsp_segment) {
   // Portal pointers
   //ctx_.back_side_def = bsp_segment->linedef->sides[bsp_segment->side ^ 1];
-  ctx_.back_sector = bsp_segment->linedef->sides[bsp_segment->side ^ 1]->sector;
+  //ctx_.back_sector = bsp_segment->linedef->sides[bsp_segment->side ^ 1]->sector;
+  ctx_.back_ceiling_height = bsp_segment->linedef->sides[bsp_segment->side ^ 1]->sector->ceiling_height;
+  ctx_.back_floor_height = bsp_segment->linedef->sides[bsp_segment->side ^ 1]->sector->floor_height;
 
   // Data to calculate screen coordinates 
-  if (ctx_.front_ceiling_height > ctx_.back_sector->ceiling_height) {
+  if (ctx_.front_ceiling_height > ctx_.back_ceiling_height) {
     std::tie(ctx_.top_y_bottom, ctx_.top_y_top, ctx_.top_dy_bottom, ctx_.top_dy_top) 
-          = CreateCoefs(ctx_.back_sector->ceiling_height, ctx_.front_ceiling_height);
+          = CreateCoefs(ctx_.back_ceiling_height, ctx_.front_ceiling_height);
   } else {
     std::tie(ctx_.top_y_bottom, ctx_.top_y_top, ctx_.top_dy_bottom, ctx_.top_dy_top) 
-          = CreateCoefs(ctx_.front_ceiling_height, ctx_.back_sector->ceiling_height);
+          = CreateCoefs(ctx_.front_ceiling_height, ctx_.back_ceiling_height);
   }
 
-  if (ctx_.front_floor_height < ctx_.back_sector->floor_height) {
+  if (ctx_.front_floor_height < ctx_.back_floor_height) {
     std::tie(ctx_.bottom_y_bottom, ctx_.bottom_y_top, ctx_.bottom_dy_bottom, ctx_.bottom_dy_top)
-          = CreateCoefs(ctx_.front_floor_height, ctx_.back_sector->floor_height);
+          = CreateCoefs(ctx_.front_floor_height, ctx_.back_floor_height);
   } else {
     std::tie(ctx_.bottom_y_bottom, ctx_.bottom_y_top, ctx_.bottom_dy_bottom, ctx_.bottom_dy_top)
-          = CreateCoefs(ctx_.back_sector->floor_height, ctx_.front_floor_height);
+          = CreateCoefs(ctx_.back_floor_height, ctx_.front_floor_height);
   }
 
   ctx_.mid_y_bottom = ctx_.bottom_y_top + 1;
@@ -642,7 +644,7 @@ void Renderer::UpdateCeiling(int screen_x, int from_y) {
 
 void Renderer::TexurizePortal() {
   ctx_.texture = gm_->GetTexture(ctx_.bottom_texture);
-  ctx_.pixel_height = abs(ctx_.front_floor_height - ctx_.back_sector->floor_height);
+  ctx_.pixel_height = abs(ctx_.front_floor_height - ctx_.back_floor_height);
   ctx_.pixel_texture_y_shift = 0;
   for (auto [left, right] : visible_fragments_) {
     TexurizeBottomFragment(left, right);
@@ -651,7 +653,7 @@ void Renderer::TexurizePortal() {
   }
 
   ctx_.texture = gm_->GetTexture(ctx_.top_texture);
-  ctx_.pixel_height = abs(ctx_.front_ceiling_height - ctx_.back_sector->ceiling_height);
+  ctx_.pixel_height = abs(ctx_.front_ceiling_height - ctx_.back_ceiling_height);
   ctx_.pixel_texture_y_shift = 0;
   for (auto [left, right] : visible_fragments_) {
     TexurizeTopFragment(left, right);
@@ -842,11 +844,11 @@ void Renderer::TexurizeBottomFragment(int left, int right) {
     int top = ctx_.bottom_dy_top * (x - ctx_.sx_leftmost) + ctx_.bottom_y_top;
     int bottom = ctx_.bottom_dy_bottom * (x - ctx_.sx_leftmost) + ctx_.bottom_y_bottom;
     ctx_.pixel_texture_y_shift = (ctx_.line_def_flags & world::kLDFLowerUnpegged) 
-      ? (ctx_.front_ceiling_height - ctx_.back_sector->floor_height) : 0;
+      ? (ctx_.front_ceiling_height - ctx_.back_floor_height) : 0;
 
     bottom_clip_[x] = std::max(top, bottom_clip_[x]);
 
-    if (ctx_.front_floor_height < ctx_.back_sector->floor_height) {
+    if (ctx_.front_floor_height < ctx_.back_floor_height) {
       DrawColumn(x, top, bottom, true);
       UpdateBottomVisplane(x, bottom - 1);
     } else {
@@ -865,7 +867,7 @@ void Renderer::TexurizeTopFragment(int left, int right) {
 
     top_clip_[x] = std::min(bottom, top_clip_[x]);
 
-    if (ctx_.front_ceiling_height > ctx_.back_sector->ceiling_height) {
+    if (ctx_.front_ceiling_height > ctx_.back_ceiling_height) {
       DrawColumn(x, top, bottom, (ctx_.line_def_flags & world::kLDFUpperUnpegged));
       UpdateTopVisplane(x, top + 1);
     } else {
