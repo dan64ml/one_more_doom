@@ -22,13 +22,7 @@ struct MaskedObject {
   int x2;
   int y2;
   
-  std::string text;
-  // Current texture
-  //graph::Texture texture;
-  // Visible segment phys lenght. Necessary for texturing
-  //double segment_len;
-  // Distance from the start of sprite to the leftmost visible point
-  //int full_offset;  
+  std::string texture_name;
 
   int height;
   int z;
@@ -39,15 +33,12 @@ struct MaskedObject {
   int sx_leftmost;
   int sx_rightmost;
 
+  // Distance from the start of sprite to the leftmost visible point
+  // or the same parametr from contex for a portal
   int full_offset;
 
   // ?? is it necessary?
   int pixel_texture_y_shift;
-  // For walls and middle part of portals
-  //int mid_y_top;
-  //int mid_y_bottom;
-  //double mid_dy_top;
-  //double mid_dy_bottom;
 
   // The distance from VP to the center of the object.
   // -1 for portals!!! 
@@ -55,7 +46,6 @@ struct MaskedObject {
 
   std::vector<int> top_clip;
   std::vector<int> bottom_clip;
-
   
   // Returns false if whole the object was clipped
   bool Clip(const std::vector<int>& top, const std::vector<int>& bottom);

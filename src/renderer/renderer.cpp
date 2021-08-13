@@ -101,20 +101,20 @@ void Renderer::FillContextFromMasked(const MaskedObject& msk) {
   // Sprites and portals have different texture sources
   // Also the height of portal is not equal to texture size 
   if (msk.distance == -1) {
-    ctx_.texture = gm_->GetTexture(msk.text);
+    ctx_.texture = gm_->GetTexture(msk.texture_name);
     ctx_.pixel_height = msk.height;
   } else {
-    ctx_.texture = gm_->GetSprite(msk.text);
+    ctx_.texture = gm_->GetSprite(msk.texture_name);
     ctx_.pixel_height = ctx_.texture.GetYSize();
   }
 
   // TODO: ??? light_level and floor_height (for flying mobjs)
 
   // TODO: ??? Redundunt - name and Texture...
-  ctx_.mid_texture = msk.text;
+  ctx_.mid_texture = msk.texture_name;
 
   // For texturing
-  ctx_.segment_len = SegmentLength(ctx_.p1, ctx_.p2); //sqrt((ctx_.p1.x - ctx_.p2.x)*(ctx_.p1.x - ctx_.p2.x) + (ctx_.p1.y - ctx_.p2.y)*(ctx_.p1.y - ctx_.p2.y));
+  ctx_.segment_len = SegmentLength(ctx_.p1, ctx_.p2);
 
   std::tie(ctx_.mid_y_bottom, ctx_.mid_y_top, ctx_.mid_dy_bottom, ctx_.mid_dy_top) 
         = CreateCoefs(msk.z, msk.z + ctx_.pixel_height);
@@ -992,7 +992,7 @@ bool Renderer::FillMobjMaskedObject(MaskedObject& msk, const mobj::MapObject* mo
     msk.height = mobj->height;
     msk.z = mobj->z;
 
-    msk.text = mobj->texture;
+    msk.texture_name = mobj->texture;
 
     //auto [width, height] = item.GetSpriteSize(vp_.angle);
 
@@ -1036,7 +1036,7 @@ bool Renderer::FillPortalMaskedObject(MaskedObject& msk, int left, int right) {
   msk.x2;
   msk.y2;
   
-  msk.text = ctx_.mid_texture;
+  msk.texture_name = ctx_.mid_texture;
 
   msk.z = std::max(ctx_.back_floor_height, ctx_.front_floor_height);
   msk.height = std::min(ctx_.front_ceiling_height, ctx_.back_ceiling_height) - msk.z;

@@ -1,8 +1,5 @@
 #include "masked_object.h"
 
-//#include "objects/map_object.h"
-//#include "plane_utils.h"
-
 namespace rend {
 
 bool MaskedObject::Clip(const std::vector<int>& top, const std::vector<int>& bottom) {
