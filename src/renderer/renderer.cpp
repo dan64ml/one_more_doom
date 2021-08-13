@@ -668,13 +668,15 @@ void Renderer::TexurizePortal() {
 //  MidPortalVisplane mpv(ctx_, floor_level_, ceiling_level_, visible_fragments_);
 //  mid_portals_.push_back(std::move(mpv));
 
-  MaskedObject msk;
-  if (!FillPortalMaskedObject(msk)) {
-    return;
+  for (auto [left, right] : visible_fragments_) {
+    MaskedObject msk;
+    if (!FillPortalMaskedObject(msk, left, right)) {
+      return;
+    }
+    //if (msk.Clip(top_clip_, bottom_clip_)) {
+      masked_.push_front(std::move(msk));
+    //}
   }
-  //if (msk.Clip(top_clip_, bottom_clip_)) {
-    masked_.push_front(std::move(msk));
-  //}
 }
 
 void Renderer::TexurizeWallFragment(int left, int right) {
@@ -1027,7 +1029,7 @@ bool Renderer::FillMobjMaskedObject(MaskedObject& msk, const mobj::MapObject* mo
     return true;
 }
 
-bool Renderer::FillPortalMaskedObject(MaskedObject& msk) {
+bool Renderer::FillPortalMaskedObject(MaskedObject& msk, int left, int right) {
   // Don't use
   msk.x1;
   msk.y1;
@@ -1044,29 +1046,33 @@ bool Renderer::FillPortalMaskedObject(MaskedObject& msk) {
   msk.p2 = ctx_.p2;
 
   // Data to calculate screen coordinates (screen x of seg's ends)
-  msk.sx_leftmost = ctx_.sx_leftmost;
-  msk.sx_rightmost = ctx_.sx_rightmost;
+//  msk.sx_leftmost = ctx_.sx_leftmost;
+//  msk.sx_rightmost = ctx_.sx_rightmost;
+  msk.sx_leftmost = left;
+  msk.sx_rightmost = right;
 
   msk.full_offset = ctx_.full_offset;
 
   // -1 for portals!!! 
   msk.distance = -1;
 
-  msk.top_clip.resize(ctx_.sx_rightmost - ctx_.sx_leftmost + 1);
-  msk.bottom_clip.resize(ctx_.sx_rightmost - ctx_.sx_leftmost + 1);
+//  msk.top_clip.resize(ctx_.sx_rightmost - ctx_.sx_leftmost + 1);
+//  msk.bottom_clip.resize(ctx_.sx_rightmost - ctx_.sx_leftmost + 1);
+  msk.top_clip.resize(msk.sx_rightmost - msk.sx_leftmost + 1);
+  msk.bottom_clip.resize(msk.sx_rightmost - msk.sx_leftmost + 1);
 
   int count = 0;
-  for (int i = ctx_.sx_leftmost; i <= ctx_.sx_rightmost; ++i) {
+  for (int i = msk.sx_leftmost; i <= msk.sx_rightmost; ++i) {
     if (ceiling_level_[i] == -1 || (ceiling_level_[i] <= floor_level_[i] + 1)) {
-      msk.top_clip[i - ctx_.sx_leftmost] = -1;
+      msk.top_clip[i - msk.sx_leftmost] = -1;
       ++count;
     } else {
-      msk.top_clip[i - ctx_.sx_leftmost] = ceiling_level_[i];
-      msk.bottom_clip[i - ctx_.sx_leftmost] = floor_level_[i];
+      msk.top_clip[i - msk.sx_leftmost] = ceiling_level_[i];
+      msk.bottom_clip[i - msk.sx_leftmost] = floor_level_[i];
     }
   }
 
-  return count != (ctx_.sx_rightmost - ctx_.sx_leftmost + 1);
+  return count != (msk.sx_rightmost - msk.sx_leftmost + 1);
 }
 
 } // namespace rend

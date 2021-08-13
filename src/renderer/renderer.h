@@ -286,8 +286,9 @@ class Renderer {
 
   // Returns false if the object is invisible
   bool FillMobjMaskedObject(MaskedObject& msk, const mobj::MapObject* mobj);
-  // Fills using contex
-  bool FillPortalMaskedObject(MaskedObject& msk);
+  // Fills portal masked using current contex. Portal can be broken into several
+  // segments by closer objects. Each segment (left, right) neads its own masked object.
+  bool FillPortalMaskedObject(MaskedObject& msk, int left, int right);
 
   void DrawMaskedObject(const MaskedObject& msk);
   void FillContextFromMasked(const MaskedObject& msk);
