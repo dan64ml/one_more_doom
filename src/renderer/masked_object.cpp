@@ -11,13 +11,15 @@ bool MaskedObject::Clip(const std::vector<int>& top, const std::vector<int>& bot
       continue;
     }
 
-    top_clip[i - sx_leftmost] = std::min(top[i], top_clip[i - sx_leftmost]);
-    bottom_clip[i - sx_leftmost] = std::max(bottom[i], bottom_clip[i - sx_leftmost]);
+//    top_clip[i - sx_leftmost] = std::min(top[i], top_clip[i - sx_leftmost]);
+//    bottom_clip[i - sx_leftmost] = std::max(bottom[i], bottom_clip[i - sx_leftmost]);
+    top_clip[i - sx_leftmost] = top[i];
+    bottom_clip[i - sx_leftmost] = bottom[i];
 
-    if (top_clip[i - sx_leftmost] <= (bottom_clip[i - sx_leftmost] + 1)) {
-      top_clip[i - sx_leftmost] = -1;
-      ++count;
-    }
+//    if (top_clip[i - sx_leftmost] <= (bottom_clip[i - sx_leftmost] + 1)) {
+//      top_clip[i - sx_leftmost] = -1;
+//      ++count;
+//    }
   }
 
   return (count != (sx_rightmost - sx_leftmost + 1));
