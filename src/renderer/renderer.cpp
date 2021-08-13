@@ -630,13 +630,43 @@ void Renderer::UpdateBottomVisplane(int screen_x, int from_y) {
 }
   
 void Renderer::UpdateFloor(int screen_x, int from_y) {
-  floor_level_[screen_x] = std::max(floor_level_[screen_x], 
-    std::min(from_y, ceiling_level_[screen_x] - 1));
+  // Closed columns must be deleted from drawing range
+  assert(ceiling_level_[screen_x] != -1);
+  if (from_y >= ceiling_level_[screen_x] - 1) {
+    ceiling_level_[screen_x] = -1;
+  } else {
+    floor_level_[screen_x] = std::max(floor_level_[screen_x], from_y);
+  }
 }
 
 void Renderer::UpdateCeiling(int screen_x, int from_y) {
-  ceiling_level_[screen_x] = std::min(ceiling_level_[screen_x],
-    std::max(from_y, floor_level_[screen_x] + 1));
+  // Closed columns must be deleted from drawing range
+  assert(ceiling_level_[screen_x] != -1);
+  if (from_y <= floor_level_[screen_x] + 1) {
+    ceiling_level_[screen_x] = -1;
+  } else {
+    ceiling_level_[screen_x] = std::min(ceiling_level_[screen_x], from_y);
+  }
+}
+
+void Renderer::CheckOpening(int first, int last) {
+  int start = -1;
+  for (int i = first; i <= last; ++i) {
+    if (ceiling_level_[i] == -1) {
+      if (start == -1) {
+        start = i;
+      }
+    } else {
+      if (start != -1) {
+        UpdateClipList(start, i - 1);
+        start = -1;
+      }
+    }
+  }
+
+  if (start != -1) {
+    UpdateClipList(start, last);
+  }
 }
 
 void Renderer::TexurizePortal() {
@@ -645,17 +675,21 @@ void Renderer::TexurizePortal() {
   ctx_.pixel_texture_y_shift = 0;
   for (auto [left, right] : visible_fragments_) {
     TexurizeBottomFragment(left, right);
-
+    CheckOpening(left, right);
     //UpdateVssMaskByPortal(left, right);
   }
+
+  CreateUnclippedFragments(ctx_.p1, ctx_.p2);
 
   ctx_.texture = gm_->GetTexture(ctx_.top_texture);
   ctx_.pixel_height = abs(ctx_.front_ceiling_height - ctx_.back_ceiling_height);
   ctx_.pixel_texture_y_shift = 0;
   for (auto [left, right] : visible_fragments_) {
     TexurizeTopFragment(left, right);
+    CheckOpening(left, right);
   }
 
+  CreateUnclippedFragments(ctx_.p1, ctx_.p2);
 
   ctx_.texture = gm_->GetTexture(ctx_.mid_texture);
   if (!ctx_.texture) {

@@ -15,7 +15,6 @@ bool MaskedObject::Clip(const std::vector<int>& top, const std::vector<int>& bot
     bottom_clip[i - sx_leftmost] = std::max(bottom[i], bottom_clip[i - sx_leftmost]);
 
     if (top_clip[i - sx_leftmost] <= (bottom_clip[i - sx_leftmost] + 1)) {
-      //bottom_clip[i - sx_leftmost] = -1;
       top_clip[i - sx_leftmost] = -1;
       ++count;
     }

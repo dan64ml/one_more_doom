@@ -195,6 +195,7 @@ class Renderer {
   // is clipped
   bool CreateUnclippedFragments(const DPoint& left, const DPoint& right);
   void UpdateClipList(int first, int last);
+  void CheckOpening(int first, int last);
 
   void FillSegmentContext(const world::Segment* bsp_segment, const DPoint& left, const DPoint& right);
   void CreateVisplanes();
