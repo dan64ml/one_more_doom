@@ -57,8 +57,8 @@ void Renderer::RenderFlats() {
 
 void Renderer::RenderMasked() {
   // Hack to simplify DrawColumn() function
-  ceiling_level_.fill(kScreenYResolution);
-  floor_level_.fill(-1);
+  //ceiling_level_.fill(kScreenYResolution);
+  //floor_level_.fill(-1);
 
   for (const auto& msk : masked_) {
     DrawMaskedObject(msk);
@@ -66,7 +66,7 @@ void Renderer::RenderMasked() {
 }
 
 void Renderer::DrawMaskedObject(const MaskedObject& msk) {
-  FillContext(msk);
+  FillContextFromMasked(msk);
 
   for (int x = ctx_.sx_leftmost; x <= ctx_.sx_rightmost; ++x) {
     if (msk.top_clip[x - ctx_.sx_leftmost] == -1) {
@@ -81,7 +81,7 @@ void Renderer::DrawMaskedObject(const MaskedObject& msk) {
   }
 }
 
-void Renderer::FillContext(const MaskedObject& msk) {
+void Renderer::FillContextFromMasked(const MaskedObject& msk) {
   // Ends of segment
   ctx_.p1 = msk.p1;
   ctx_.p2 = msk.p2;
@@ -120,6 +120,12 @@ void Renderer::FillContext(const MaskedObject& msk) {
         = CreateCoefs(msk.z, msk.z + ctx_.pixel_height);
 
   ctx_.pixel_texture_y_shift = 0;
+
+  // DrawColumn() uses floor_level_ and ceiling_level_ for clipping
+  for (int i = msk.sx_leftmost; i <= msk.sx_rightmost; ++i) {
+    floor_level_[i] = msk.bottom_clip[i - msk.sx_leftmost];
+    ceiling_level_[i] = msk.top_clip[i - msk.sx_leftmost];
+  }
 }
 
 
@@ -428,7 +434,7 @@ void Renderer::RenderWalls() {
     // deal with MapObjects
     for (const auto* mobj : ss->mobjs) {
       MaskedObject masked;
-      if (!FillMaskedObject(masked, mobj)) {
+      if (!FillMobjMaskedObject(masked, mobj)) {
         continue;
       }
       if (masked.Clip(top_clip_, bottom_clip_)) {
@@ -666,9 +672,9 @@ void Renderer::TexurizePortal() {
   if (!FillPortalMaskedObject(msk)) {
     return;
   }
-  if (msk.Clip(top_clip_, bottom_clip_)) {
+  //if (msk.Clip(top_clip_, bottom_clip_)) {
     masked_.push_front(std::move(msk));
-  }
+  //}
 }
 
 void Renderer::TexurizeWallFragment(int left, int right) {
@@ -979,7 +985,7 @@ void Renderer::ClearRenderer() {
   masked_.clear();
 }
 
-bool Renderer::FillMaskedObject(MaskedObject& msk, const mobj::MapObject* mobj) {
+bool Renderer::FillMobjMaskedObject(MaskedObject& msk, const mobj::MapObject* mobj) {
     //int width = mobj->radius;
     msk.height = mobj->height;
     msk.z = mobj->z;
@@ -1060,7 +1066,7 @@ bool Renderer::FillPortalMaskedObject(MaskedObject& msk) {
     }
   }
 
-  return !(count == (ctx_.sx_rightmost - ctx_.sx_leftmost + 1));
+  return count != (ctx_.sx_rightmost - ctx_.sx_leftmost + 1);
 }
 
 } // namespace rend

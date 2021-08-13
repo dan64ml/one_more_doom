@@ -285,12 +285,12 @@ class Renderer {
   std::vector<int> bottom_clip_;
 
   // Returns false if the object is invisible
-  bool FillMaskedObject(MaskedObject& msk, const mobj::MapObject* mobj);
+  bool FillMobjMaskedObject(MaskedObject& msk, const mobj::MapObject* mobj);
   // Fills using contex
   bool FillPortalMaskedObject(MaskedObject& msk);
 
   void DrawMaskedObject(const MaskedObject& msk);
-  void FillContext(const MaskedObject& msk);
+  void FillContextFromMasked(const MaskedObject& msk);
 };
 
 } // namespace rend
