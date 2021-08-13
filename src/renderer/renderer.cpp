@@ -56,6 +56,10 @@ void Renderer::RenderFlats() {
 }
 
 void Renderer::RenderMasked() {
+  // Hack to simplify DrawColumn() function
+  ceiling_level_.fill(kScreenYResolution);
+  floor_level_.fill(-1);
+
   for (const auto& msk : masked_) {
     DrawMaskedObject(msk);
   }
@@ -65,7 +69,7 @@ void Renderer::DrawMaskedObject(const MaskedObject& msk) {
   FillContext(msk);
 
   for (int x = ctx_.sx_leftmost; x <= ctx_.sx_rightmost; ++x) {
-    if (msk.top_clip[x] == -1) {
+    if (msk.top_clip[x - ctx_.sx_leftmost] == -1) {
       continue;
     }
 
@@ -91,12 +95,18 @@ void Renderer::FillContext(const MaskedObject& msk) {
   ctx_.right_distance = SegmentLength(vp_, ctx_.p2) * rend::BamCos(ctx_.p2.angle - rend::kBamAngle45);
 
   ctx_.line_def_flags = 0;
-  ctx_.full_offset = SegmentLength(msk.x1, msk.y1, ctx_.p1.x, ctx_.p1.y);
+  ctx_.full_offset = msk.full_offset;
   ctx_.row_offset = 0;
 
-  // TODO: ???
-  ctx_.texture = gm_->GetSprite(msk.text);
-  ctx_.pixel_height = ctx_.texture.GetYSize();
+  // Sprites and portals have different texture sources
+  // Also the height of portal is not equal to texture size 
+  if (msk.distance == -1) {
+    ctx_.texture = gm_->GetTexture(msk.text);
+    ctx_.pixel_height = msk.height;
+  } else {
+    ctx_.texture = gm_->GetSprite(msk.text);
+    ctx_.pixel_height = ctx_.texture.GetYSize();
+  }
 
   // TODO: ??? light_level and floor_height (for flying mobjs)
 
@@ -645,15 +655,15 @@ void Renderer::TexurizePortal() {
   if (!ctx_.texture) {
     return;
   }
-  ctx_.pixel_height = abs(ctx_.front_ceiling_height - ctx_.front_floor_height);
-  ctx_.pixel_texture_y_shift = 0;
+//  ctx_.pixel_height = abs(ctx_.front_ceiling_height - ctx_.front_floor_height);
+//  ctx_.pixel_texture_y_shift = 0;
 
   // Create pseudo-vissprite
-  MidPortalVisplane mpv(ctx_, floor_level_, ceiling_level_, visible_fragments_);
-  mid_portals_.push_back(std::move(mpv));
+//  MidPortalVisplane mpv(ctx_, floor_level_, ceiling_level_, visible_fragments_);
+//  mid_portals_.push_back(std::move(mpv));
 
   MaskedObject msk;
-  if (!FillMaskedObject(msk)) {
+  if (!FillPortalMaskedObject(msk)) {
     return;
   }
   if (msk.Clip(top_clip_, bottom_clip_)) {
@@ -682,7 +692,7 @@ void Renderer::TexurizeWallFragment(int left, int right) {
 }
 
 void Renderer::DrawColumn(int screen_x, int screen_top_y, int screen_bottom_y, bool up_to_down) {
-  // No texture
+  // No texture, e.g. portal just changes sectors but is invisible itself
   if (!ctx_.texture) {
     return;
   }
@@ -717,8 +727,6 @@ void Renderer::DrawColumn(int screen_x, int screen_top_y, int screen_bottom_y, b
 
   // Texture map coords (u, v)
   // Common texture offset + offset from the start of line to bsp segment + column offset
-//  int u = (ctx_.front_side_def->texture_offset + ctx_.full_offset 
-//          + ScreenXtoTextureU(screen_x)) % ctx_.texture.GetXSize();
   int u = (ctx_.full_offset + ScreenXtoTextureU(screen_x)) % ctx_.texture.GetXSize();
 
   double delta_v = static_cast<double>(ctx_.pixel_height) / (screen_top_y - screen_bottom_y + 1);
@@ -824,6 +832,7 @@ void Renderer::TexurizeBottomFragment(int left, int right) {
     // Screen top and bottom ends of current column
     int top = ctx_.bottom_dy_top * (x - ctx_.sx_leftmost) + ctx_.bottom_y_top;
     int bottom = ctx_.bottom_dy_bottom * (x - ctx_.sx_leftmost) + ctx_.bottom_y_bottom;
+
     ctx_.pixel_texture_y_shift = (ctx_.line_def_flags & world::kLDFLowerUnpegged) 
       ? (ctx_.front_ceiling_height - ctx_.back_floor_height) : 0;
 
@@ -1000,7 +1009,8 @@ bool Renderer::FillMaskedObject(MaskedObject& msk, const mobj::MapObject* mobj) 
 
     msk.p1 = p1;
     msk.p2 = p2;
-    //full_offset = sqrt((p1.x - lx)*(p1.x - lx) + (p1.y - ly)*(p1.y - ly));
+    msk.full_offset = SegmentLength(msk.x1, msk.y1, p1.x, p1.y);
+
     msk.distance = sqrt((mobj->x - vp_.x)*(mobj->x - vp_.x) + (mobj->y - vp_.y)*(mobj->y - vp_.y));
     msk.sx_leftmost = bam_to_screen_x_table_[p1.angle];
     msk.sx_rightmost = bam_to_screen_x_table_[p2.angle];
@@ -1011,8 +1021,46 @@ bool Renderer::FillMaskedObject(MaskedObject& msk, const mobj::MapObject* mobj) 
     return true;
 }
 
-bool Renderer::FillMaskedObject(MaskedObject& msk) {
+bool Renderer::FillPortalMaskedObject(MaskedObject& msk) {
+  // Don't use
+  msk.x1;
+  msk.y1;
+  msk.x2;
+  msk.y2;
+  
+  msk.text = ctx_.mid_texture;
 
+  msk.z = std::max(ctx_.back_floor_height, ctx_.front_floor_height);
+  msk.height = std::min(ctx_.front_ceiling_height, ctx_.back_ceiling_height) - msk.z;
+  msk.pixel_texture_y_shift = 0;
+
+  msk.p1 = ctx_.p1;
+  msk.p2 = ctx_.p2;
+
+  // Data to calculate screen coordinates (screen x of seg's ends)
+  msk.sx_leftmost = ctx_.sx_leftmost;
+  msk.sx_rightmost = ctx_.sx_rightmost;
+
+  msk.full_offset = ctx_.full_offset;
+
+  // -1 for portals!!! 
+  msk.distance = -1;
+
+  msk.top_clip.resize(ctx_.sx_rightmost - ctx_.sx_leftmost + 1);
+  msk.bottom_clip.resize(ctx_.sx_rightmost - ctx_.sx_leftmost + 1);
+
+  int count = 0;
+  for (int i = ctx_.sx_leftmost; i <= ctx_.sx_rightmost; ++i) {
+    if (ceiling_level_[i] == -1 || (ceiling_level_[i] <= floor_level_[i] + 1)) {
+      msk.top_clip[i - ctx_.sx_leftmost] = -1;
+      ++count;
+    } else {
+      msk.top_clip[i - ctx_.sx_leftmost] = ceiling_level_[i];
+      msk.bottom_clip[i - ctx_.sx_leftmost] = floor_level_[i];
+    }
+  }
+
+  return !(count == (ctx_.sx_rightmost - ctx_.sx_leftmost + 1));
 }
 
 } // namespace rend

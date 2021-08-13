@@ -287,7 +287,7 @@ class Renderer {
   // Returns false if the object is invisible
   bool FillMaskedObject(MaskedObject& msk, const mobj::MapObject* mobj);
   // Fills using contex
-  bool FillMaskedObject(MaskedObject& msk);
+  bool FillPortalMaskedObject(MaskedObject& msk);
 
   void DrawMaskedObject(const MaskedObject& msk);
   void FillContext(const MaskedObject& msk);

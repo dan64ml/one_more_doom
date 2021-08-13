@@ -39,6 +39,10 @@ struct MaskedObject {
   int sx_leftmost;
   int sx_rightmost;
 
+  int full_offset;
+
+  // ?? is it necessary?
+  int pixel_texture_y_shift;
   // For walls and middle part of portals
   //int mid_y_top;
   //int mid_y_bottom;
