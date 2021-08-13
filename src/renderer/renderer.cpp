@@ -673,9 +673,8 @@ void Renderer::TexurizePortal() {
     if (!FillPortalMaskedObject(msk, left, right)) {
       return;
     }
-    //if (msk.Clip(top_clip_, bottom_clip_)) {
-      masked_.push_front(std::move(msk));
-    //}
+
+    masked_.push_front(std::move(msk));
   }
 }
 
@@ -994,30 +993,23 @@ bool Renderer::FillMobjMaskedObject(MaskedObject& msk, const mobj::MapObject* mo
 
     msk.texture_name = mobj->texture;
 
-    //auto [width, height] = item.GetSpriteSize(vp_.angle);
-
     auto angle = CalcAngle(vp_.x, vp_.y, mobj->x, mobj->y);
-//    int dx = mobj->radius * BamCos(kBamAngle90 - angle);
-//    int dy = mobj->radius * BamSin(kBamAngle90 - angle);
     int dx = 26 * BamCos(kBamAngle90 - angle);
     int dy = 26 * BamSin(kBamAngle90 - angle);
-
-//    int lx = mobj->x - dx / 2;
-//    int ly = mobj->y + dy / 2;
     
-    msk.x1 = mobj->x - dx / 2;
-    msk.y1 = mobj->y + dy / 2;
-    msk.x2 = msk.x1 + dx;
-    msk.y2 = msk.y1 - dy;
+    int x1 = mobj->x - dx / 2;
+    int y1 = mobj->y + dy / 2;
+    int x2 = x1 + dx;
+    int y2 = y1 - dy;
 
-    auto [visible, p1, p2] = GetVisibleSegment(vp_, msk.x1, msk.y1, msk.x2, msk.y2);
+    auto [visible, p1, p2] = GetVisibleSegment(vp_, x1, y1, x2, y2);
     if (!visible) {
       return false;
     }
 
     msk.p1 = p1;
     msk.p2 = p2;
-    msk.full_offset = SegmentLength(msk.x1, msk.y1, p1.x, p1.y);
+    msk.full_offset = SegmentLength(x1, y1, p1.x, p1.y);
 
     msk.distance = sqrt((mobj->x - vp_.x)*(mobj->x - vp_.x) + (mobj->y - vp_.y)*(mobj->y - vp_.y));
     msk.sx_leftmost = bam_to_screen_x_table_[p1.angle];
@@ -1030,12 +1022,6 @@ bool Renderer::FillMobjMaskedObject(MaskedObject& msk, const mobj::MapObject* mo
 }
 
 bool Renderer::FillPortalMaskedObject(MaskedObject& msk, int left, int right) {
-  // Don't use
-  msk.x1;
-  msk.y1;
-  msk.x2;
-  msk.y2;
-  
   msk.texture_name = ctx_.mid_texture;
 
   msk.z = std::max(ctx_.back_floor_height, ctx_.front_floor_height);
@@ -1046,8 +1032,6 @@ bool Renderer::FillPortalMaskedObject(MaskedObject& msk, int left, int right) {
   msk.p2 = ctx_.p2;
 
   // Data to calculate screen coordinates (screen x of seg's ends)
-//  msk.sx_leftmost = ctx_.sx_leftmost;
-//  msk.sx_rightmost = ctx_.sx_rightmost;
   msk.sx_leftmost = left;
   msk.sx_rightmost = right;
 
@@ -1056,8 +1040,6 @@ bool Renderer::FillPortalMaskedObject(MaskedObject& msk, int left, int right) {
   // -1 for portals!!! 
   msk.distance = -1;
 
-//  msk.top_clip.resize(ctx_.sx_rightmost - ctx_.sx_leftmost + 1);
-//  msk.bottom_clip.resize(ctx_.sx_rightmost - ctx_.sx_leftmost + 1);
   msk.top_clip.resize(msk.sx_rightmost - msk.sx_leftmost + 1);
   msk.bottom_clip.resize(msk.sx_rightmost - msk.sx_leftmost + 1);
 

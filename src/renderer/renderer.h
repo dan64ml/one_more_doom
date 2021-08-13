@@ -280,6 +280,7 @@ class Renderer {
   std::vector<MidPortalVisplane> mid_portals_;
 
   std::list<MaskedObject> masked_;
+  // Clipping track for masked
   // top_clip[i] == -1 means fully closed column
   std::vector<int> top_clip_;
   std::vector<int> bottom_clip_;

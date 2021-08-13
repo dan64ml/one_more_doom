@@ -4,24 +4,11 @@
 #include <vector>
 #include <string>
 
-//#include "graphics/texture.h"
 #include "plane_utils.h"
-
-//namespace mobj {
-//  class MapObject;
-//}
 
 namespace rend {
 
-//class SegmentRendContext;
-//struct DPoint;
-
 struct MaskedObject {
-  int x1;
-  int y1;
-  int x2;
-  int y2;
-  
   std::string texture_name;
 
   int height;
