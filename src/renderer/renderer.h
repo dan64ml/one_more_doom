@@ -294,6 +294,10 @@ class Renderer {
 
   void DrawMaskedObject(const MaskedObject& msk);
   void FillContextFromMasked(const MaskedObject& msk);
+
+  // Idea: Object list contains sprites and portals: [sprites from a sector][portals of a sector] ... [s][p]
+  // We have to sort sprites by distance in each sector group, but we must NOT touch the order of groups.
+  void SortMaskedObjects();
 };
 
 } // namespace rend

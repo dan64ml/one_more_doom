@@ -4,6 +4,7 @@
 #include <limits>
 #include <iostream>
 #include <cassert>
+#include <algorithm>
 
 #include <chrono>
 
@@ -56,9 +57,7 @@ void Renderer::RenderFlats() {
 }
 
 void Renderer::RenderMasked() {
-  // Hack to simplify DrawColumn() function
-  //ceiling_level_.fill(kScreenYResolution);
-  //floor_level_.fill(-1);
+  SortMaskedObjects();
 
   for (const auto& msk : masked_) {
     DrawMaskedObject(msk);
@@ -666,6 +665,15 @@ void Renderer::CheckOpening(int first, int last) {
 
   if (start != -1) {
     UpdateClipList(start, last);
+  }
+}
+
+void Renderer::SortMaskedObjects() {
+  auto start_it = begin(masked_);
+  while (start_it != end(masked_)) {
+    auto end_it = std::find_if(start_it, end(masked_), [](const auto elem){ return elem.distance == -1; });
+    //masked_.sort(start_it, end_it, [](const auto& lhs, const auto& rhs ){ return lhs.distance > rhs.distance; });
+    start_it = std::find_if(end_it, end(masked_), [](const auto elem){ return elem.distance != -1; });
   }
 }
 
