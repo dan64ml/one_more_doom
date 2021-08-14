@@ -90,7 +90,7 @@ void World::LoadLevel(size_t level) {
 }
 
 void World::TickTime() {
-
+  player_.TickTime();
 }
 
 void World::ClearLevel() {
@@ -225,8 +225,9 @@ void World::CreateMapObjectList(std::ifstream& fin) {
 
       int ss_idx = bsp_.GetSubSectorIdx(player_.x, player_.y);
       player_.z = sub_sectors_[ss_idx].sector->floor_height;
+      player_.ss = &sub_sectors_[ss_idx];
 
-      player_.angle = items[i].angle;
+      player_.angle = rend::DegreesToBam(items[i].angle);
     } else if (items[i].type == 45 || items[i].type == 46) {
       mobj::MapObject torch(this);
       torch.x = items[i].x;

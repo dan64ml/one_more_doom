@@ -27,7 +27,9 @@ class World {
   void TickTime();
 
   const wad::FastBsp* GetBsp() const { return &bsp_; };
-  const mobj::Player* GetPlayer() const { return &player_; };
+
+  //const mobj::Player* GetPlayer() const { return &player_; };
+  mobj::Player* GetPlayer() { return &player_; };
 
  private:
   std::string wad_file_name_;

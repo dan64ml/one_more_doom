@@ -9,13 +9,9 @@
 
 namespace mobj {
 
-bool MapObject::TimeTick() {
+bool MapObject::TickTime() {
   MoveObject();
-
-  x += mom_x;
-  y += mom_y;
-
-  mom_x = mom_y = 0;
+  return true;
 }
 
 void MapObject::MoveObject() {

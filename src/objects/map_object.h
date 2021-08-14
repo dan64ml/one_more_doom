@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <string>
 
-//#include "renderer/plane_utils.h"
+#include "renderer/bam.h"
 
 namespace world {
   class World;
@@ -121,9 +121,7 @@ struct MapObject {
   int z;
 
   // View direction
-  // TODO: select angle units...
-  //rend::BamAngle angle;
-  int angle;
+  rend::BamAngle angle;
 
   // Sizes of the mobj
   int height;
@@ -147,7 +145,7 @@ struct MapObject {
   // Current subsector
   world::SubSector* ss;
 
-  bool TimeTick();
+  bool TickTime();
 
  private:
   struct Opening {

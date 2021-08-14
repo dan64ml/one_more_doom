@@ -30,7 +30,7 @@ void Renderer::RenderScene(const wad::FastBsp* bsp, const graph::GraphicsManager
   vp_.x = player->x;
   vp_.y = player->y;
   player_feet_height_ = player->z;
-  vp_.angle = DegreesToBam(player->angle);  // TODO!!!!!
+  vp_.angle = player->angle;
   
   ClearRenderer();
 
