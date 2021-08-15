@@ -95,6 +95,7 @@ GetVisibleSegment(DPoint view_point, const world::Line* line, BamAngle h_fov) {
   }
 }
 
+// TODO: fix the case when point lies on the line
 std::tuple<bool, DPoint, DPoint>
 GetVisibleSegment(DPoint view_point, int x1, int y1, int x2, int y2, BamAngle h_fov) {
   const BamAngle a1 = CalcAngle(view_point.x, view_point.y, x1, y1) + h_fov / 2 - view_point.angle;

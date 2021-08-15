@@ -164,6 +164,21 @@ void World::LoadLines(std::ifstream& fin, RawVertex* vertexes) {
     line.sides[0] = &sides_[lines[i].sidenum[0]];
     line.sides[1] = (lines[i].sidenum[1] == -1) ? nullptr : &sides_[lines[i].sidenum[1]];
 
+    if (line.x1 > line.x2) {
+      line.bbox.left = line.x2;
+      line.bbox.right = line.x1;
+    } else {
+      line.bbox.left = line.x1;
+      line.bbox.right = line.x2;
+    }
+    if (line.y1 > line.y2) {
+      line.bbox.bottom = line.y2;
+      line.bbox.top = line.y1;
+    } else {
+      line.bbox.bottom = line.y1;
+      line.bbox.top = line.y2;
+    }
+
     lines_.push_back(std::move(line));
   }
 }
@@ -224,8 +239,11 @@ void World::CreateMapObjectList(std::ifstream& fin) {
       player_.y = items[i].y;
 
       int ss_idx = bsp_.GetSubSectorIdx(player_.x, player_.y);
-      player_.z = sub_sectors_[ss_idx].sector->floor_height;
+      player_.floor_z = player_.z = sub_sectors_[ss_idx].sector->floor_height;
       player_.ss = &sub_sectors_[ss_idx];
+      player_.radius = 16;
+
+      player_.flags = mobj::MF_SOLID | mobj::MF_DROPOFF;
 
       player_.angle = rend::DegreesToBam(items[i].angle);
     } else if (items[i].type == 45 || items[i].type == 46) {

@@ -103,6 +103,7 @@ enum MapObjectFlag : std::uint32_t {
 };
 
 const int kMaxRadius = 32;
+const double kGravity = 1.0;
 
 /*=========================================================================
 Need access to:
@@ -159,6 +160,7 @@ struct MapObject {
  private:
   void MoveObject();
   void XYMove();
+  // It looks like a candidate to be virtual...
   void ZMove();
 
   // Check the position, interact with items and move

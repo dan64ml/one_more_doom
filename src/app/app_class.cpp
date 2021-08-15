@@ -17,7 +17,7 @@ void AppClass::InitInstance() {
   gm_.Load("/home/dan/tmp/DOOM2.WAD");
 
   world_.OpenWad("/home/dan/tmp/DOOM2.WAD");
-  world_.LoadLevel(11); // 11 - wrong torch // 16 flying torch //27
+  world_.LoadLevel(9); // 11 - wrong torch // 16 flying torch //27
   player_ = world_.GetPlayer();
 
   renderer_.SetDrawWindow(&wnd_);
@@ -57,7 +57,7 @@ void AppClass::InitInstance() {
     }
 	);
 
- 	SetKeyStateHandler(SDL_SCANCODE_LALT, [this]() {
+ 	SetKeyStateHandler(SDL_SCANCODE_LCTRL/*SDL_SCANCODE_LALT*/, [this]() {
       this->keybd_.side_move = true;
     }
 	);

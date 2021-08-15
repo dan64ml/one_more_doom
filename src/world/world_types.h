@@ -54,6 +54,8 @@ struct Line {
   int specials;   // Special Type
   int tag;
 
+  BBox bbox;
+
   // sides[1] == nullptr if a wall
   SideDef* sides[2];
 };

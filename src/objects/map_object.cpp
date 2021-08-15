@@ -2,10 +2,17 @@
 
 #include <cassert>
 #include <algorithm>
+#include <iostream>
 
 #include "world/world.h"
-//#include "world/fast_bsp.h"
 #include "utils/plane_utils.h"
+
+#define DEBUG_CODE
+
+#ifdef DEBUG_CODE
+  #define D_PRINT_STEPS
+  #define D_PRINT_LINES
+#endif
 
 namespace mobj {
 
@@ -67,7 +74,22 @@ void MapObject::XYMove() {
 }
 
 void MapObject::ZMove() {
+  // Flying objects have another behavior !!!
+  z += mom_z;
 
+  if (z <= floor_z) {
+    z = floor_z;
+
+    if (mom_z < 0) {
+      mom_z = 0;
+    } 
+  } else {
+    if (mom_z == 0) {
+      mom_z = -kGravity;
+    } else {
+      mom_z -= kGravity;
+    }
+  }
 }
 
 // By default - do nothing and continue
@@ -94,6 +116,11 @@ bool MapObject::ProcessLine(const world::Line* line) {
 // highest floor. It's necessary for second step - heights check.
 // If both steps are OK, the foo changes current position of the mobs.
 bool MapObject::TryMoveTo(int new_x, int new_y) {
+  #ifdef D_PRINT_STEPS
+    std::cout << "TryMoveTo: (" << x << ", " << y << ") => (" 
+              << new_x << ", " << new_y << "): " << std::endl;
+  #endif
+
   // check if the new position empty
   Opening op;
   if (!CheckPosition(new_x, new_y, op)) {
@@ -144,14 +171,14 @@ bool MapObject::CheckPosition(int new_x, int new_y, Opening& op) {
   // Possible area where collision of mobjs can happen
   int dist = kMaxRadius + radius;
   world::BBox bbox;
-  bbox.left = x - dist;
-  bbox.right = x + dist;
-  bbox.top = y + dist;
-  bbox.bottom = y - dist;
+  bbox.left = new_x - dist;
+  bbox.right = new_x + dist;
+  bbox.top = new_y + dist;
+  bbox.bottom = new_y - dist;
 
   for (auto mobj : world_->blocks_.GetMapObjects(bbox)) {
     int collision_dist = radius + mobj->radius;
-    if (abs(x - mobj->x) >= collision_dist || abs(y - mobj->y) >= collision_dist) {
+    if (abs(new_x - mobj->x) >= collision_dist || abs(new_y - mobj->y) >= collision_dist) {
       // Didn't hit
       continue;
     }
@@ -165,16 +192,32 @@ bool MapObject::CheckPosition(int new_x, int new_y, Opening& op) {
   }
 
   // Possible area where collision of mobj and line can happen
-  bbox.left = x - radius;
-  bbox.right = x + radius;
-  bbox.top = y + radius;
-  bbox.bottom = y - radius;
+  bbox.left = new_x - radius;
+  bbox.right = new_x + radius;
+  bbox.top = new_y + radius;
+  bbox.bottom = new_y - radius;
 
   for (auto line : world_->blocks_.GetLines(bbox)) {
-    if (math::LineBBoxPosition(line, &bbox) != math::kCross) {
-      // Didn't cross
+    #ifdef D_PRINT_LINES
+      std::cout << "Checking line (" << line->x1 << ", " << line->y1 << ") -> ("
+                << line->x2 << ", " << line->y2 << "): ";
+    #endif
+    // Check bboxes
+    if (line->bbox.left > bbox.right || bbox.left > line->bbox.right ||
+        line->bbox.top < bbox.bottom || line->bbox.bottom > bbox.top) {
       continue;
     }
+
+    if (math::LineBBoxPosition(line, &bbox) != math::kCross) {
+      // Didn't cross
+      #ifdef D_PRINT_LINES
+        std::cout << "don't cross" << std::endl;
+      #endif
+      continue;
+    }
+    #ifdef D_PRINT_LINES
+      std::cout << "cross" << std::endl;
+    #endif
 
     if (!ProcessLine(line)) {
       return false;
