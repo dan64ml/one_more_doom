@@ -2,7 +2,6 @@
 
 #include <memory>
 #include <algorithm>
-#include <iostream>
 
 #include "wad_raw_types.h"
 
@@ -45,16 +44,12 @@ MobjRange BlockMap::GetMapObjects(const BBox& bbox) {
   if (top_idx < 0) top_idx = 0;
   if (bottom_idx >= (int)blocks_.size()) bottom_idx = blocks_.size() - 1;
 
-  std::cout << "GetMapObjects(): ";
   for (int i = bottom_idx; i <= top_idx; ++i) {
     for (int j = left_idx; j <= right_idx; ++j) {
-      std::cout << "[" << i << ", " << j << "] ";
       result.insert(begin(blocks_[i][j].mobjs), end((blocks_[i][j].mobjs)));
     }
-    std::cout << std::endl;
   }
 
-  std::cout << std::endl;
   return result;
 }
 

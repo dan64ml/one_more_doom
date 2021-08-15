@@ -205,6 +205,9 @@ bool MapObject::CheckPosition(int new_x, int new_y, Opening& op) {
     // Check bboxes
     if (line->bbox.left > bbox.right || bbox.left > line->bbox.right ||
         line->bbox.top < bbox.bottom || line->bbox.bottom > bbox.top) {
+      #ifdef D_PRINT_LINES
+        std::cout << "don't cross" << std::endl;
+      #endif
       continue;
     }
 

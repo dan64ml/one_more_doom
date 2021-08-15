@@ -95,11 +95,16 @@ GetVisibleSegment(DPoint view_point, const world::Line* line, BamAngle h_fov) {
   }
 }
 
-// TODO: fix the case when point lies on the line
 std::tuple<bool, DPoint, DPoint>
 GetVisibleSegment(DPoint view_point, int x1, int y1, int x2, int y2, BamAngle h_fov) {
   const BamAngle a1 = CalcAngle(view_point.x, view_point.y, x1, y1) + h_fov / 2 - view_point.angle;
   const BamAngle a2 = CalcAngle(view_point.x, view_point.y, x2, y2) + h_fov / 2 - view_point.angle;
+
+  // Prevent visibility when view point lies on the line.
+  // May be a better way exists???
+  if (static_cast<BamAngle>(static_cast<BamAngle>(a1 - a2) - kBamAngle180) < 5) {
+    return {false, {}, {}};
+  }
 
   if (DefineVpSide(x1, y1, x2, y2, view_point.x, view_point.y)) {
     // we look at the back side of the segment
