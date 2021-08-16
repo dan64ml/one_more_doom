@@ -1,23 +1,12 @@
-#ifndef MAP_OBJECT_
-#define MAP_OBJECT_
+#ifndef MOBJ_FLAGS_H_
+#define MOBJ_FLAGS_H_
 
 #include <cstdint>
-#include <string>
-
-#include "mobj_flags.h"
-#include "renderer/bam.h"
-
-namespace world {
-  class World;
-  class Line;
-  class SubSector;
-}
-
 
 namespace mobj {
 
 // The original DOOM flags, no point to change...
-/*enum MapObjectFlag : std::uint32_t {
+enum MapObjectFlag : std::uint32_t {
     // Call P_SpecialThing when touched.
     MF_SPECIAL		= 1,
     // Blocks.
@@ -101,100 +90,8 @@ namespace mobj {
     MF_TRANSLATION  	= 0xc000000,
     // Hmm ???.
     MF_TRANSSHIFT	= 26
-};*/
-
-const int kMaxRadius = 32;
-const double kGravity = 1.0;
-
-/*=========================================================================
-Need access to:
-- BlockMap class data
-- FastBsp
-===========================================================================*/
-struct MapObject {
-  // TMP!!!
-  std::string texture;
- public:
-  MapObject(world::World* world) : world_(world) {}
-
-  // World coordinates of the object
-  int x;
-  int y;
-  int z;
-
-  // View direction
-  rend::BamAngle angle;
-
-  // Sizes of the mobj
-  int height;
-  int radius;
-
-  // Original DOOM flags
-  uint32_t flags;
-
-  // Momentums, in fact speed in strange units
-  double mom_x = 0;
-  double mom_y = 0;
-  double mom_z = 0;
-
-  // The narrowest part over all contacted Sectors.
-  // Calculated during checking lines intersection
-  int floor_z;
-  int ceiling_z;
-  // The lowest floor. Necessary for falling check
-  //int dropoff_z;
-
-  // Current subsector
-  world::SubSector* ss;
-
-  bool TickTime();
-
- private:
-  struct Opening {
-    int ceiling;
-    int floor;
-    int dropoff;
-
-    world::SubSector* ss;
-  };
-  
- private:
-  void MoveObject();
-  void XYMove();
-  // It looks like a candidate to be virtual...
-  void ZMove();
-
-  // Check the position, interact with items and move
-  // the object to the new position if possible (and return true)
-  // false if moving impossible
-  bool TryMoveTo(int new_x, int new_y);
-  // Iterates over all mobjs and lines in current and adjacent BlockMaps
-  bool CheckPosition(int new_x, int new_y, Opening& op);
-
-  // Invoked if the object run into sth. XYMove() will be interrupted
-  // immediately if return false.
-  // Defines common action after hit, e.g. sliding for player, missile explosion etc...
-  virtual bool RunIntoAction();
-  // Contains logic for object speed reducing
-  virtual void SlowDown();
-
-  // Applied to each touched MapObject until return false
-  virtual bool InfluenceObject(MapObject*) { return true; }
-  
-  // Applied to each crossed line until return false.
-  // False means it's impossible to cross the line.
-  virtual bool ProcessLine(const world::Line* line);
-
-  void UpdateOpening(Opening& op, const world::Line* line);
-  // Change current subsector
-  bool ChangeSubSector(world::SubSector* new_ss);
-
-  const double kMaxMove = 30;
-  const int kMaxStepSize = 24;
-
-  world::World* world_;
 };
 
 } // namespace mobj
 
-#endif  // MAP_OBJECT_
+#endif  // MOBJ_FLAGS_H_

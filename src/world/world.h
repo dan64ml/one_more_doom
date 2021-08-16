@@ -10,6 +10,7 @@
 #include "block_map.h"
 
 #include "objects/player.h"
+#include "objects/mobj_factory.h"
 
 namespace mobj {
   class MapObject;
@@ -49,6 +50,8 @@ class World {
 
   mobj::Player player_ {this};
 
+  id::MobjFactory spawner_;
+
   // TMP!!!!
   std::list<mobj::MapObject> mobjs_;
   
@@ -62,6 +65,7 @@ class World {
   // Loads things from .wad and creates list of MapObjects
   void CreateMapObjectList(std::ifstream& fin);
 
+  void PutMobjOnMap(mobj::MapObject obj);
 
   friend class mobj::MapObject;
 };

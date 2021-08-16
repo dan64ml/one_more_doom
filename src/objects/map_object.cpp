@@ -12,6 +12,7 @@
 #ifdef DEBUG_CODE
   #define D_PRINT_STEPS
   #define D_PRINT_LINES
+  #define D_PRINT_MOBJS
 #endif
 
 namespace mobj {
@@ -177,6 +178,9 @@ bool MapObject::CheckPosition(int new_x, int new_y, Opening& op) {
   bbox.bottom = new_y - dist;
 
   for (auto mobj : world_->blocks_.GetMapObjects(bbox)) {
+    #ifdef D_PRINT_MOBJS
+      std::cout << "Checking line (" << mobj->x << ", " << mobj->y << ")" << std::endl;
+    #endif
     int collision_dist = radius + mobj->radius;
     if (abs(new_x - mobj->x) >= collision_dist || abs(new_y - mobj->y) >= collision_dist) {
       // Didn't hit

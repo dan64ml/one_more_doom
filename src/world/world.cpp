@@ -233,6 +233,16 @@ void World::CreateMapObjectList(std::ifstream& fin) {
 
   auto items = wad::LoadLump<wad::WadMapThing>(fin, lump.position, lump.size);
   for (size_t i = 0; i < len; ++i) {
+    if (items[i].type == 1) {
+      // create player
+    } else {
+      auto mobj = spawner_.Create(items[i].type, items[i].x, items[i].y, items[i].angle);
+      if (mobj) {
+        // TODO: move??
+        PutMobjOnMap(mobj.value());
+      }
+    }
+
     // TODO: create MapObject
     if (items[i].type == 1) {
       player_.x = items[i].x;
@@ -244,6 +254,7 @@ void World::CreateMapObjectList(std::ifstream& fin) {
       player_.radius = 16;
 
       player_.flags = mobj::MF_SOLID | mobj::MF_DROPOFF;
+      player_.height = 56;
 
       player_.angle = rend::DegreesToBam(items[i].angle);
     } else if (items[i].type == 45 || items[i].type == 46) {
@@ -262,6 +273,15 @@ void World::CreateMapObjectList(std::ifstream& fin) {
       sub_sectors_[ss_idx].mobjs.push_back(&mobjs_.back());
     }
   }
+}
+
+void World::PutMobjOnMap(mobj::MapObject obj) {
+  int ss_idx = bsp_.GetSubSectorIdx(obj.x, obj.y);
+  obj.z = sub_sectors_[ss_idx].sector->floor_height;
+
+  mobjs_.push_back(obj);
+  sub_sectors_[ss_idx].mobjs.push_back(&mobjs_.back());
+  // TODO: block_map_
 }
 
 } // namespace world
