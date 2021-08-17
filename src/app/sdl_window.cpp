@@ -58,6 +58,15 @@ int SdlWindow::SdlWindow::GetYSize() const {
   return size;
 }
 
+void SdlWindow::ClearFBRender(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+  uint32_t clear_color = r;
+  clear_color |= g << 8;
+  clear_color |= b << 16;
+  clear_color |= a << 24;
+
+  std::fill(begin(frame_buf_), end(frame_buf_), clear_color);
+}
+
 void SdlWindow::SetPosition(int x, int y) {
   SDL_SetWindowPosition(wnd_, x, y);
 }

@@ -16,11 +16,14 @@ void AppClass::InitInstance() {
   
   gm_.Load("/home/dan/tmp/DOOM2.WAD");
 
+  int level = 0;
+
   world_.OpenWad("/home/dan/tmp/DOOM2.WAD");
-  world_.LoadLevel(27); // 10 - wrong portal // 11 - wrong torch // 16 flying torch //27
+  world_.LoadLevel(level); // 10 - wrong portal // 11 - wrong torch // 16 flying torch //27
   player_ = world_.GetPlayer();
 
   renderer_.SetDrawWindow(&wnd_);
+  renderer_.SetLevel(level);
 
   // 17 - right texture alignment error; 4 - floor has wrong direction
   // 25 and angle - 45: switch is shifted

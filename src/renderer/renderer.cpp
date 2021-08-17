@@ -51,8 +51,12 @@ void Renderer::RenderScene(const wad::FastBsp* bsp, const graph::GraphicsManager
 
 void Renderer::RenderFlats() {
   for (const auto& vs : visplanes_) {
-    CreateRanges(*(vs.get()));
-    DrawPixelRange(*(vs.get()));
+    if (vs->texture == "F_SKY1") {
+      DrawSky(*(vs.get()));
+    } else {
+      CreateRanges(*(vs.get()));
+      DrawPixelRange(*(vs.get()));
+    }
   }
 }
 
@@ -320,6 +324,33 @@ void Renderer::FillContextFromMasked(const MaskedObject& msk) {
     }
   }
 }*/
+
+void Renderer::DrawSky(const Visplane& vs) {
+  std::string texture_name;
+  if (level_ < 11) {
+    texture_name = "SKY1";
+  } else if (level_ < 20) {
+    texture_name = "SKY2";
+  } else {
+    texture_name = "SKY3";
+  }
+
+  auto texture = gm_->GetTexture(texture_name);
+  texture.SetLightLevel(0);
+
+  for (int i = vs.min_x; i <= vs.max_x; ++i) {
+    BamAngle da = kBamAngle90 - vp_.angle;
+    int shift = (kScreenXResolution / static_cast<double>(kBamAngle90)) * da;
+
+    int u = ((i + shift) / kScaleCoef) % 256;
+
+    for (int j = vs.bottom[i]; j <= vs.top[i]; ++j) {
+      int v = (kScreenYResolution - j - 1) / kScaleCoef;
+      uint32_t color = texture.GetPixel(u, v);
+      wnd_->RenderFBPointAlpha(i, j, color);
+    }
+  }
+}
 
 void Renderer::DrawPixelRange(const Visplane& vs) {
   auto texture = gm_->GetFlat(vs.texture);
@@ -1011,7 +1042,8 @@ int Renderer::ScreenXtoTextureU(int sx) {
 }
 
 void Renderer::ClearRenderer() {
-  wnd_->ClearRender(0, 0, 0, 0);
+//  wnd_->ClearRender(0, 0, 0, 0);
+  wnd_->ClearFBRender(0, 0, 0, 255);
 
   wall_clipping_.clear();
   wall_clipping_.push_back({std::numeric_limits<int>::min(), -1});

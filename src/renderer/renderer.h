@@ -184,6 +184,8 @@ class Renderer {
 
   void SetDrawWindow(sdl2::SdlWindow* wnd) { wnd_ = wnd; }
 
+  void SetLevel(int level) { level_ = level; }
+
  private:
   void ClearRenderer();
   void RenderWalls();
@@ -226,6 +228,8 @@ class Renderer {
   const wad::FastBsp* bsp_;
 
   RendererOptions opt_;
+  // Current level. For sky texture only :(
+  int level_ = 0;
 
   // Player position
   DPoint vp_;
@@ -258,6 +262,7 @@ class Renderer {
   int max_vsp_y_;
   void CreateRanges(const Visplane& vs);
   void DrawPixelRange(const Visplane& vs);
+  void DrawSky(const Visplane& vs);
 
   // Vissprites
   //std::list<Vissprite> vissprites_;
