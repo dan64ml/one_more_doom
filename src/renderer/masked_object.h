@@ -5,13 +5,16 @@
 #include <string>
 
 #include "plane_utils.h"
+#include "graphics/texture.h"
 
 namespace rend {
 
 struct MaskedObject {
-  std::string texture_name;
+  //std::string texture_name;
+  graph::Texture texture;
 
   int height;
+  int width;
   int z;
 
   DPoint p1;

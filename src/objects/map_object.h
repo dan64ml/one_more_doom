@@ -131,6 +131,11 @@ struct MapObject {
   int height;
   int radius;
 
+  // It looks like items have different logical (for collisions) 
+  // and pixel (for drawing) sizes. These are for drawing
+  //int pixel_height;
+  //int pixel_width;
+
   // Original DOOM flags
   uint32_t flags;
 

@@ -99,18 +99,21 @@ void Renderer::FillContextFromMasked(const MaskedObject& msk) {
 
   // Sprites and portals have different texture sources
   // Also the height of portal is not equal to texture size 
-  if (msk.distance == -1) {
-    ctx_.texture = gm_->GetTexture(msk.texture_name);
-    ctx_.pixel_height = msk.height;
-  } else {
-    ctx_.texture = gm_->GetSpriteEx(msk.texture_name);
-    ctx_.pixel_height = ctx_.texture.GetYSize();
-  }
+//  if (msk.distance == -1) {
+//    ctx_.texture = gm_->GetTexture(msk.texture_name);
+//    ctx_.pixel_height = msk.height;
+//  } else {
+//    ctx_.texture = gm_->GetSpriteEx(msk.texture_name);
+//    ctx_.pixel_height = ctx_.texture.GetYSize();
+//  }
+
+  ctx_.texture = msk.texture;
+  ctx_.pixel_height = msk.height;
 
   // TODO: ??? light_level and floor_height (for flying mobjs)
 
   // TODO: ??? Redundunt - name and Texture...
-  ctx_.mid_texture = msk.texture_name;
+  //ctx_.mid_texture = msk.texture_name;
 
   // For texturing
   ctx_.segment_len = SegmentLength(ctx_.p1, ctx_.p2);
@@ -1030,17 +1033,24 @@ void Renderer::ClearRenderer() {
 
 bool Renderer::FillMobjMaskedObject(MaskedObject& msk, const mobj::MapObject* mobj) {
     //int width = mobj->radius;
-    msk.height = mobj->height;
+    // msk.height = mobj->height;
     msk.z = mobj->z;
 
-    msk.texture_name = mobj->GetSpriteName(vp_.angle);
-    auto t = gm_->GetSpriteEx(msk.texture_name);
+    auto texture_name = mobj->GetSpriteName(vp_.angle);
+    msk.texture = gm_->GetSpriteEx(texture_name);
+    // TODO: handle with strange texture frame indexes
+    if (!msk.texture) {
+      return false;
+    }
+    
+    msk.width = msk.texture.GetXSize();
+    msk.height = msk.texture.GetYSize();
 
     auto angle = CalcAngle(vp_.x, vp_.y, mobj->x, mobj->y);
 //    int dx = 26 * BamCos(kBamAngle90 - angle);
 //    int dy = 26 * BamSin(kBamAngle90 - angle);
-    int dx = t.GetXSize() * BamCos(kBamAngle90 - angle);
-    int dy = t.GetXSize() * BamSin(kBamAngle90 - angle);
+    int dx = msk.width * BamCos(kBamAngle90 - angle);
+    int dy = msk.width * BamSin(kBamAngle90 - angle);
     
     int x1 = mobj->x - dx / 2;
     int y1 = mobj->y + dy / 2;
@@ -1067,7 +1077,8 @@ bool Renderer::FillMobjMaskedObject(MaskedObject& msk, const mobj::MapObject* mo
 }
 
 bool Renderer::FillPortalMaskedObject(MaskedObject& msk, int left, int right) {
-  msk.texture_name = ctx_.mid_texture;
+//  msk.texture_name = ctx_.mid_texture;
+  msk.texture = gm_->GetTexture(ctx_.mid_texture);
 
   msk.z = std::max(ctx_.back_floor_height, ctx_.front_floor_height);
   msk.height = std::min(ctx_.front_ceiling_height, ctx_.back_ceiling_height) - msk.z;

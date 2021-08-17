@@ -17,7 +17,7 @@ void AppClass::InitInstance() {
   gm_.Load("/home/dan/tmp/DOOM2.WAD");
 
   world_.OpenWad("/home/dan/tmp/DOOM2.WAD");
-  world_.LoadLevel(0); // 11 - wrong torch // 16 flying torch //27
+  world_.LoadLevel(10); // 11 - wrong torch // 16 flying torch //27
   player_ = world_.GetPlayer();
 
   renderer_.SetDrawWindow(&wnd_);
