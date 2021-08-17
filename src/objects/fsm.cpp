@@ -32,7 +32,7 @@ bool FSM::Tick() {
   return true;
 }
 
-std::string FSM::GetSpriteName() {
+std::string FSM::GetSpriteName() const {
   std::string result = id::sprnames[current_state.sprite];
   result += 'A' + current_state.frame;
   return result;

@@ -6,6 +6,7 @@
 
 #include "mobj_flags.h"
 #include "renderer/bam.h"
+#include "fsm.h"
 
 namespace world {
   class World;
@@ -113,9 +114,10 @@ Need access to:
 ===========================================================================*/
 struct MapObject {
   // TMP!!!
-  std::string texture;
+  //std::string texture;
  public:
   MapObject(world::World* world) : world_(world) {}
+  MapObject(const id::mobjinfo_t& info);
 
   // World coordinates of the object
   int x;
@@ -147,7 +149,11 @@ struct MapObject {
   // Current subsector
   world::SubSector* ss;
 
+  world::World* world_;
+
   bool TickTime();
+
+  std::string GetSpriteName(rend::BamAngle vp_angle) const;
 
  private:
   struct Opening {
@@ -192,7 +198,7 @@ struct MapObject {
   const double kMaxMove = 30;
   const int kMaxStepSize = 24;
 
-  world::World* world_;
+  FSM fsm_;
 };
 
 } // namespace mobj

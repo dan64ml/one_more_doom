@@ -38,6 +38,9 @@ class GraphicsManager {
 
   Texture GetTexture(std::string texture_name) const;
   Texture GetSprite(std::string sprite_name) const;
+  // Trys to load sprite with name sprite_name. If such texture not found,
+  // trys to load texture with another last number...
+  Texture GetSpriteEx(std::string sprite_name) const;
   Flat GetFlat(std::string flat_name) const;
 
  private:

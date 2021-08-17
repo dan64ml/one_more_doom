@@ -15,7 +15,7 @@ class MobjFactory {
  public:
   MobjFactory() = default;
 
-  std::optional<mobj::MapObject> Create(int type, int x, int y, int degree_angle);
+  std::optional<mobj::MapObject> Create(int type);
 
  private:
   static std::unordered_map<int, id::mobjinfo_t> mobjs_info_;

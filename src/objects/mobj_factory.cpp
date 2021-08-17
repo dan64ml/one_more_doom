@@ -1,20 +1,24 @@
 #include "mobj_factory.h"
 
+#include "map_object.h"
+
 namespace id {
 
-std::optional<mobj::MapObject> MobjFactory::Create(int type, int x, int y, int degree_angle) {
+std::optional<mobj::MapObject> MobjFactory::Create(int type) {
   if (mobjs_info_.count(type) == 0) {
     return {};
   }
 
-  return {};
+  mobj::MapObject obj(mobjs_info_.at(type));
+
+  return {obj};
 }
 
 std::unordered_map<int, id::mobjinfo_t> Fill() {
   std::unordered_map<int, id::mobjinfo_t> ret;
   for (int i = 0; i < NUMMOBJTYPES; ++i) {
     if (mobjinfo[i].doomednum != -1) {
-      ret[i] = mobjinfo[i];
+      ret[mobjinfo[i].doomednum] = mobjinfo[i];
     }
   }
 

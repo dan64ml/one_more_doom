@@ -103,7 +103,7 @@ void Renderer::FillContextFromMasked(const MaskedObject& msk) {
     ctx_.texture = gm_->GetTexture(msk.texture_name);
     ctx_.pixel_height = msk.height;
   } else {
-    ctx_.texture = gm_->GetSprite(msk.texture_name);
+    ctx_.texture = gm_->GetSpriteEx(msk.texture_name);
     ctx_.pixel_height = ctx_.texture.GetYSize();
   }
 
@@ -1033,11 +1033,14 @@ bool Renderer::FillMobjMaskedObject(MaskedObject& msk, const mobj::MapObject* mo
     msk.height = mobj->height;
     msk.z = mobj->z;
 
-    msk.texture_name = mobj->texture;
+    msk.texture_name = mobj->GetSpriteName(vp_.angle);
+    auto t = gm_->GetSpriteEx(msk.texture_name);
 
     auto angle = CalcAngle(vp_.x, vp_.y, mobj->x, mobj->y);
-    int dx = 26 * BamCos(kBamAngle90 - angle);
-    int dy = 26 * BamSin(kBamAngle90 - angle);
+//    int dx = 26 * BamCos(kBamAngle90 - angle);
+//    int dy = 26 * BamSin(kBamAngle90 - angle);
+    int dx = t.GetXSize() * BamCos(kBamAngle90 - angle);
+    int dy = t.GetXSize() * BamSin(kBamAngle90 - angle);
     
     int x1 = mobj->x - dx / 2;
     int y1 = mobj->y + dy / 2;

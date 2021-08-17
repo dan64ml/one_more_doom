@@ -221,6 +221,15 @@ Texture GraphicsManager::GetSprite(std::string sprite_name) const {
   }
 }
 
+Texture GraphicsManager::GetSpriteEx(std::string sprite_name) const {
+   if (sprites_.count(sprite_name) == 0) {
+     sprite_name.back() = '0';
+     return GetSprite(sprite_name);
+   } else {
+    return {this, &sprites_.at(sprite_name)};
+  }
+}
+
 Flat GraphicsManager::GetFlat(std::string flat_name) const {
   if (flats_.count(flat_name) == 0) {
     //std::cout << "Flat " + flat_name + " not found!" << std::endl;

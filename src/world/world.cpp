@@ -6,6 +6,7 @@
 
 #include "wad_utils.h"
 #include "wad_raw_types.h"
+#include "renderer/bam.h"
 
 namespace world {
 
@@ -91,6 +92,10 @@ void World::LoadLevel(size_t level) {
 
 void World::TickTime() {
   player_.TickTime();
+
+  for (auto& mobj : mobjs_) {
+    //mobj.TickTime();
+  }
 }
 
 void World::ClearLevel() {
@@ -236,10 +241,10 @@ void World::CreateMapObjectList(std::ifstream& fin) {
     if (items[i].type == 1) {
       // create player
     } else {
-      auto mobj = spawner_.Create(items[i].type, items[i].x, items[i].y, items[i].angle);
+      auto mobj = spawner_.Create(items[i].type);
       if (mobj) {
         // TODO: move??
-        PutMobjOnMap(mobj.value());
+        PutMobjOnMap(mobj.value(), items[i].x, items[i].y, items[i].angle);
       }
     }
 
@@ -258,26 +263,33 @@ void World::CreateMapObjectList(std::ifstream& fin) {
 
       player_.angle = rend::DegreesToBam(items[i].angle);
     } else if (items[i].type == 45 || items[i].type == 46) {
-      mobj::MapObject torch(this);
-      torch.x = items[i].x;
-      torch.y = items[i].y;
-
-      //torch.height = 
-
-      int ss_idx = bsp_.GetSubSectorIdx(torch.x, torch.y);
-      torch.z = sub_sectors_[ss_idx].sector->floor_height;
-
-      torch.texture = "TGRNA0";
-
-      mobjs_.push_back(torch);
-      sub_sectors_[ss_idx].mobjs.push_back(&mobjs_.back());
+    //  mobj::MapObject torch(this);
+    //  torch.x = items[i].x;
+    //  torch.y = items[i].y;
+//
+    //  //torch.height = 
+//
+    //  int ss_idx = bsp_.GetSubSectorIdx(torch.x, torch.y);
+    //  torch.z = sub_sectors_[ss_idx].sector->floor_height;
+//
+    //  //torch.texture = "TGRNA0";
+//
+    //  mobjs_.push_back(torch);
+    //  sub_sectors_[ss_idx].mobjs.push_back(&mobjs_.back());
     }
   }
 }
 
-void World::PutMobjOnMap(mobj::MapObject obj) {
+void World::PutMobjOnMap(mobj::MapObject obj, int x, int y, int degree_angle) {
+  obj.x = x;
+  obj.y = y;
+
   int ss_idx = bsp_.GetSubSectorIdx(obj.x, obj.y);
   obj.z = sub_sectors_[ss_idx].sector->floor_height;
+
+  obj.angle = rend::DegreesToBam(degree_angle);
+
+  obj.world_ = this;
 
   mobjs_.push_back(obj);
   sub_sectors_[ss_idx].mobjs.push_back(&mobjs_.back());

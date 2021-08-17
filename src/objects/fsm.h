@@ -10,10 +10,11 @@ namespace mobj {
 
 class FSM {
  public:
+  FSM() = default;
   FSM(const id::mobjinfo_t& info);
   bool Tick();
 
-  std::string GetSpriteName();
+  std::string GetSpriteName() const;
   
   void ToSeeState();
   void ToDeathState();

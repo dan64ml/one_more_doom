@@ -17,7 +17,22 @@
 
 namespace mobj {
 
+//MapObject::MapObject(world::World* world, const id::mobjinfo_t& info) : fsm_(info), world_(world) {
+//  
+//}
+MapObject::MapObject(const id::mobjinfo_t& info) : fsm_(info) {
+  flags = info.flags;
+  height = info.height;
+  radius = info.radius;
+}
+
+std::string MapObject::GetSpriteName(rend::BamAngle vp_angle) const {
+  return fsm_.GetSpriteName() + "1";
+}
+
 bool MapObject::TickTime() {
+  fsm_.Tick();
+  
   MoveObject();
   return true;
 }
