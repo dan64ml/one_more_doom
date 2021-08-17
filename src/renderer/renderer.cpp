@@ -675,7 +675,10 @@ void Renderer::SortMaskedObjects() {
   auto start_it = begin(masked_);
   while (start_it != end(masked_)) {
     auto end_it = std::find_if(start_it, end(masked_), [](const auto elem){ return elem.distance == -1; });
-    //masked_.sort(start_it, end_it, [](const auto& lhs, const auto& rhs ){ return lhs.distance > rhs.distance; });
+    std::list<MaskedObject> tmp;
+    tmp.splice(end(tmp), masked_, start_it, end_it);
+    tmp.sort([](const auto& lhs, const auto& rhs ){ return lhs.distance > rhs.distance; });
+    masked_.splice(end_it, tmp);
     start_it = std::find_if(end_it, end(masked_), [](const auto elem){ return elem.distance != -1; });
   }
 }
