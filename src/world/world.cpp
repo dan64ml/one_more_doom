@@ -282,32 +282,18 @@ void World::CreateMapObjectList(std::ifstream& fin) {
   }
 }
 
-//void World::PutMobjOnMap(mobj::MapObject obj, int x, int y, int degree_angle) {
-//  obj.x = x;
-//  obj.y = y;
-//
-//  int ss_idx = bsp_.GetSubSectorIdx(obj.x, obj.y);
-//  obj.floor_z = obj.z = sub_sectors_[ss_idx].sector->floor_height;
-//
-//  obj.angle = rend::DegreesToBam(degree_angle);
-//
-//  obj.world_ = this;
-//
-//  mobjs_.push_back(obj);
-//  sub_sectors_[ss_idx].mobjs.push_back(&mobjs_.back());
-//  // TODO: block_map_
-//}
 void World::PutMobjOnMap(mobj::MapObject obj) {
   int ss_idx = bsp_.GetSubSectorIdx(obj.x, obj.y);
-  obj.floor_z = obj.z = sub_sectors_[ss_idx].sector->floor_height;
-
   obj.ss = &sub_sectors_[ss_idx];
+
+  obj.floor_z = obj.z = sub_sectors_[ss_idx].sector->floor_height;
 
   obj.world_ = this;
 
   mobjs_.push_back(std::move(obj));
   sub_sectors_[ss_idx].mobjs.push_back(&mobjs_.back());
-  // TODO: block_map_
+
+  blocks_.AddMapObject(&mobjs_.back());
 }
 
 } // namespace world

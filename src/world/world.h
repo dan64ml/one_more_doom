@@ -65,7 +65,6 @@ class World {
   // Loads things from .wad and creates list of MapObjects
   void CreateMapObjectList(std::ifstream& fin);
 
-  //void PutMobjOnMap(mobj::MapObject obj, int x, int y, int degree_angle);
   void PutMobjOnMap(mobj::MapObject obj);
 
   friend class mobj::MapObject;
