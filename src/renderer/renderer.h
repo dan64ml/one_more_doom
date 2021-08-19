@@ -140,48 +140,6 @@ struct Visplane {
   std::array<int, kScreenXResolution> bottom;
 };
 
-struct MidPortalVisplane {
-  MidPortalVisplane(const SegmentRendContext& ctx, const std::array<int, kScreenXResolution>& floor_level,
-    const std::array<int, kScreenXResolution>& ceiling_level, const std::vector<PixelRange>& visible_fragments) 
-    : context(ctx), floor_level(floor_level), ceiling_level(ceiling_level), visible_fragments(visible_fragments) {
-      mask.assign(ctx.sx_rightmost - ctx.sx_leftmost + 1, std::vector<bool>(kScreenYResolution, false));
-    }
-
-  SegmentRendContext context;
-  std::array<int, kScreenXResolution> floor_level;
-  std::array<int, kScreenXResolution> ceiling_level;
-  std::vector<PixelRange> visible_fragments;
-
-  std::vector<std::vector<bool>> mask;
-};
-
-/*struct Vissprite {
-  Vissprite() = default;
-  Vissprite(int left, int right, double d, const thing::VisibleThing& sp, DPoint p1, DPoint p2, DPoint p_center, double offset)
-    : x_left(left), x_right(right), dist(d), sprite(&sp), p1(p1), p2(p2), p_center(p_center), offset(offset),
-    top(right - left + 1, rend::kScreenYResolution), bottom(right - left + 1, -1) {}
-
-  // Screen x coordinates of sprite location
-  int x_left;
-  int x_right;
-
-  // Distance from view point to the sprite center
-  double dist;
-
-  const thing::VisibleThing* sprite;
-  
-  // Visible ends of the sprite
-  DPoint p1, p2;
-  // And the center
-  DPoint p_center;
-  // Distance from left end of the sprite to the left visible end
-  double offset;
-
-  std::vector<int> top; // == -1 if the column if fully masked
-  std::vector<int> bottom;
-
-  int masked_column_count = 0;
-};*/
 
 class Renderer {
  public:
@@ -271,27 +229,6 @@ class Renderer {
   void CreateRanges(const Visplane& vs);
   void DrawPixelRange(const Visplane& vs);
   void DrawSky(const Visplane& vs);
-
-  // Vissprites
-  //std::list<Vissprite> vissprites_;
-  // Creates list of visible sprites
-  //void CreateVissprites(const Scene& scene);
-  // Using current fragment data update masks of vissprites.
-  // If vissprite is fully masked, delete it from the list 
-  //void UpdateVssMaskByWall(int left, int right);
-  //void UpdateVssMaskByPortal(int left, int right);
-  // Sorts vissprites_ by distance (from farthest to nearest)
-  //void SortVissprites();
-  // Draw the sprite
-  //void DrawSprite(const Vissprite& vs);
-
-
-  // TOD0: there is lots of very dirty code!
-  void TexurizeMidFragment(MidPortalVisplane& mpv);
-  void DrawMaskedColumn(int screen_x, int screen_top_y, int screen_bottom_y, bool up_to_down, 
-    MidPortalVisplane& mpv);
-
-  std::vector<MidPortalVisplane> mid_portals_;
 
   std::list<MaskedObject> masked_;
   // Clipping track for masked

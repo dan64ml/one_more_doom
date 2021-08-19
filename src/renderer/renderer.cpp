@@ -1,5 +1,4 @@
 #include "renderer.h"
-//#include "wad/texture.h"
 
 #include <limits>
 #include <iostream>
@@ -33,8 +32,6 @@ void Renderer::RenderScene(const wad::FastBsp* bsp, const graph::GraphicsManager
   vp_.angle = player->angle;
   
   ClearRenderer();
-
-  //CreateVissprites({});
 
   RenderWalls();
   RenderFlats();
@@ -71,7 +68,6 @@ void Renderer::RenderMasked() {
 void Renderer::DrawMaskedObject(const MaskedObject& msk) {
   FillContextFromMasked(msk);
 
-//  for (int x = ctx_.sx_leftmost; x <= ctx_.sx_rightmost; ++x) {
   for (int x = msk.left; x <= msk.right; ++x) {
     if (msk.top_clip[x - ctx_.sx_leftmost] == -1) {
       continue;
@@ -102,16 +98,6 @@ void Renderer::FillContextFromMasked(const MaskedObject& msk) {
   ctx_.full_offset = msk.full_offset;
   ctx_.row_offset = 0;
 
-  // Sprites and portals have different texture sources
-  // Also the height of portal is not equal to texture size 
-//  if (msk.distance == -1) {
-//    ctx_.texture = gm_->GetTexture(msk.texture_name);
-//    ctx_.pixel_height = msk.height;
-//  } else {
-//    ctx_.texture = gm_->GetSpriteEx(msk.texture_name);
-//    ctx_.pixel_height = ctx_.texture.GetYSize();
-//  }
-
   ctx_.texture = msk.texture;
   ctx_.pixel_height = msk.height;
 
@@ -134,197 +120,6 @@ void Renderer::FillContextFromMasked(const MaskedObject& msk) {
     ceiling_level_[i] = msk.top_clip[i - msk.sx_leftmost];
   }
 }
-
-
-/*void Renderer::CreateVissprites(const Scene& scene) {
-  vissprites_.clear();
-
-  for (const thing::VisibleThing& item : scene.items_) {
-    auto [sp_x, sp_y] = item.GetPosition();
-    auto [width, height] = item.GetSpriteSize(vp_.angle);
-
-    auto angle = CalcAngle(vp_.x, vp_.y, sp_x, sp_y);
-//    int dx = (width / 2.0) * BamCos(kBamAngle90 - angle);
-//    int dy = (width / 2.0) * BamSin(kBamAngle90 - angle);
-//    auto [visible, p1, p2] = GetVisibleSegment(vp_, sp_x - dx, sp_y + dy, sp_x + dx, sp_y - dy);
-    int dx = width * BamCos(kBamAngle90 - angle);
-    int dy = width * BamSin(kBamAngle90 - angle);
-    int lx = sp_x - dx / 2;
-    int ly = sp_y + dy / 2;
-    auto [visible, p1, p2] = GetVisibleSegment(vp_, lx, ly, lx + dx, ly - dy);
-    if (!visible) {
-      continue;
-    }
-
-//    double offset = sqrt((p1.x - (sp_x - dx))*(p1.x - (sp_x - dx)) + (p1.y - (sp_y + dy))*(p1.y - (sp_y + dy)));
-    double offset = sqrt((p1.x - lx)*(p1.x - lx) + (p1.y - ly)*(p1.y - ly));
-    double dist = sqrt((sp_x - vp_.x)*(sp_x - vp_.x) + (sp_y - vp_.y)*(sp_y - vp_.y));
-    int left = bam_to_screen_x_table_[p1.angle];
-    int right = bam_to_screen_x_table_[p2.angle];
-
-    vissprites_.emplace_back(left, right, dist, item, p1, p2, DPoint{sp_x, sp_y, 0}, offset);
-  }
-}*/
-
-/*void Renderer::UpdateVssMaskByWall(int left, int right) {
-  for (auto& vs : vissprites_) {
-    if (vs.x_left > right || vs.x_right < left) {
-      continue;
-    }
-    if (DefineVpSide(ctx_.p1.x, ctx_.p1.y, ctx_.p2.x, ctx_.p2.y, vs.p_center.x, vs.p_center.y) == 0) {
-      continue;
-    }
-
-    const auto [from, to] = CreateIntersection(left, right, vs.x_left, vs.x_right);
-    for (int i = from; i <= to; ++i) {
-      if (vs.top[i - vs.x_left] != -1) {
-        vs.top[i - vs.x_left] = -1;
-        ++vs.masked_column_count;
-      }
-    }
-  }
-
-  for (auto it = begin(vissprites_); it != end(vissprites_);) {
-    if (it->masked_column_count == (it->x_right - it->x_left + 1)) {
-      it = vissprites_.erase(it);
-    } else {
-      ++it;
-    }
-  }
-}*/
-
-/*void Renderer::UpdateVssMaskByPortal(int left, int right) {
-  for (auto& vs : vissprites_) {
-    if (vs.x_left > right || vs.x_right < left) {
-      continue;
-    }
-    if (DefineVpSide(ctx_.p1.x, ctx_.p1.y, ctx_.p2.x, ctx_.p2.y, vs.p_center.x, vs.p_center.y) == 0) {
-      continue;
-    }
-
-    const auto [from, to] = CreateIntersection(left, right, vs.x_left, vs.x_right);
-    for (int i = from; i <= to; ++i) {
-      if (vs.top[i - vs.x_left] == -1) {
-        continue;
-      }
-
-      int top = ctx_.mid_y_top + ctx_.mid_dy_top * (i - ctx_.sx_leftmost);
-      int bottom = ctx_.mid_y_bottom + ctx_.mid_dy_bottom * (i - ctx_.sx_leftmost);
-
-      vs.top[i - vs.x_left] = std::min(vs.top[i - vs.x_left], top);
-      vs.bottom[i - vs.x_left] = std::max(vs.bottom[i - vs.x_left], bottom);
-      if (vs.bottom[i - vs.x_left] + 1 >= vs.top[i - vs.x_left]) {
-        vs.top[i - vs.x_left] = -1;
-        ++vs.masked_column_count;
-      }
-    }
-  }
-
-  for (auto it = begin(vissprites_); it != end(vissprites_);) {
-    if (it->masked_column_count == (it->x_right - it->x_left + 1)) {
-      it = vissprites_.erase(it);
-    } else {
-      ++it;
-    }
-  }
-}*/
-
-/*void Renderer::SortVissprites() {
-  auto comp = [](const Vissprite& l, const Vissprite& r) -> bool {
-      return l.dist > r.dist;
-  };
-
-  vissprites_.sort(comp);
-}*/
-
-/*void Renderer::DrawSprite(const Vissprite& vs) {
-  auto [sp_widht, sp_height] = vs.sprite->GetSpriteSize(vp_.angle);
-
-  double const dist_left = sqrt((vs.p1.x - vp_.x)*(vs.p1.x - vp_.x) + (vs.p1.y - vp_.y)*(vs.p1.y - vp_.y))
-      * BamCos(vs.p1.angle - kBamAngle45);
-  double const dist_right = sqrt((vs.p2.x - vp_.x)*(vs.p2.x - vp_.x) + (vs.p2.y - vp_.y)*(vs.p2.y - vp_.y))
-      * BamCos(vs.p2.angle - kBamAngle45);
-
-  int top_y_left = (vs.sprite->GetHeight() + sp_height - (kPlayerHeight + player_feet_height_)) 
-                    * (static_cast<double>(kProjectPlaneDist) / dist_left) + kProjectPlaneCenter;
-  int top_y_right = (vs.sprite->GetHeight() + sp_height - (kPlayerHeight + player_feet_height_)) 
-                    * (static_cast<double>(kProjectPlaneDist) / dist_right) + kProjectPlaneCenter;
-
-
-  int bottom_y_left = kProjectPlaneCenter - (kPlayerHeight + player_feet_height_ - vs.sprite->GetHeight())
-                      * (static_cast<double>(kProjectPlaneDist) / dist_left);
-  int bottom_y_right = kProjectPlaneCenter - (kPlayerHeight + player_feet_height_ - vs.sprite->GetHeight())
-                      * (static_cast<double>(kProjectPlaneDist) / dist_right);
-
-  top_y_left *= kScaleCoef;
-  top_y_right *= kScaleCoef;
-  bottom_y_left *= kScaleCoef;
-  bottom_y_right *= kScaleCoef;
-  double dy_top = (top_y_right - top_y_left) / (vs.x_right - vs.x_left + 1.0);
-  double dy_bottom = (bottom_y_right - bottom_y_left) / (vs.x_right - vs.x_left + 1.0);
-
-  const auto& texture = vs.sprite->GetSprite(vp_.angle);
-  double len = sqrt((vs.p1.x - vs.p2.x)*(vs.p1.x - vs.p2.x) + (vs.p1.y - vs.p2.y)*(vs.p1.y - vs.p2.y));
-
-  for (int x = vs.x_left; x <= vs.x_right; ++x) {
-    if (vs.top[x - vs.x_left] == -1) {
-      continue;
-    }
-
-    double a = (x - vs.x_left) / (vs.x_right - vs.x_left + 1.0);
-    int u = (a * len / dist_right) / ((1 - a) / dist_left + a / dist_right) + vs.offset;
-
-    int top_y = top_y_left + (x - vs.x_left) * dy_top;
-    int bottom_y = bottom_y_left + (x - vs.x_left) * dy_bottom;
-    double texture_y_coef = sp_height / (top_y - bottom_y + 1.0);
-
-    for (int y = std::max(vs.bottom[x - vs.x_left] + 1, bottom_y);
-         y <= std::min(vs.top[x - vs.x_left] - 1, top_y); ++y) {
-      int v = (top_y - y) * texture_y_coef;
-
-      int r, g, b;
-      if (texture.GetPixel(u, v, r, g, b)) {
-        wnd_->RenderFBPoint(x, y, r, g, b);
-
-
-        for (auto& mp : mid_portals_) {
-          if (x < mp.context.sx_leftmost || x > mp.context.sx_rightmost) {
-            continue;
-          }
-          if(DefineVpSide(mp.context.p1.x, mp.context.p1.y, mp.context.p2.x, mp.context.p2.y, vs.p_center.x, vs.p_center.y) == 1) {
-            continue;
-          }
-
-          mp.mask[x - mp.context.sx_leftmost][y] = true;
-        }
-    
-      }
-    }
-  }
-
-}*/
-
-/*void Renderer::RenderMasked() {
-  SortVissprites();
-
-  for (const auto& vs : vissprites_) {
-    DrawSprite(vs);
-  }
-
-  for (auto it = std::rbegin(mid_portals_); it != std::rend(mid_portals_); ++it) {
-    TexurizeMidFragment(*it);
-  }
-
-  // Temporary!!! Draw status bar
-  auto texture = map_->GetGraphicsManager().GetSprite("STBAR");
-  for (int x = 0; x < kScreenXResolution; ++x) {
-    for (int y = 0; y < 32 * kScaleCoef; ++y) {
-      int r, g, b;
-      texture.GetPixel(x / kScaleCoef, (32 * kScaleCoef - y - 1) / kScaleCoef, r, g, b);
-      wnd_->RenderFBPoint(x, y, r, g, b);
-    }
-  }
-}*/
 
 void Renderer::DrawSky(const Visplane& vs) {
   std::string texture_name;
@@ -633,8 +428,6 @@ void Renderer::TexurizeWall() {
   for (auto [left, right] : visible_fragments_) {
     TexurizeWallFragment(left, right);
     UpdateClipList(left, right);
-
-    //UpdateVssMaskByWall(left, right);
   }
 }
 
@@ -736,7 +529,6 @@ void Renderer::TexurizePortal() {
   for (auto [left, right] : visible_fragments_) {
     TexurizeBottomFragment(left, right);
     CheckOpening(left, right);
-    //UpdateVssMaskByPortal(left, right);
   }
 
   CreateUnclippedFragments(ctx_.p1, ctx_.p2);
@@ -759,12 +551,6 @@ void Renderer::TexurizePortal() {
   if (!ctx_.texture) {
     return;
   }
-//  ctx_.pixel_height = abs(ctx_.front_ceiling_height - ctx_.front_floor_height);
-//  ctx_.pixel_texture_y_shift = 0;
-
-  // Create pseudo-vissprite
-//  MidPortalVisplane mpv(ctx_, floor_level_, ceiling_level_, visible_fragments_);
-//  mid_portals_.push_back(std::move(mpv));
 
   for (auto [left, right] : visible_fragments_) {
     MaskedObject msk;
@@ -855,83 +641,6 @@ void Renderer::DrawColumn(int screen_x, int screen_top_y, int screen_bottom_y, b
   }
 }
 
-void Renderer::DrawMaskedColumn(int screen_x, int screen_top_y, int screen_bottom_y, bool up_to_down, MidPortalVisplane& mpv) {
-  // No texture
-  if (!ctx_.texture) {
-    return;
-  }
-  // Below the floor
-  if (screen_top_y <= floor_level_[screen_x]) {
-    return;
-  }
-  // Above the ceiling
-  if (screen_bottom_y >= ceiling_level_[screen_x]) {
-    return;
-  }
-  // Visible part of the column
-  int high = std::min(screen_top_y, ceiling_level_[screen_x] - 1);
-  int low = std::max(screen_bottom_y, floor_level_[screen_x] + 1);
-  //int high = std::min(screen_top_y, kScreenYResolution - 1);
-  //int low = std::max(screen_bottom_y, 0);
-
-  // Light
-  int light = 0;
-  if (opt_.sector_light_enable) {
-    light = (255 - ctx_.front_light_level);
-  }
-  if (opt_.distance_light_enable) {
-    light += kDiminishFactor * screen_bottom_y / kScaleCoef;
-  }
-  light >>= kLightShift;
-  if (light < 0) {
-    light = 0;
-  }
-  if (light >= kLightLevels) {
-    light = kLightLevels - 1;
-  }
-  ctx_.texture.SetLightLevel(light);
-
-  // Texture map coords (u, v)
-  // Common texture offset + offset from the start of line to bsp segment + column offset
-//  int u = (ctx_.front_side_def->texture_offset + ctx_.full_offset 
-//          + ScreenXtoTextureU(screen_x)) % ctx_.texture.GetXSize();
-  int u = (ctx_.full_offset + ScreenXtoTextureU(screen_x)) % ctx_.texture.GetXSize();
-
-  double delta_v = static_cast<double>(ctx_.pixel_height) / (screen_top_y - screen_bottom_y + 1);
-
-  int texture_y_size = ctx_.texture.GetYSize();
-  int r, g, b;
-  if (up_to_down) {
-    for (int y = high; y >= low; --y) {
-      if (mpv.mask[screen_x - ctx_.sx_leftmost][y]) {
-        continue;
-      }
-      int v = static_cast<int>((screen_top_y - y) * delta_v + ctx_.pixel_texture_y_shift + ctx_.row_offset) // TODO:!!!
-              % texture_y_size;
-
-      //if (ctx_.texture.GetPixel(u, v, r, g, b)) {
-      //  wnd_->RenderFBPoint(screen_x, y, r, g, b);
-      //}
-      uint32_t c = ctx_.texture.GetPixel(u, v);
-      wnd_->RenderFBPointAlpha(screen_x, y, c);
-    }
-  } else {
-    for (int y = low; y <= high; ++y) {
-      if (mpv.mask[screen_x - ctx_.sx_leftmost][y]) {
-        continue;
-      }
-      int v = static_cast<int>((y - screen_bottom_y) * delta_v + ctx_.pixel_texture_y_shift + ctx_.row_offset) % texture_y_size;
-
-      //if (ctx_.texture.GetPixel(u, texture_y_size - v - 1, r, g, b)) {
-      //  wnd_->RenderFBPoint(screen_x, y, r, g, b);
-      //}
-      uint32_t c = ctx_.texture.GetPixel(u, texture_y_size - v - 1);
-      wnd_->RenderFBPointAlpha(screen_x, y, c);
-    }
-  }
-
-}
-
 void Renderer::TexurizeBottomFragment(int left, int right) {
   for (int x = left; x <= right; ++x) {
     // Screen top and bottom ends of current column
@@ -970,23 +679,6 @@ void Renderer::TexurizeTopFragment(int left, int right) {
     }
 
     UpdateCeiling(x, bottom);
-  }
-}
-
-void Renderer::TexurizeMidFragment(MidPortalVisplane& mpv) {
-  ctx_ = mpv.context;
-  floor_level_ = mpv.floor_level;
-  ceiling_level_ = mpv.ceiling_level;
-
-  for (auto [left, right] : mpv.visible_fragments) {
-    for (int x = left; x <= right; ++x) {
-      // Screen top and bottom ends of current column
-      int top = ctx_.mid_dy_top * (x - ctx_.sx_leftmost) + ctx_.mid_y_top;
-      int bottom = ctx_.mid_dy_bottom * (x - ctx_.sx_leftmost) + ctx_.mid_y_bottom;
-  
-      DrawMaskedColumn(x, top, bottom, !(ctx_.line_def_flags & world::kLDFLowerUnpegged), 
-        mpv);
-    }
   }
 }
 
@@ -1051,9 +743,6 @@ void Renderer::AddVisplane(std::unique_ptr<Visplane>& vs) {
 }
 
 int Renderer::ScreenXtoTextureU(int sx) {
-  // TODO: add length of line part out of FOV!!!!
-  //return ctx_.delta_u * (sx - ctx_.sx_leftmost) /*+ ctx_.bsp_segment->offset*/;
-
   double a = (sx - ctx_.sx_leftmost) / (ctx_.sx_rightmost - ctx_.sx_leftmost + 1.0);
 
   int ret = (a * ctx_.segment_len / ctx_.right_distance) / ((1 - a) / ctx_.left_distance + a / ctx_.right_distance);
@@ -1071,14 +760,8 @@ void Renderer::ClearRenderer() {
   floor_level_.fill(-1);
   ceiling_level_.fill(kScreenYResolution);
 
-  mid_portals_.clear();
-  //vissprites_.clear();
-
   // visible_fragments_
    visplanes_.clear();
-  // top_visplane_
-  // bottom_visplane_
-  // vsp_ranges_
 
   top_clip_.assign(top_clip_.size(), kScreenYResolution);
   bottom_clip_.assign(bottom_clip_.size(), -1);
@@ -1086,8 +769,6 @@ void Renderer::ClearRenderer() {
 }
 
 bool Renderer::FillMobjMaskedObject(MaskedObject& msk, const mobj::MapObject* mobj) {
-    //int width = mobj->radius;
-    // msk.height = mobj->height;
     msk.z = mobj->z;
 
     auto texture_name = mobj->GetSpriteName(vp_.angle);
@@ -1132,7 +813,6 @@ bool Renderer::FillMobjMaskedObject(MaskedObject& msk, const mobj::MapObject* mo
 }
 
 bool Renderer::FillPortalMaskedObject(MaskedObject& msk, int left, int right) {
-//  msk.texture_name = ctx_.mid_texture;
   msk.texture = gm_->GetTexture(ctx_.mid_texture);
 
   msk.z = std::max(ctx_.back_floor_height, ctx_.front_floor_height);
