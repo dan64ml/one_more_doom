@@ -14,6 +14,20 @@ std::optional<mobj::MapObject> MobjFactory::Create(int type) {
   return {obj};
 }
 
+std::optional<mobj::MapObject> MobjFactory::Create(const wad::WadMapThing& thing) {
+  if (mobjs_info_.count(thing.type) == 0) {
+    return {};
+  }
+
+  mobj::MapObject obj(mobjs_info_.at(thing.type));
+  obj.x = thing.x;
+  obj.y = thing.y;
+
+  obj.angle = rend::DegreesToBam(thing.angle);
+
+  return {obj};
+}
+
 std::unordered_map<int, id::mobjinfo_t> Fill() {
   std::unordered_map<int, id::mobjinfo_t> ret;
   for (int i = 0; i < NUMMOBJTYPES; ++i) {

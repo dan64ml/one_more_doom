@@ -241,10 +241,12 @@ void World::CreateMapObjectList(std::ifstream& fin) {
     if (items[i].type == 1) {
       // create player
     } else {
-      auto mobj = spawner_.Create(items[i].type);
+      //auto mobj = spawner_.Create(items[i].type);
+      auto mobj = spawner_.Create(items[i]);
       if (mobj) {
         // TODO: move??
-        PutMobjOnMap(mobj.value(), items[i].x, items[i].y, items[i].angle);
+        //PutMobjOnMap(mobj.value(), items[i].x, items[i].y, items[i].angle);
+        PutMobjOnMap(mobj.value());
       }
     }
 
@@ -280,18 +282,30 @@ void World::CreateMapObjectList(std::ifstream& fin) {
   }
 }
 
-void World::PutMobjOnMap(mobj::MapObject obj, int x, int y, int degree_angle) {
-  obj.x = x;
-  obj.y = y;
-
+//void World::PutMobjOnMap(mobj::MapObject obj, int x, int y, int degree_angle) {
+//  obj.x = x;
+//  obj.y = y;
+//
+//  int ss_idx = bsp_.GetSubSectorIdx(obj.x, obj.y);
+//  obj.floor_z = obj.z = sub_sectors_[ss_idx].sector->floor_height;
+//
+//  obj.angle = rend::DegreesToBam(degree_angle);
+//
+//  obj.world_ = this;
+//
+//  mobjs_.push_back(obj);
+//  sub_sectors_[ss_idx].mobjs.push_back(&mobjs_.back());
+//  // TODO: block_map_
+//}
+void World::PutMobjOnMap(mobj::MapObject obj) {
   int ss_idx = bsp_.GetSubSectorIdx(obj.x, obj.y);
   obj.floor_z = obj.z = sub_sectors_[ss_idx].sector->floor_height;
 
-  obj.angle = rend::DegreesToBam(degree_angle);
+  obj.ss = &sub_sectors_[ss_idx];
 
   obj.world_ = this;
 
-  mobjs_.push_back(obj);
+  mobjs_.push_back(std::move(obj));
   sub_sectors_[ss_idx].mobjs.push_back(&mobjs_.back());
   // TODO: block_map_
 }

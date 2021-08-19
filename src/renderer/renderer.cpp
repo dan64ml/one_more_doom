@@ -761,7 +761,7 @@ void Renderer::ClearRenderer() {
   ceiling_level_.fill(kScreenYResolution);
 
   // visible_fragments_
-   visplanes_.clear();
+  visplanes_.clear();
 
   top_clip_.assign(top_clip_.size(), kScreenYResolution);
   bottom_clip_.assign(bottom_clip_.size(), -1);
@@ -769,8 +769,6 @@ void Renderer::ClearRenderer() {
 }
 
 bool Renderer::FillMobjMaskedObject(MaskedObject& msk, const mobj::MapObject* mobj) {
-    msk.z = mobj->z;
-
     auto texture_name = mobj->GetSpriteName(vp_.angle);
     msk.texture = gm_->GetSpriteEx(texture_name);
     // TODO: handle with strange texture frame indexes
@@ -780,6 +778,12 @@ bool Renderer::FillMobjMaskedObject(MaskedObject& msk, const mobj::MapObject* mo
     
     msk.width = msk.texture.GetXSize();
     msk.height = msk.texture.GetYSize();
+
+    if (mobj->flags & mobj::MF_SPAWNCEILING) {
+      msk.z = mobj->ss->sector->ceiling_height - msk.height;
+    } else {
+      msk.z = mobj->z;
+    }
 
     auto angle = CalcAngle(vp_.x, vp_.y, mobj->x, mobj->y);
     int dx = msk.width * BamCos(kBamAngle90 - angle);

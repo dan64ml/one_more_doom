@@ -8,6 +8,7 @@
 
 #include "map_object.h"
 #include "world/world_types.h"
+#include "world/wad_raw_types.h"
 
 namespace id {
 
@@ -16,6 +17,7 @@ class MobjFactory {
   MobjFactory() = default;
 
   std::optional<mobj::MapObject> Create(int type);
+  std::optional<mobj::MapObject> Create(const wad::WadMapThing& thing);
 
  private:
   static std::unordered_map<int, id::mobjinfo_t> mobjs_info_;
