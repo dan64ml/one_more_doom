@@ -17,7 +17,7 @@ void AppClass::InitInstance() {
   gm_.Load("/home/dan/tmp/DOOM2.WAD");
 //  gm_.Load("/home/dan/tmp/Wads/Doom1.WAD");
 
-  int level = 12; // 12 - wide open space
+  int level = 25; // 12 - wide open space
 
   world_.OpenWad("/home/dan/tmp/DOOM2.WAD");
   world_.LoadLevel(level); // 10 - wrong portal // 11 - wrong torch // 16 flying torch // 29 animated wall

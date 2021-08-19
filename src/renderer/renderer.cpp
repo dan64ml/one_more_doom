@@ -71,7 +71,8 @@ void Renderer::RenderMasked() {
 void Renderer::DrawMaskedObject(const MaskedObject& msk) {
   FillContextFromMasked(msk);
 
-  for (int x = ctx_.sx_leftmost; x <= ctx_.sx_rightmost; ++x) {
+//  for (int x = ctx_.sx_leftmost; x <= ctx_.sx_rightmost; ++x) {
+  for (int x = msk.left; x <= msk.right; ++x) {
     if (msk.top_clip[x - ctx_.sx_leftmost] == -1) {
       continue;
     }
@@ -1100,8 +1101,6 @@ bool Renderer::FillMobjMaskedObject(MaskedObject& msk, const mobj::MapObject* mo
     msk.height = msk.texture.GetYSize();
 
     auto angle = CalcAngle(vp_.x, vp_.y, mobj->x, mobj->y);
-//    int dx = 26 * BamCos(kBamAngle90 - angle);
-//    int dy = 26 * BamSin(kBamAngle90 - angle);
     int dx = msk.width * BamCos(kBamAngle90 - angle);
     int dy = msk.width * BamSin(kBamAngle90 - angle);
     
@@ -1123,6 +1122,9 @@ bool Renderer::FillMobjMaskedObject(MaskedObject& msk, const mobj::MapObject* mo
     msk.sx_leftmost = bam_to_screen_x_table_[p1.angle];
     msk.sx_rightmost = bam_to_screen_x_table_[p2.angle];
 
+    msk.left = msk.sx_leftmost;
+    msk.right = msk.sx_rightmost;
+
     msk.top_clip.assign(msk.sx_rightmost - msk.sx_leftmost + 1, kScreenYResolution);
     msk.bottom_clip.assign(msk.sx_rightmost - msk.sx_leftmost + 1, -1);
 
@@ -1141,8 +1143,11 @@ bool Renderer::FillPortalMaskedObject(MaskedObject& msk, int left, int right) {
   msk.p2 = ctx_.p2;
 
   // Data to calculate screen coordinates (screen x of seg's ends)
-  msk.sx_leftmost = left;
-  msk.sx_rightmost = right;
+  msk.sx_leftmost = ctx_.sx_leftmost;
+  msk.sx_rightmost = ctx_.sx_rightmost;
+
+  msk.left = left;
+  msk.right = right;
 
   msk.full_offset = ctx_.full_offset;
 

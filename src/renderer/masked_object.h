@@ -23,6 +23,9 @@ struct MaskedObject {
   int sx_leftmost;
   int sx_rightmost;
 
+  int left;
+  int right;
+
   // Distance from the start of sprite to the leftmost visible point
   // or the same parametr from contex for a portal
   int full_offset;
