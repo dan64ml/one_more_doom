@@ -6,6 +6,7 @@
 
 #include "world/world.h"
 #include "utils/plane_utils.h"
+#include "renderer/plane_utils.h"
 
 #define DEBUG_CODE
 
@@ -26,8 +27,17 @@ MapObject::MapObject(const id::mobjinfo_t& info) : fsm_(info) {
   radius = info.radius;
 }
 
-std::string MapObject::GetSpriteName(rend::BamAngle vp_angle) const {
-  return fsm_.GetSpriteName() + "1";
+std::string MapObject::GetSpriteName(int vp_x, int vp_y) const {
+  auto vp_angle = rend::CalcAngle(x, y, vp_x, vp_y);
+
+  rend::BamAngle da = (vp_angle - (rend::BamAngle)(angle - rend::kBamAngle45 / 2));
+  int sector = da / rend::kBamAngle45;
+  ++sector;
+  if (sector > 8) {
+    sector -= 8;
+  }
+
+  return fsm_.GetSpriteName() + std::to_string(sector);
 }
 
 bool MapObject::TickTime() {

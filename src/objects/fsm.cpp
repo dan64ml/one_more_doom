@@ -1,6 +1,7 @@
 #include "fsm.h"
 
 #include <cassert>
+#include <limits>
 
 namespace mobj {
 

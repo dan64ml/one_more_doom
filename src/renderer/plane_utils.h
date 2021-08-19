@@ -23,6 +23,9 @@ struct DPoint {
   DPoint(T x, T y, BamAngle a) : x(x), y(y), angle(a) {}
 };
 
+// Returns angle between OX and the line
+BamAngle CalcAngle(int from_x, int from_y, int to_x, int to_y);
+
 // Return coordinates of visible segment's ends with angles from view point !relative to right
 // border of FOV!
 // If segment is invisible return {false, 0, 0}

@@ -769,7 +769,7 @@ void Renderer::ClearRenderer() {
 }
 
 bool Renderer::FillMobjMaskedObject(MaskedObject& msk, const mobj::MapObject* mobj) {
-    auto texture_name = mobj->GetSpriteName(vp_.angle);
+    auto texture_name = mobj->GetSpriteName(vp_.x, vp_.y);
     msk.texture = gm_->GetSpriteEx(texture_name);
     // TODO: handle with strange texture frame indexes
     if (!msk.texture) {

@@ -291,9 +291,13 @@ void World::PutMobjOnMap(mobj::MapObject obj) {
   obj.world_ = this;
 
   mobjs_.push_back(std::move(obj));
-  sub_sectors_[ss_idx].mobjs.push_back(&mobjs_.back());
+  if (!(obj.flags & mobj::MF_NOSECTOR)) {
+    sub_sectors_[ss_idx].mobjs.push_back(&mobjs_.back());
+  }
 
-  blocks_.AddMapObject(&mobjs_.back());
+  if (!(obj.flags & mobj::MF_NOBLOCKMAP)) {
+    blocks_.AddMapObject(&mobjs_.back());
+  }
 }
 
 } // namespace world

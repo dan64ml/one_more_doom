@@ -75,7 +75,7 @@ void GraphicsManager::LoadSpriteEntry(std::ifstream& fin, const wad::WadDirector
   }
 
   const std::string name = wad::to_string<8>(entry.name);
-//  std::cout << name << std::endl;
+//    std::cout << name << std::endl;
 
   auto buf = std::unique_ptr<char[]>(new char[entry.size]);
   fin.seekg(entry.offset);
@@ -106,7 +106,25 @@ void GraphicsManager::LoadSpriteEntry(std::ifstream& fin, const wad::WadDirector
     }
   }
 
-  sprites_.insert({name, ret});
+  if (name.size() == 8) {
+    //std::cout << name << std::endl;
+    sprites_.insert({name.substr(0, 6), ret});
+    MirrorSprite(ret);
+    sprites_.insert({name.substr(0, 4) + name.substr(6, 2), ret});
+  } else {
+    sprites_.insert({name, ret});
+  }
+}
+
+void GraphicsManager::MirrorSprite(PixelPicture& sp) {
+  for (int i = 0; i < sp.width / 2; ++i) {
+    for (int j = 0; j < sp.height; ++j) {
+      int left_idx = i + j * sp.width;
+      int right_idx = (sp.width - i - 1) + j * sp.width;
+
+      std::swap(sp.pixels[left_idx], sp.pixels[right_idx]);
+    }
+  }
 }
 
 void GraphicsManager::LoadFlatEntry(std::ifstream& fin, const wad::WadDirectoryEntry& entry) {

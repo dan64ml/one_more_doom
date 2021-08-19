@@ -90,6 +90,8 @@ class GraphicsManager {
   void LoadFlatEntry(std::ifstream& fin, const wad::WadDirectoryEntry& entry);
   void LoadSpriteEntry(std::ifstream& fin, const wad::WadDirectoryEntry& entry);
 
+  void MirrorSprite(PixelPicture& sp);
+
   const PatchRaw* GetRawPatchByIdx(int idx) const;
 
   PixelPicture LoadWallTexture(std::string name);

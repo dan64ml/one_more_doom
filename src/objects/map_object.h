@@ -63,9 +63,12 @@ struct MapObject {
 
   world::World* world_;
 
+  // For debug
+  int type;
+
   bool TickTime();
 
-  std::string GetSpriteName(rend::BamAngle vp_angle) const;
+  std::string GetSpriteName(int vp_x, int vp_y) const;
 
  private:
   struct Opening {

@@ -25,6 +25,8 @@ std::optional<mobj::MapObject> MobjFactory::Create(const wad::WadMapThing& thing
 
   obj.angle = rend::DegreesToBam(thing.angle);
 
+  obj.type = thing.type;
+  
   return {obj};
 }
 
