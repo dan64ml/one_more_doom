@@ -41,8 +41,8 @@ MobjRange BlockMap::GetMapObjects(const BBox& bbox) {
   
   if (left_idx < 0) left_idx = 0;
   if (right_idx >= (int)blocks_.front().size()) right_idx = blocks_.front().size() - 1;
-  if (top_idx < 0) top_idx = 0;
-  if (bottom_idx >= (int)blocks_.size()) bottom_idx = blocks_.size() - 1;
+  if (top_idx >= (int)blocks_.size()) top_idx = blocks_.size() - 1;
+  if (bottom_idx < 0) bottom_idx = 0;
 
   for (int i = bottom_idx; i <= top_idx; ++i) {
     for (int j = left_idx; j <= right_idx; ++j) {
@@ -62,8 +62,8 @@ LineRange BlockMap::GetLines(const BBox& bbox) {
   
   if (left_idx < 0) left_idx = 0;
   if (right_idx >= (int)blocks_.front().size()) right_idx = blocks_.front().size() - 1;
-  if (top_idx < 0) top_idx = 0;
-  if (bottom_idx >= (int)blocks_.size()) bottom_idx = blocks_.size() - 1;
+  if (top_idx >= (int)blocks_.size()) top_idx = blocks_.size() - 1;
+  if (bottom_idx < 0) bottom_idx = 0;
 
   for (int i = bottom_idx; i <= top_idx; ++i) {
     for (int j = left_idx; j <= right_idx; ++j) {

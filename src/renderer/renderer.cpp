@@ -339,12 +339,17 @@ void Renderer::DrawSky(const Visplane& vs) {
   texture.SetLightLevel(0);
 
   for (int i = vs.min_x; i <= vs.max_x; ++i) {
+    if (vs.bottom[i] == -1) {
+      continue;
+    }
     BamAngle da = kBamAngle90 - vp_.angle;
     int shift = (kScreenXResolution / static_cast<double>(kBamAngle90)) * da;
 
     int u = ((i + shift) / kScaleCoef) % 256;
 
     for (int j = vs.bottom[i]; j <= vs.top[i]; ++j) {
+      assert(j >= 0);
+      assert(j < kScreenYResolution);
       int v = (kScreenYResolution - j - 1) / kScaleCoef;
       uint32_t color = texture.GetPixel(u, v);
       wnd_->RenderFBPointAlpha(i, j, color);
@@ -502,6 +507,14 @@ void Renderer::RenderWalls() {
   }
 }
 
+#ifdef DEBUG_VISPLANES
+  void Renderer::CheckVisplane(const Visplane& vs) {
+    for (int i = vs.min_x; i <= vs.max_x; ++i) {
+      //assert(vs.bottom[i] )
+    }
+  }
+#endif
+
 void Renderer::FillSegmentContext(const world::Segment* bsp_segment, const DPoint& left, const DPoint& right) {
   ctx_.p1 = left;
   ctx_.p2 = right;
@@ -546,6 +559,7 @@ void Renderer::FillSegmentContext(const world::Segment* bsp_segment, const DPoin
   } else {
     ctx_.back_ceiling_height = bsp_segment->linedef->sides[bsp_segment->side ^ 1]->sector->ceiling_height;
     ctx_.back_floor_height = bsp_segment->linedef->sides[bsp_segment->side ^ 1]->sector->floor_height;
+    ctx_.back_ceiling_pic = bsp_segment->linedef->sides[bsp_segment->side ^ 1]->sector->ceiling_pic;
 
     // Data to calculate screen coordinates 
     if (ctx_.front_ceiling_height > ctx_.back_ceiling_height) {
@@ -730,6 +744,10 @@ void Renderer::TexurizePortal() {
   ctx_.pixel_height = abs(ctx_.front_ceiling_height - ctx_.back_ceiling_height);
   ctx_.pixel_texture_y_shift = 0;
   for (auto [left, right] : visible_fragments_) {
+    // hack for sky
+    if (ctx_.front_ceiling_pic == "F_SKY1" && ctx_.back_ceiling_pic == "F_SKY1") {
+      continue;
+    }
     TexurizeTopFragment(left, right);
     CheckOpening(left, right);
   }

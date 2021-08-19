@@ -94,7 +94,7 @@ void World::TickTime() {
   player_.TickTime();
 
   for (auto& mobj : mobjs_) {
-    //mobj.TickTime();
+    mobj.TickTime();
   }
 }
 
@@ -285,7 +285,7 @@ void World::PutMobjOnMap(mobj::MapObject obj, int x, int y, int degree_angle) {
   obj.y = y;
 
   int ss_idx = bsp_.GetSubSectorIdx(obj.x, obj.y);
-  obj.z = sub_sectors_[ss_idx].sector->floor_height;
+  obj.floor_z = obj.z = sub_sectors_[ss_idx].sector->floor_height;
 
   obj.angle = rend::DegreesToBam(degree_angle);
 

@@ -15,11 +15,12 @@ void AppClass::InitInstance() {
   //map_.Open("/usr/share/games/doom/freedoom1.wad");
   
   gm_.Load("/home/dan/tmp/DOOM2.WAD");
+//  gm_.Load("/home/dan/tmp/Wads/Doom1.WAD");
 
-  int level = 0;
+  int level = 12; // 12 - wide open space
 
   world_.OpenWad("/home/dan/tmp/DOOM2.WAD");
-  world_.LoadLevel(level); // 10 - wrong portal // 11 - wrong torch // 16 flying torch //27
+  world_.LoadLevel(level); // 10 - wrong portal // 11 - wrong torch // 16 flying torch // 29 animated wall
   player_ = world_.GetPlayer();
 
   renderer_.SetDrawWindow(&wnd_);

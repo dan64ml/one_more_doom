@@ -14,6 +14,12 @@
 #include "plane_utils.h"
 #include "masked_object.h"
 
+#define DEBUG_CODE
+
+#ifdef DEBUG_CODE
+  #define DEBUG_VISPLANES
+#endif
+
 namespace rend {
 
 const int kScaleCoef = 8;
@@ -98,6 +104,8 @@ struct SegmentRendContext {
   // Texture names for top and bottom parts of the portal
   std::string top_texture;
   std::string bottom_texture;
+
+  std::string back_ceiling_pic;
 
   // Precalculated coefs for bottom part of portals
   int bottom_y_top;
@@ -303,6 +311,10 @@ class Renderer {
   // Idea: Object list contains sprites and portals: [sprites from a sector][portals of a sector] ... [s][p]
   // We have to sort sprites by distance in each sector group, but we must NOT touch the order of groups.
   void SortMaskedObjects();
+
+#ifdef DEBUG_VISPLANES
+  void CheckVisplane(const Visplane& vs);
+#endif
 };
 
 } // namespace rend
