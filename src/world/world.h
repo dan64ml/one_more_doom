@@ -29,8 +29,8 @@ class World {
 
   const wad::FastBsp* GetBsp() const { return &bsp_; };
 
-  //const mobj::Player* GetPlayer() const { return &player_; };
-  mobj::Player* GetPlayer() { return &player_; };
+  mobj::Player* GetPlayer() { return reinterpret_cast<mobj::Player*>(player_.get()); };
+//  mobj::MapObject* GetPlayer() { return player_.get(); };
 
  private:
   std::string wad_file_name_;
@@ -48,7 +48,8 @@ class World {
   
   BlockMap blocks_;
 
-  mobj::Player player_ {this};
+  //mobj::Player player_ {this};
+  std::unique_ptr<mobj::MapObject> player_;
 
   id::MobjFactory spawner_;
 

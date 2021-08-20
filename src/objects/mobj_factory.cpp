@@ -1,6 +1,7 @@
 #include "mobj_factory.h"
 
 #include "map_object.h"
+#include "player.h"
 
 namespace id {
 
@@ -28,6 +29,18 @@ std::optional<mobj::MapObject> MobjFactory::Create(const wad::WadMapThing& thing
   obj.type = thing.type;
   
   return {obj};
+}
+
+std::unique_ptr<mobj::MapObject> MobjFactory::CreatePlayer(const wad::WadMapThing& thing) {
+  std::unique_ptr<mobj::MapObject> ret(new mobj::Player(mobjinfo[id::MT_PLAYER]));
+  
+  ret->x = thing.x;
+  ret->y = thing.y;
+  
+  ret->angle = rend::DegreesToBam(thing.angle);
+  ret->type = thing.type;
+  
+  return ret;
 }
 
 std::unordered_map<int, id::mobjinfo_t> Fill() {

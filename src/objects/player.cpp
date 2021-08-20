@@ -19,4 +19,8 @@ void Player::Move(rend::BamAngle delta_angle, double forward_move, double side_m
   mom_y += dy;
 }
 
+bool Player::RunIntoAction() {
+  return true;
+}
+
 } // namespace mobj

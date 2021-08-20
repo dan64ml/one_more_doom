@@ -8,9 +8,12 @@ namespace mobj {
 
 class Player : public MapObject {
  public:
-  Player(world::World* world) : MapObject(world) {}
+  Player(const id::mobjinfo_t& info) : MapObject(info) {}
   
   void Move(rend::BamAngle delta_angle, double forward_move, double side_move);
+ 
+ private:
+  virtual bool RunIntoAction() override;
 };
 
 } // namespace mobj

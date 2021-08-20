@@ -3,6 +3,7 @@
 
 #include <unordered_map>
 #include <optional>
+#include <memory>
 
 #include "info.h"
 
@@ -18,6 +19,7 @@ class MobjFactory {
 
   std::optional<mobj::MapObject> Create(int type);
   std::optional<mobj::MapObject> Create(const wad::WadMapThing& thing);
+  std::unique_ptr<mobj::MapObject> CreatePlayer(const wad::WadMapThing& thing);
 
  private:
   static std::unordered_map<int, id::mobjinfo_t> mobjs_info_;

@@ -27,7 +27,7 @@ Need access to:
 ===========================================================================*/
 struct MapObject {
  public:
-  MapObject(world::World* world) : world_(world) {}
+  //MapObject(world::World* world) : world_(world) {}
   MapObject(const id::mobjinfo_t& info);
 
   // World coordinates of the object
@@ -79,19 +79,7 @@ struct MapObject {
     world::SubSector* ss;
   };
   
- private:
-  void MoveObject();
-  void XYMove();
-  // It looks like a candidate to be virtual...
-  void ZMove();
-
-  // Check the position, interact with items and move
-  // the object to the new position if possible (and return true)
-  // false if moving impossible
-  bool TryMoveTo(int new_x, int new_y);
-  // Iterates over all mobjs and lines in current and adjacent BlockMaps
-  bool CheckPosition(int new_x, int new_y, Opening& op);
-
+ protected:
   // Invoked if the object run into sth. XYMove() will be interrupted
   // immediately if return false.
   // Defines common action after hit, e.g. sliding for player, missile explosion etc...
@@ -105,6 +93,19 @@ struct MapObject {
   // Applied to each crossed line until return false.
   // False means it's impossible to cross the line.
   virtual bool ProcessLine(const world::Line* line);
+
+ private:
+  void MoveObject();
+  void XYMove();
+  // It looks like a candidate to be virtual...
+  void ZMove();
+
+  // Check the position, interact with items and move
+  // the object to the new position if possible (and return true)
+  // false if moving impossible
+  bool TryMoveTo(int new_x, int new_y);
+  // Iterates over all mobjs and lines in current and adjacent BlockMaps
+  bool CheckPosition(int new_x, int new_y, Opening& op);
 
   void UpdateOpening(Opening& op, const world::Line* line);
   // Change current subsector

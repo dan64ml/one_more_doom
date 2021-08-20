@@ -91,7 +91,7 @@ void World::LoadLevel(size_t level) {
 }
 
 void World::TickTime() {
-  player_.TickTime();
+  player_->TickTime();
 
   for (auto& mobj : mobjs_) {
     mobj.TickTime();
@@ -240,44 +240,20 @@ void World::CreateMapObjectList(std::ifstream& fin) {
   for (size_t i = 0; i < len; ++i) {
     if (items[i].type == 1) {
       // create player
+      player_ = spawner_.CreatePlayer(items[i]);
+
+      int ss_idx = bsp_.GetSubSectorIdx(player_->x, player_->y);
+      player_->floor_z = player_->z = sub_sectors_[ss_idx].sector->floor_height;
+      player_->ss = &sub_sectors_[ss_idx];
+
+      player_->angle = rend::DegreesToBam(items[i].angle);
+      player_->world_ = this;
     } else {
-      //auto mobj = spawner_.Create(items[i].type);
       auto mobj = spawner_.Create(items[i]);
       if (mobj) {
         // TODO: move??
-        //PutMobjOnMap(mobj.value(), items[i].x, items[i].y, items[i].angle);
         PutMobjOnMap(mobj.value());
       }
-    }
-
-    // TODO: create MapObject
-    if (items[i].type == 1) {
-      player_.x = items[i].x;
-      player_.y = items[i].y;
-
-      int ss_idx = bsp_.GetSubSectorIdx(player_.x, player_.y);
-      player_.floor_z = player_.z = sub_sectors_[ss_idx].sector->floor_height;
-      player_.ss = &sub_sectors_[ss_idx];
-      player_.radius = 16;
-
-      player_.flags = mobj::MF_SOLID | mobj::MF_DROPOFF;
-      player_.height = 56;
-
-      player_.angle = rend::DegreesToBam(items[i].angle);
-    } else if (items[i].type == 45 || items[i].type == 46) {
-    //  mobj::MapObject torch(this);
-    //  torch.x = items[i].x;
-    //  torch.y = items[i].y;
-//
-    //  //torch.height = 
-//
-    //  int ss_idx = bsp_.GetSubSectorIdx(torch.x, torch.y);
-    //  torch.z = sub_sectors_[ss_idx].sector->floor_height;
-//
-    //  //torch.texture = "TGRNA0";
-//
-    //  mobjs_.push_back(torch);
-    //  sub_sectors_[ss_idx].mobjs.push_back(&mobjs_.back());
     }
   }
 }
