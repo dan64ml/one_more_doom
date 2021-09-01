@@ -34,6 +34,8 @@ void GraphicsManager::Load(const std::string& wad_file) {
 
   const wad::WadDirectoryEntry* directory = reinterpret_cast<wad::WadDirectoryEntry*>(buf.get());
   for (int i = 0; i < header.num_directories; ++i) {
+//    const std::string name = wad::to_string<8>(directory[i].name);
+//    std::cout << name << "     " << directory[i].size << std::endl;
     if (wad::strcmp<8>(directory[i].name, "P_START")) {
       // Zero-sized lump marking the beginning of wall patches
       while (!wad::strcmp<8>(directory[++i].name, "P_END")) {
@@ -61,6 +63,13 @@ void GraphicsManager::Load(const std::string& wad_file) {
       }
     } else if (wad::strcmp<8>(directory[i].name, "STBAR")) {
       LoadSpriteEntry(fin, directory[i]);
+    } else if (wad::strcmp<2>(directory[i].name, "ST")) {
+      LoadSTBarEntry(fin, directory[i]);
+      //const std::string name = wad::to_string<8>(directory[i].name);
+      //std::cout << name << std::endl;
+    } else {
+      const std::string name = wad::to_string<8>(directory[i].name);
+//      std::cout << name << std::endl;
     }
   }
 
@@ -69,13 +78,55 @@ void GraphicsManager::Load(const std::string& wad_file) {
   }
 }
 
+void GraphicsManager::LoadSTBarEntry(std::ifstream& fin, const wad::WadDirectoryEntry& entry) {
+  const std::string name = wad::to_string<8>(entry.name);
+
+  auto buf = std::unique_ptr<char[]>(new char[entry.size]);
+  fin.seekg(entry.offset);
+  fin.read(buf.get(), entry.size);
+
+  auto texture = CreatePixelPicture(buf.get());
+
+  //if (texture) {
+    stbar_[name] = std::move(texture);
+  //}
+}
+
+PixelPicture GraphicsManager::CreatePixelPicture(const char* buf) {
+  const PatchRaw* patch = reinterpret_cast<const PatchRaw*>(buf);
+  
+  PixelPicture ret;
+  ret.height = patch->height;
+  ret.width = patch->width;
+  ret.pixels.assign(patch->width * patch->height, kTransparentColor);
+
+  for (int x = 0; x < patch->width; ++x) {
+    int column_offset = patch->columnofs[x];
+    const uint8_t* posts_data = reinterpret_cast<const uint8_t*>(patch) + column_offset;
+
+    while (*posts_data != 0xff) {
+      int offset = *posts_data;
+      int len = *(posts_data + 1);
+
+      posts_data += 3;
+      for (int i = 0; i < len; ++i) {
+        int idx = x + (offset + i ) * patch->width;
+        ret.pixels[idx] = *posts_data;
+        ++posts_data;
+      }
+      ++posts_data;
+    }
+  }
+
+  return ret;
+}
+
 void GraphicsManager::LoadSpriteEntry(std::ifstream& fin, const wad::WadDirectoryEntry& entry) {
   if (entry.size == 0) {
     return;
   }
 
   const std::string name = wad::to_string<8>(entry.name);
-//    std::cout << name << std::endl;
 
   auto buf = std::unique_ptr<char[]>(new char[entry.size]);
   fin.seekg(entry.offset);
@@ -236,6 +287,15 @@ Texture GraphicsManager::GetSprite(std::string sprite_name) const {
     return {};
   } else {
     return {this, &sprites_.at(sprite_name)};
+  }
+}
+
+Texture GraphicsManager::GetSTBarElement(std::string element_name) const {
+  if (stbar_.count(element_name) == 0) {
+    //std::cout << "Sprite " + sprite_name + " not found!" << std::endl;
+    return {};
+  } else {
+    return {this, &stbar_.at(element_name)};
   }
 }
 

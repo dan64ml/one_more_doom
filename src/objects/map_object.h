@@ -29,6 +29,8 @@ struct MapObject {
  public:
   //MapObject(world::World* world) : world_(world) {}
   MapObject(const id::mobjinfo_t& info);
+  MapObject() {}  // TODO!!!!!
+  MapObject(id::mobjtype_t type) {}  // TODO!!!!!
 
   // World coordinates of the object
   int x;

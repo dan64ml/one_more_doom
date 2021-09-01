@@ -31,8 +31,8 @@ std::optional<mobj::MapObject> MobjFactory::Create(const wad::WadMapThing& thing
   return {obj};
 }
 
-std::unique_ptr<mobj::MapObject> MobjFactory::CreatePlayer(const wad::WadMapThing& thing) {
-  std::unique_ptr<mobj::MapObject> ret(new mobj::Player(mobjinfo[id::MT_PLAYER]));
+std::unique_ptr<mobj::Player> MobjFactory::CreatePlayer(const wad::WadMapThing& thing) {
+  std::unique_ptr<mobj::Player> ret(new mobj::Player(mobjinfo[id::MT_PLAYER]));
   
   ret->x = thing.x;
   ret->y = thing.y;

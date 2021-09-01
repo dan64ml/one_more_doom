@@ -36,6 +36,7 @@ void Renderer::RenderScene(const wad::FastBsp* bsp, const graph::GraphicsManager
   RenderWalls();
   RenderFlats();
   RenderMasked();
+  RenderStatusBar(player);
 
   auto finish = std::chrono::steady_clock::now();
   auto dur = finish - start;
@@ -44,6 +45,47 @@ void Renderer::RenderScene(const wad::FastBsp* bsp, const graph::GraphicsManager
   wnd_->PrintString("msec = " + std::to_string(msec) + ", fps = " + std::to_string(1000 / msec));
 
   wnd_->ShowFBRender();
+}
+
+void Renderer::RenderStatusBar(const mobj::Player* player) {
+  auto bar = gm_->GetSprite("STBAR");
+
+  auto arms_name = player->GetWeaponSprite();
+  auto ext = gm_->GetSprite(arms_name);
+  
+  //auto ext = gm_->GetSprite("PISFA0");
+  //auto ext = gm_->GetSprite("SHTGA0");
+  //auto ext = gm_->GetSprite("SHTFA0");
+  
+  //auto ext = gm_->GetSprite("PLSGA0");
+  //auto ext = gm_->GetSprite("PLSFB0");
+  //auto ext = gm_->GetSprite("PLSSB0");
+
+  //auto ext = gm_->GetSTBarElement("STFTL00");
+  
+//  auto name = player->GetSpriteName(vp_.x, vp_.y);
+//  auto ext = gm_->GetSprite(name);
+
+  int ext_y_size = ext.GetYSize() * rend::kScaleCoef;
+
+  int x_shift = (160 - ext.GetXSize() / 2) * rend::kScaleCoef;
+  //int y_shift = 32 * rend::kScaleCoef;
+  int y_shift = 16 * rend::kScaleCoef;
+
+  for (int i = 0; i < ext_y_size; ++i) {
+    for (int j = 0; j < ext.GetXSize() * rend::kScaleCoef; ++j) {
+      uint32_t color = ext.GetPixel(j / rend::kScaleCoef, i / rend::kScaleCoef);
+      wnd_->RenderFBPointAlpha(j + x_shift, ext_y_size - i - 1 + y_shift, color);
+    }
+  }
+
+  int bar_y_size = bar.GetYSize() * rend::kScaleCoef;
+  for (int i = 0; i < bar_y_size; ++i) {
+    for (int j = 0; j < bar.GetXSize() * rend::kScaleCoef; ++j) {
+      uint32_t color = bar.GetPixel(j / rend::kScaleCoef, i / rend::kScaleCoef);
+      wnd_->RenderFBPointAlpha(j, bar_y_size - i - 1, color);
+    }
+  }
 }
 
 void Renderer::RenderFlats() {

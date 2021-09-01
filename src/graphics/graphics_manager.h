@@ -42,6 +42,7 @@ class GraphicsManager {
   // trys to load texture with another last number...
   Texture GetSpriteEx(std::string sprite_name) const;
   Flat GetFlat(std::string flat_name) const;
+  Texture GetSTBarElement(std::string element_name) const;
 
  private:
   // Set of all MapTextureRaw. MapTextureRaw has variable size, so we need
@@ -59,6 +60,7 @@ class GraphicsManager {
   std::unordered_map<std::string, PixelPicture> textures2_;
   std::unordered_map<std::string, FlatPicture> flats_;
   std::unordered_map<std::string, PixelPicture> sprites_;
+  std::unordered_map<std::string, PixelPicture> stbar_;
 
   // Set VGA palettes (256 x RGB). The game uses 14 palettes.
   // #0 is default. #1 - #8 are used to indicate damage.
@@ -87,8 +89,11 @@ class GraphicsManager {
   void LoadPlayPal(std::ifstream& fin, const wad::WadDirectoryEntry& entry);
   void LoadColorMap(std::ifstream& fin, const wad::WadDirectoryEntry& entry);
 
+  PixelPicture CreatePixelPicture(const char* buf);
+
   void LoadFlatEntry(std::ifstream& fin, const wad::WadDirectoryEntry& entry);
   void LoadSpriteEntry(std::ifstream& fin, const wad::WadDirectoryEntry& entry);
+  void LoadSTBarEntry(std::ifstream& fin, const wad::WadDirectoryEntry& entry);
 
   void MirrorSprite(PixelPicture& sp);
 

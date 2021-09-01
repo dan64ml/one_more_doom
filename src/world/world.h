@@ -49,7 +49,8 @@ class World {
   BlockMap blocks_;
 
   //mobj::Player player_ {this};
-  std::unique_ptr<mobj::MapObject> player_;
+  //std::unique_ptr<mobj::MapObject> player_;
+  std::unique_ptr<mobj::Player> player_;
 
   id::MobjFactory spawner_;
 

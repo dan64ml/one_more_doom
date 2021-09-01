@@ -154,10 +154,12 @@ class Renderer {
 
  private:
   void ClearRenderer();
+
   void RenderWalls();
   void RenderFlats();
   void RenderMasked();
-
+  void RenderStatusBar(const mobj::Player* player);
+  
   // Segment can be partially closed by other elements. This foo creates a list
   // of visible fragments and some extra params. Returns false if all the segment
   // is clipped

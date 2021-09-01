@@ -1,5 +1,7 @@
 #include "player.h"
 
+#include <cassert>
+
 namespace mobj {
 
 void Player::Move(rend::BamAngle delta_angle, double forward_move, double side_move) {
@@ -17,6 +19,36 @@ void Player::Move(rend::BamAngle delta_angle, double forward_move, double side_m
 
   mom_x += dx;
   mom_y += dy;
+}
+
+void Player::Fire() {
+  auto ret = weapon_.Fire(ammo_);
+  switch (ret.index())
+  {
+  case 0:
+    if (!std::get<bool>(ret)) {
+      // change active weapon
+    }
+    break;
+  
+  case 1:
+    // process Projectile
+    break;
+
+  case 2:
+    // process Hitscan
+    break;
+
+  default:
+    // something went wrong ((
+    assert(false);
+    break;
+  }
+}
+
+bool Player::TickTime() {
+  MapObject::TickTime();
+  return weapon_.TickTime();
 }
 
 bool Player::RunIntoAction() {
