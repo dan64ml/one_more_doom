@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "ammunition.h"
+#include "projectile_params.h"
 
 namespace wpn {
 
@@ -13,8 +14,11 @@ struct PlasmaGun {
   static std::vector<std::pair<std::string, int>> fire_sprites;
 
   static bool GetAmmo(Ammo& am);
-  
+  static ProjectileParams GetShot() { return {10, 10, id::MT_PLASMA}; }
+
   static const int fire_again_idx = 1;
+
+  static const int damage = 10;
  private:
   static const int volley_ammo_number = 1;
 };

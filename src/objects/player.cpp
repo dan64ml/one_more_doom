@@ -2,6 +2,8 @@
 
 #include <cassert>
 
+#include "world/world.h"
+
 namespace mobj {
 
 void Player::Move(rend::BamAngle delta_angle, double forward_move, double side_move) {
@@ -33,6 +35,7 @@ void Player::Fire() {
   
   case 1:
     // process Projectile
+    world_->SpawnProjectile(Projectile(std::get<wpn::ProjectileParams>(ret)), this);
     break;
 
   case 2:

@@ -3,27 +3,26 @@
 
 #include <vector>
 
-#include "objects/map_object.h"
+#include "map_object.h"
+#include "weapon/projectile_params.h"
 
-namespace wpn {
+namespace mobj {
 
-class Projectile : public mobj::MapObject {
+class Projectile : public MapObject {
  public:
-  template<class T>
-  Projectile(T param);
+  Projectile(const wpn::ProjectileParams& param);
 
   bool TickTime();
 
+ protected:
+  void SlowDown() override {}
+  
  private:
   int sprite_idx_ = 0;
   int frame_count_ = 0;
   std::vector<std::pair<std::string, int>> sprites_;
 };
 
-template<class T>
-Projectile::Projectile(T param) {
-
-}
 
 } // namespace wpn
 

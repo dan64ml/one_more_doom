@@ -11,6 +11,7 @@
 
 #include "objects/player.h"
 #include "objects/mobj_factory.h"
+#include "objects/projectile.h"
 
 namespace mobj {
   class MapObject;
@@ -30,7 +31,8 @@ class World {
   const wad::FastBsp* GetBsp() const { return &bsp_; };
 
   mobj::Player* GetPlayer() { return reinterpret_cast<mobj::Player*>(player_.get()); };
-//  mobj::MapObject* GetPlayer() { return player_.get(); };
+
+  void SpawnProjectile(mobj::Projectile proj, const mobj::MapObject* parent);
 
  private:
   std::string wad_file_name_;
@@ -67,7 +69,7 @@ class World {
   // Loads things from .wad and creates list of MapObjects
   void CreateMapObjectList(std::ifstream& fin);
 
-  void PutMobjOnMap(mobj::MapObject obj);
+  void PutMobjOnMap(mobj::MapObject&& obj);
 
   friend class mobj::MapObject;
 };

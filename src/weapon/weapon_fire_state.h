@@ -12,12 +12,12 @@ class WeaponReadyState;
 template<class Arms>
 class WeaponFireState : public WeaponState {
  public:
-  std::variant<bool, Projectile, HitScan> Fire(Ammo& am, Weapon* w) override {
+  std::variant<bool, ProjectileParams, HitscanParams> Fire(Ammo& am, Weapon* w) override {
     if (sprite_idx_ < Arms::fire_again_idx) {
       return true;
     } else if (Arms::GetAmmo(am)) {
       w->SetNewState(&WeaponFireState<Arms>::GetInstance());
-      return Projectile(Arms());
+      return Arms::GetShot();
     } else {
       return false;
     }

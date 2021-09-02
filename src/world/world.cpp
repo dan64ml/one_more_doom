@@ -252,13 +252,13 @@ void World::CreateMapObjectList(std::ifstream& fin) {
       auto mobj = spawner_.Create(items[i]);
       if (mobj) {
         // TODO: move??
-        PutMobjOnMap(mobj.value());
+        PutMobjOnMap(std::move(mobj.value()));
       }
     }
   }
 }
 
-void World::PutMobjOnMap(mobj::MapObject obj) {
+void World::PutMobjOnMap(mobj::MapObject&& obj) {
   int ss_idx = bsp_.GetSubSectorIdx(obj.x, obj.y);
   obj.ss = &sub_sectors_[ss_idx];
 
@@ -274,6 +274,16 @@ void World::PutMobjOnMap(mobj::MapObject obj) {
   if (!(obj.flags & mobj::MF_NOBLOCKMAP)) {
     blocks_.AddMapObject(&mobjs_.back());
   }
+}
+
+void World::SpawnProjectile(mobj::Projectile proj, const mobj::MapObject* parent) {
+  proj.x = parent->x;
+  proj.y = parent->y;
+  proj.z = parent->z;
+
+  proj.mom_x = 35;
+
+  PutMobjOnMap(std::move(proj));
 }
 
 } // namespace world

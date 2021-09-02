@@ -3,8 +3,8 @@
 
 namespace wpn {
 
-class HitScan {
-
+class HitscanParams {
+  int damage;
 };
 
 } // namespace wpn

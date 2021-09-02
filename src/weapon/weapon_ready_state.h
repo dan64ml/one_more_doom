@@ -13,10 +13,10 @@ namespace wpn {
 template<class Arms>
 class WeaponReadyState : public WeaponState {
  public:
-  std::variant<bool, Projectile, HitScan> Fire(Ammo& am, Weapon* w) override { 
+  std::variant<bool, ProjectileParams, HitscanParams> Fire(Ammo& am, Weapon* w) override { 
     if (Arms::GetAmmo(am)) {
       w->SetNewState(&WeaponFireState<Arms>::GetInstance());
-      return Projectile(Arms());
+      return Arms::GetShot();
     } else {
       return false;
     }

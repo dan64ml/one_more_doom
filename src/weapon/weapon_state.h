@@ -5,8 +5,8 @@
 #include <variant>
 
 #include "ammunition.h"
-#include "projectile.h"
-#include "hit_scan.h"
+#include "projectile_params.h"
+#include "hitscan_params.h"
 
 namespace wpn {
 
@@ -16,7 +16,7 @@ class WeaponState {
  public:
   virtual bool TickTime(Weapon* w) = 0;
 
-  virtual std::variant<bool, Projectile, HitScan> Fire(Ammo&, Weapon* w) = 0;
+  virtual std::variant<bool, ProjectileParams, HitscanParams> Fire(Ammo&, Weapon* w) = 0;
 
   virtual std::string GetSprite() const = 0;
 };

@@ -30,7 +30,7 @@ struct MapObject {
   //MapObject(world::World* world) : world_(world) {}
   MapObject(const id::mobjinfo_t& info);
   MapObject() {}  // TODO!!!!!
-  MapObject(id::mobjtype_t type) {}  // TODO!!!!!
+  //MapObject(id::mobjtype_t type) : fsm_(id::mobjinfo[type]) {}  // TODO!!!!!
 
   // World coordinates of the object
   int x;

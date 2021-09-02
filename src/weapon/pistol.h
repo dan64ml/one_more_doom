@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "ammunition.h"
+#include "hitscan_params.h"
 
 namespace wpn {
 
@@ -13,6 +14,7 @@ struct Pistol {
   static std::vector<std::pair<std::string, int>> fire_sprites;
 
   static bool GetAmmo(Ammo& am);
+  static HitscanParams GetShot() { return {}; }
 
   static const int fire_again_idx = 1;
 
