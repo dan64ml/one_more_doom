@@ -262,7 +262,11 @@ void World::PutMobjOnMap(std::unique_ptr<mobj::MapObject> obj) {
   int ss_idx = bsp_.GetSubSectorIdx(obj->x, obj->y);
   obj->ss = &sub_sectors_[ss_idx];
 
-  obj->floor_z = obj->z = sub_sectors_[ss_idx].sector->floor_height;
+  obj->floor_z = sub_sectors_[ss_idx].sector->floor_height;
+  if (!(obj->flags & mobj::MF_MISSILE)) {
+    // Don't put projectiles on floor
+    obj->z = obj->floor_z;
+  }
 
   obj->world_ = this;
 
@@ -275,17 +279,6 @@ void World::PutMobjOnMap(std::unique_ptr<mobj::MapObject> obj) {
   }
 
   mobjs_.push_back(std::move(obj));
-}
-
-// TODO: redundant???
-void World::SpawnProjectile(std::unique_ptr<mobj::MapObject> proj, const mobj::MapObject* parent) {
-  proj->x = parent->x;
-  proj->y = parent->y;
-  proj->z = parent->z;
-
-  proj->mom_x = 3;
-
-  PutMobjOnMap(std::move(proj));
 }
 
 void World::SpawnProjectile(std::unique_ptr<mobj::MapObject> proj) {

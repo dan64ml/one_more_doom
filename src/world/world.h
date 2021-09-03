@@ -33,7 +33,7 @@ class World {
 
   mobj::Player* GetPlayer() { return reinterpret_cast<mobj::Player*>(player_.get()); };
 
-  void SpawnProjectile(std::unique_ptr<mobj::MapObject> proj, const mobj::MapObject* parent);
+  //void SpawnProjectile(std::unique_ptr<mobj::MapObject> proj, const mobj::MapObject* parent);
   void SpawnProjectile(std::unique_ptr<mobj::MapObject> proj);
 
  private:
