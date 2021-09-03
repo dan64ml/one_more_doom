@@ -15,20 +15,20 @@ std::optional<mobj::MapObject> MobjFactory::Create(int type) {
   return {obj};
 }
 
-std::optional<mobj::MapObject> MobjFactory::Create(const wad::WadMapThing& thing) {
+std::unique_ptr<mobj::MapObject> MobjFactory::Create(const wad::WadMapThing& thing) {
   if (mobjs_info_.count(thing.type) == 0) {
     return {};
   }
 
-  mobj::MapObject obj(mobjs_info_.at(thing.type));
-  obj.x = thing.x;
-  obj.y = thing.y;
+  std::unique_ptr<mobj::MapObject> obj(new mobj::MapObject(mobjs_info_.at(thing.type)));
+  obj->x = thing.x;
+  obj->y = thing.y;
 
-  obj.angle = rend::DegreesToBam(thing.angle);
+  obj->angle = rend::DegreesToBam(thing.angle);
 
-  obj.type = thing.type;
+  obj->type = thing.type;
   
-  return {obj};
+  return obj;
 }
 
 std::unique_ptr<mobj::Player> MobjFactory::CreatePlayer(const wad::WadMapThing& thing) {

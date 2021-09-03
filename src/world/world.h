@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <memory>
 
 #include "world_types.h"
 #include "fast_bsp.h"
@@ -32,7 +33,8 @@ class World {
 
   mobj::Player* GetPlayer() { return reinterpret_cast<mobj::Player*>(player_.get()); };
 
-  void SpawnProjectile(mobj::Projectile proj, const mobj::MapObject* parent);
+  void SpawnProjectile(std::unique_ptr<mobj::MapObject> proj, const mobj::MapObject* parent);
+  void SpawnProjectile(std::unique_ptr<mobj::MapObject> proj);
 
  private:
   std::string wad_file_name_;
@@ -50,14 +52,14 @@ class World {
   
   BlockMap blocks_;
 
-  //mobj::Player player_ {this};
   //std::unique_ptr<mobj::MapObject> player_;
   std::unique_ptr<mobj::Player> player_;
 
   id::MobjFactory spawner_;
 
   // TMP!!!!
-  std::list<mobj::MapObject> mobjs_;
+  //std::list<mobj::MapObject> mobjs_;
+  std::list<std::unique_ptr<mobj::MapObject>> mobjs_;
   
  private:
   void ClearLevel();
@@ -69,7 +71,7 @@ class World {
   // Loads things from .wad and creates list of MapObjects
   void CreateMapObjectList(std::ifstream& fin);
 
-  void PutMobjOnMap(mobj::MapObject&& obj);
+  void PutMobjOnMap(std::unique_ptr<mobj::MapObject> obj);
 
   friend class mobj::MapObject;
 };

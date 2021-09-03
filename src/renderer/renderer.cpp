@@ -145,7 +145,7 @@ void Renderer::FillContextFromMasked(const MaskedObject& msk) {
 
   // TODO: ??? light_level and floor_height (for flying mobjs)
 
-  // TODO: ??? Redundunt - name and Texture...
+  // TODO: ??? Redundant - name and Texture...
   //ctx_.mid_texture = msk.texture_name;
 
   // For texturing

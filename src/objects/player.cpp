@@ -35,7 +35,8 @@ void Player::Fire() {
   
   case 1:
     // process Projectile
-    world_->SpawnProjectile(Projectile(std::get<wpn::ProjectileParams>(ret)), this);
+    //world_->SpawnProjectile(std::unique_ptr<Projectile>(new Projectile(std::get<wpn::ProjectileParams>(ret))), this);
+    world_->SpawnProjectile(std::unique_ptr<Projectile>(new Projectile(std::get<wpn::ProjectileParams>(ret), this)));
     break;
 
   case 2:

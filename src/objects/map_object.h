@@ -68,7 +68,7 @@ struct MapObject {
   // For debug
   int type;
 
-  bool TickTime();
+  virtual bool TickTime();
 
   std::string GetSpriteName(int vp_x, int vp_y) const;
 
@@ -95,12 +95,14 @@ struct MapObject {
   // Applied to each crossed line until return false.
   // False means it's impossible to cross the line.
   virtual bool ProcessLine(const world::Line* line);
+  // It looks like a candidate to be virtual...
+  virtual void ZMove();
+
+  FSM fsm_;
 
  private:
   void MoveObject();
   void XYMove();
-  // It looks like a candidate to be virtual...
-  void ZMove();
 
   // Check the position, interact with items and move
   // the object to the new position if possible (and return true)
@@ -115,8 +117,6 @@ struct MapObject {
 
   const double kMaxMove = 30;
   const int kMaxStepSize = 24;
-
-  FSM fsm_;
 };
 
 } // namespace mobj

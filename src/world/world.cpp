@@ -94,7 +94,7 @@ void World::TickTime() {
   player_->TickTime();
 
   for (auto& mobj : mobjs_) {
-    mobj.TickTime();
+    mobj->TickTime();
   }
 }
 
@@ -252,36 +252,48 @@ void World::CreateMapObjectList(std::ifstream& fin) {
       auto mobj = spawner_.Create(items[i]);
       if (mobj) {
         // TODO: move??
-        PutMobjOnMap(std::move(mobj.value()));
+        PutMobjOnMap(std::move(mobj));
       }
     }
   }
 }
 
-void World::PutMobjOnMap(mobj::MapObject&& obj) {
-  int ss_idx = bsp_.GetSubSectorIdx(obj.x, obj.y);
-  obj.ss = &sub_sectors_[ss_idx];
+void World::PutMobjOnMap(std::unique_ptr<mobj::MapObject> obj) {
+  int ss_idx = bsp_.GetSubSectorIdx(obj->x, obj->y);
+  obj->ss = &sub_sectors_[ss_idx];
 
-  obj.floor_z = obj.z = sub_sectors_[ss_idx].sector->floor_height;
+  obj->floor_z = obj->z = sub_sectors_[ss_idx].sector->floor_height;
 
-  obj.world_ = this;
+  obj->world_ = this;
+
+  if (!(obj->flags & mobj::MF_NOSECTOR)) {
+    sub_sectors_[ss_idx].mobjs.push_back(obj.get());
+  }
+
+  if (!(obj->flags & mobj::MF_NOBLOCKMAP)) {
+    blocks_.AddMapObject(obj.get());
+  }
 
   mobjs_.push_back(std::move(obj));
-  if (!(obj.flags & mobj::MF_NOSECTOR)) {
-    sub_sectors_[ss_idx].mobjs.push_back(&mobjs_.back());
-  }
-
-  if (!(obj.flags & mobj::MF_NOBLOCKMAP)) {
-    blocks_.AddMapObject(&mobjs_.back());
-  }
 }
 
-void World::SpawnProjectile(mobj::Projectile proj, const mobj::MapObject* parent) {
-  proj.x = parent->x;
-  proj.y = parent->y;
-  proj.z = parent->z;
+// TODO: redundant???
+void World::SpawnProjectile(std::unique_ptr<mobj::MapObject> proj, const mobj::MapObject* parent) {
+  proj->x = parent->x;
+  proj->y = parent->y;
+  proj->z = parent->z;
 
-  proj.mom_x = 35;
+  proj->mom_x = 3;
+
+  PutMobjOnMap(std::move(proj));
+}
+
+void World::SpawnProjectile(std::unique_ptr<mobj::MapObject> proj) {
+//  proj->x = parent->x;
+//  proj->y = parent->y;
+//  proj->z = parent->z;
+//
+//  proj->mom_x = 3;
 
   PutMobjOnMap(std::move(proj));
 }

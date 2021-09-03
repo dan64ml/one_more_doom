@@ -19,7 +19,7 @@ class MobjFactory {
   MobjFactory() = default;
 
   std::optional<mobj::MapObject> Create(int type);
-  std::optional<mobj::MapObject> Create(const wad::WadMapThing& thing);
+  std::unique_ptr<mobj::MapObject> Create(const wad::WadMapThing& thing);
   std::unique_ptr<mobj::Player> CreatePlayer(const wad::WadMapThing& thing);
 
  private:
