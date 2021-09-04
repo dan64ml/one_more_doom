@@ -18,6 +18,8 @@ class FSM {
   
   void ToSeeState();
   void ToDeathState();
+  void ToXDeathState();
+  void ToPainState();
 
  private:
   id::state_t current_state;

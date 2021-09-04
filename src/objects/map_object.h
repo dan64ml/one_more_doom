@@ -73,7 +73,7 @@ struct MapObject {
 
   std::string GetSpriteName(int vp_x, int vp_y) const;
   
-  void CauseDamage(int damage) {}
+  void CauseDamage(int damage);
 
  private:
   struct Opening {
@@ -102,6 +102,10 @@ struct MapObject {
   virtual void ZMove();
 
   FSM fsm_;
+
+  int health_;
+  int spawn_health_;
+  int pain_chance_;
 
  private:
   void MoveObject();

@@ -26,6 +26,9 @@ MapObject::MapObject(const id::mobjinfo_t& info) : fsm_(info) {
   flags = info.flags;
   height = info.height;
   radius = info.radius;
+
+  spawn_health_ = health_ = info.spawnhealth;
+  pain_chance_ = info.painchance;
 }
 
 std::string MapObject::GetSpriteName(int vp_x, int vp_y) const {
@@ -304,6 +307,27 @@ bool MapObject::ChangeSubSector(world::SubSector* new_ss) {
   ss = new_ss;
 
   return true;
+}
+
+void MapObject::CauseDamage(int damage) {
+  health_ -= damage;
+
+  if (health_ > 0) {
+    if (rand() % 256 < pain_chance_) {
+      fsm_.ToPainState();
+    }
+    return;
+  } else {
+    if (health_ < -spawn_health_) {
+      fsm_.ToXDeathState();
+    } else {
+      fsm_.ToDeathState();
+    }
+
+    // remains are visible but not interacting
+    // TODO: flying objects must fall down
+    flags &= ~(MF_SOLID | MF_SHOOTABLE);
+  }
 }
 
 } // namespace mobj

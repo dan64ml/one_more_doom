@@ -58,4 +58,20 @@ void FSM::ToDeathState() {
   current_state = id::states[death_state];
 }
 
+void FSM::ToXDeathState() {
+  if (xdeath_state == id::S_NULL) {
+    return;
+  }
+
+  current_state = id::states[xdeath_state];
+}
+
+void FSM::ToPainState() {
+  if (pain_state == id::S_NULL) {
+    return;
+  }
+
+  current_state = id::states[pain_state];
+}
+
 } // namespace fsm
