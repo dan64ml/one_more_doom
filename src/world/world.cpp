@@ -93,8 +93,16 @@ void World::LoadLevel(size_t level) {
 void World::TickTime() {
   player_->TickTime();
 
-  for (auto& mobj : mobjs_) {
-    mobj->TickTime();
+  for (auto it = begin(mobjs_); it != end(mobjs_);) {
+    if ((*it)->TickTime()) {
+      ++it;
+    } else {
+      // delete the mobj
+      auto obj = it->get();
+      obj->ss->mobjs.remove(obj);
+      blocks_.DeleteMapObject(obj);
+      it = mobjs_.erase(it);
+    }
   }
 }
 
@@ -280,6 +288,10 @@ void World::PutMobjOnMap(std::unique_ptr<mobj::MapObject> obj) {
 
   mobjs_.push_back(std::move(obj));
 }
+
+//void World::DeleteMobj(const mobj::MapObject* obj) {
+//
+//}
 
 void World::SpawnProjectile(std::unique_ptr<mobj::MapObject> proj) {
 //  proj->x = parent->x;

@@ -10,7 +10,6 @@ namespace mobj {
 
 class Projectile : public MapObject {
  public:
-  Projectile(const wpn::ProjectileParams& param);
   Projectile(const wpn::ProjectileParams& param, const MapObject* parent);
 
   bool TickTime() override;
@@ -21,9 +20,10 @@ class Projectile : public MapObject {
   bool RunIntoAction() override;
 
  private:
-  int sprite_idx_ = 0;
-  int frame_count_ = 0;
-  //std::vector<std::pair<std::string, int>> sprites_;
+  int damage_;
+  int blast_damage_;
+
+  bool met_obstacle = false;
 };
 
 

@@ -137,7 +137,7 @@ bool MapObject::ProcessLine(const world::Line* line) {
   return true;
 }
 
-// There is two step check: CheckPosition() checks obstacles and returns
+// There is two steps check: CheckPosition() checks obstacles and returns
 // true if the position is clear. Also it updates lowest ceiling and 
 // highest floor. It's necessary for second step - heights check.
 // If both steps are OK, the foo changes current position of the mobs.
@@ -294,6 +294,8 @@ bool MapObject::ChangeSubSector(world::SubSector* new_ss) {
 
   new_ss->mobjs.push_back(this);
 
+  ss = new_ss;
+  
   return true;
 }
 

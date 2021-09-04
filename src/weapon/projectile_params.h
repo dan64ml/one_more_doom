@@ -7,6 +7,8 @@ namespace wpn {
 
 struct ProjectileParams {
   int damage;
+  int blast_damage;
+  
   int speed;
   int spawn_height;
 

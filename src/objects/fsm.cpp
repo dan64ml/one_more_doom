@@ -23,10 +23,13 @@ bool FSM::Tick() {
     return true;
   }
   
-  // TODO: run action
+  // TODO: run an action
 
   if (--current_state.tics == 0) {
-    assert(current_state.nextstate != id::S_NULL);
+    // check if it's the last state
+    if (current_state.nextstate == id::S_NULL) {
+      return false;
+    }
     current_state = id::states[current_state.nextstate];
   }
 

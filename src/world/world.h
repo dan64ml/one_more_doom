@@ -36,6 +36,8 @@ class World {
   //void SpawnProjectile(std::unique_ptr<mobj::MapObject> proj, const mobj::MapObject* parent);
   void SpawnProjectile(std::unique_ptr<mobj::MapObject> proj);
 
+  void DoBlastDamage(int damage, int x, int y) {}
+
  private:
   std::string wad_file_name_;
   // Level names and lumps
@@ -72,6 +74,7 @@ class World {
   void CreateMapObjectList(std::ifstream& fin);
 
   void PutMobjOnMap(std::unique_ptr<mobj::MapObject> obj);
+  //void DeleteMobj(const mobj::MapObject* obj);
 
   friend class mobj::MapObject;
 };

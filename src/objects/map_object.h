@@ -29,7 +29,7 @@ struct MapObject {
  public:
   //MapObject(world::World* world) : world_(world) {}
   MapObject(const id::mobjinfo_t& info);
-  MapObject() {}  // TODO!!!!!
+  //MapObject() {}  // TODO!!!!!
   //MapObject(id::mobjtype_t type) : fsm_(id::mobjinfo[type]) {}  // TODO!!!!!
 
   // World coordinates of the object
@@ -68,6 +68,7 @@ struct MapObject {
   // For debug
   int type;
 
+  // Returns false if the object should be deleted
   virtual bool TickTime();
 
   std::string GetSpriteName(int vp_x, int vp_y) const;
