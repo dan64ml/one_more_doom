@@ -72,6 +72,8 @@ struct MapObject {
   virtual bool TickTime();
 
   std::string GetSpriteName(int vp_x, int vp_y) const;
+  
+  void CauseDamage(int damage) {}
 
  private:
   struct Opening {

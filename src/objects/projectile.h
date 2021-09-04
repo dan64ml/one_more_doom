@@ -18,7 +18,9 @@ class Projectile : public MapObject {
   void SlowDown() override {}
   void ZMove() override {}
   bool RunIntoAction() override;
-
+  bool InfluenceObject(MapObject*) override;
+  bool ProcessLine(const world::Line* line) override;
+  
  private:
   int damage_;
   int blast_damage_;

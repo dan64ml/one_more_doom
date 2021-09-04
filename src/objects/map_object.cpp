@@ -206,6 +206,11 @@ bool MapObject::CheckPosition(int new_x, int new_y, Opening& op) {
     #ifdef D_PRINT_MOBJS
       std::cout << "Checking mobj (" << mobj->x << ", " << mobj->y << ")" << std::endl;
     #endif
+    if (!(mobj->flags & (MF_SOLID | MF_SPECIAL | MF_SHOOTABLE))) {
+      // This object don't interact with anything (???)
+      continue;
+    }
+
     int collision_dist = radius + mobj->radius;
     if (abs(new_x - mobj->x) >= collision_dist || abs(new_y - mobj->y) >= collision_dist) {
       // Didn't hit
@@ -295,7 +300,7 @@ bool MapObject::ChangeSubSector(world::SubSector* new_ss) {
   new_ss->mobjs.push_back(this);
 
   ss = new_ss;
-  
+
   return true;
 }
 
