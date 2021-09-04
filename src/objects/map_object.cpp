@@ -3,6 +3,7 @@
 #include <cassert>
 #include <algorithm>
 #include <iostream>
+#include <cmath>
 
 #include "world/world.h"
 #include "utils/plane_utils.h"
@@ -80,11 +81,12 @@ void MapObject::XYMove() {
       dx /= 2;
       dy /= 2;
 
-      x_dest = x + dx;
-      y_dest = y + dy;
+      // TODO: controversial hack to avoid direction changing by very small values...
+      x_dest = std::round(x + dx);
+      y_dest = std::round(y + dy);
     } else {
-      x_dest = x + dx;
-      y_dest = y + dy;
+      x_dest = std::round(x + dx);
+      y_dest = std::round(y + dy);
 
       dx = dy = 0;
     }
