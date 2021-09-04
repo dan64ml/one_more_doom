@@ -20,11 +20,12 @@ class Projectile : public MapObject {
   bool RunIntoAction() override;
   bool InfluenceObject(MapObject*) override;
   bool ProcessLine(const world::Line* line) override;
-  
+
  private:
   int damage_;
   int blast_damage_;
-
+  int speed_;
+  
   bool met_obstacle = false;
 };
 

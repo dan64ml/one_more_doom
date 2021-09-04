@@ -13,11 +13,13 @@ Projectile::Projectile(const wpn::ProjectileParams& param, const MapObject* pare
   y = parent->y;
   z = parent->z + param.spawn_height;
 
-  damage_ = param.damage;
+  //damage_ = param.damage;
+  damage_ = id::mobjinfo[param.type].damage;
+  speed_ = id::mobjinfo[param.type].speed;
   blast_damage_ = param.blast_damage;
 
-  mom_x = param.speed * rend::BamCos(parent->angle);
-  mom_y = param.speed * rend::BamSin(parent->angle);
+  mom_x = speed_ * rend::BamCos(parent->angle);
+  mom_y = speed_ * rend::BamSin(parent->angle);
   mom_z = 0;
 }
 
@@ -78,7 +80,7 @@ bool Projectile::ProcessLine(const world::Line* line) {
   }
 
   // TODO: Do I have to check any line's flags here???
-  
+
   return true;
 }
 
