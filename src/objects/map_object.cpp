@@ -324,7 +324,7 @@ void MapObject::CauseDamage(int damage) {
       fsm_.ToDeathState();
     }
 
-    // remains are visible but not interacting
+    // remains are visible but not interactable
     // TODO: flying objects must fall down
     flags &= ~(MF_SOLID | MF_SHOOTABLE);
   }

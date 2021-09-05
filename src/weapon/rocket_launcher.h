@@ -1,5 +1,5 @@
-#ifndef PLASMA_GUN_H_
-#define PLASMA_GUN_H_
+#ifndef ROCKET_LAUNCHER_H_
+#define ROCKET_LAUNCHER_H_
 
 #include <string>
 #include <vector>
@@ -9,7 +9,7 @@
 
 namespace wpn {
 
-struct PlasmaGun {
+struct RocketLauncher {
   static std::string ready_sprite;
   static std::vector<std::pair<std::string, int>> fire_sprites;
 
@@ -17,7 +17,7 @@ struct PlasmaGun {
   static ProjectileParams GetShot() {
     return {0,    // blast damage
             36,   // spawn height
-            id::MT_PLASMA
+            id::MT_ROCKET
     }; 
   }
 
@@ -29,4 +29,4 @@ struct PlasmaGun {
 
 } // namespace wpn
 
-#endif  // PLASMA_GUN_H_
+#endif  // ROCKET_LAUNCHER_H_

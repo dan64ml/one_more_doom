@@ -8,19 +8,24 @@ namespace mobj {
 
 Projectile::Projectile(const wpn::ProjectileParams& param, const MapObject* parent) 
   : MapObject(id::mobjinfo[param.type]) {
-  // TODO: spawn at the end of the barrel
-  x = parent->x;
-  y = parent->y;
+  // Spawn at the end of the barrel
+  int dx = parent->radius * rend::BamCos(parent->angle);
+  int dy = parent->radius * rend::BamSin(parent->angle);
+
+  x = parent->x + dx;
+  y = parent->y + dy;
   z = parent->z + param.spawn_height;
 
-  //damage_ = param.damage;
   damage_ = id::mobjinfo[param.type].damage;
   speed_ = id::mobjinfo[param.type].speed;
   blast_damage_ = param.blast_damage;
+  
+  angle = parent->angle;
 
   mom_x = speed_ * rend::BamCos(parent->angle);
   mom_y = speed_ * rend::BamSin(parent->angle);
   mom_z = 0;
+
 }
 
 bool Projectile::TickTime() {
