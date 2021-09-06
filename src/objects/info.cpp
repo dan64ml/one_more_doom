@@ -55,7 +55,11 @@ const char *sprnames[NUMSPRITES] = {
 
 // Doesn't work with g++, needs actionf_p1
 void  A_Light0();
+//actionf_t  A_Light0;
+
 void A_WeaponReady();
+//actionf_t A_WeaponReady;
+
 void A_Lower();
 void A_Raise();
 void A_Punch();
@@ -77,6 +81,7 @@ void A_FirePlasma();
 void A_BFGsound();
 void A_FireBFG();
 void A_BFGSpray();
+
 void A_Explode();
 void A_Pain();
 void A_PlayerScream();

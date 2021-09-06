@@ -25,10 +25,12 @@
 #define __INFO__
 
 #include <cstddef>
+#include <functional>
 
 namespace id {
 
 using actionf_t = void (*)();
+//using actionf_t = std::function<void(void)>;
 
 const int FRACUNIT = 1;
 

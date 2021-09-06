@@ -4,9 +4,10 @@ void A_Light0() {
 
 }
 
-void A_WeaponReady(){
+//void A_WeaponReady(){
+//
+//}
 
-}
 void A_Lower(){
 
 }
