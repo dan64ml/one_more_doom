@@ -159,6 +159,7 @@ class Renderer {
   void RenderFlats();
   void RenderMasked();
   void RenderStatusBar(const mobj::Player* player);
+  void RenderWeapon(const wpn::Weapon& w);
   
   // Segment can be partially closed by other elements. This foo creates a list
   // of visible fragments and some extra params. Returns false if all the segment

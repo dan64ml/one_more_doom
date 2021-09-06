@@ -19,7 +19,8 @@ class Player : public MapObject {
 
   bool TickTime();
  
-  std::string GetWeaponSprite() const { return weapon_.GetSprite(); }
+  //std::string GetWeaponSprite() const { return weapon_.GetSprite(); }
+  const wpn::Weapon& GetWeapon() const { return weapon_; }
 
  private:
   virtual bool RunIntoAction() override;

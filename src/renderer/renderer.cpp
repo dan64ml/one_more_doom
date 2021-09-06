@@ -50,8 +50,8 @@ void Renderer::RenderScene(const wad::FastBsp* bsp, const graph::GraphicsManager
 void Renderer::RenderStatusBar(const mobj::Player* player) {
   auto bar = gm_->GetSprite("STBAR");
 
-  auto arms_name = player->GetWeaponSprite();
-  auto ext = gm_->GetSprite(arms_name);
+//  auto arms_name = player->GetWeaponSprite();
+//  auto ext = gm_->GetSprite(arms_name);
   
   //auto ext = gm_->GetSprite("PISFA0");
   //auto ext = gm_->GetSprite("SHTGA0");
@@ -66,18 +66,20 @@ void Renderer::RenderStatusBar(const mobj::Player* player) {
 //  auto name = player->GetSpriteName(vp_.x, vp_.y);
 //  auto ext = gm_->GetSprite(name);
 
-  int ext_y_size = ext.GetYSize() * rend::kScaleCoef;
+//  int ext_y_size = ext.GetYSize() * rend::kScaleCoef;
+//
+//  int x_shift = (160 - ext.GetXSize() / 2) * rend::kScaleCoef;
+//  //int y_shift = 32 * rend::kScaleCoef;
+//  int y_shift = 16 * rend::kScaleCoef;
+//
+//  for (int i = 0; i < ext_y_size; ++i) {
+//    for (int j = 0; j < ext.GetXSize() * rend::kScaleCoef; ++j) {
+//      uint32_t color = ext.GetPixel(j / rend::kScaleCoef, i / rend::kScaleCoef);
+//      wnd_->RenderFBPointAlpha(j + x_shift, ext_y_size - i - 1 + y_shift, color);
+//    }
+//  }
 
-  int x_shift = (160 - ext.GetXSize() / 2) * rend::kScaleCoef;
-  //int y_shift = 32 * rend::kScaleCoef;
-  int y_shift = 16 * rend::kScaleCoef;
-
-  for (int i = 0; i < ext_y_size; ++i) {
-    for (int j = 0; j < ext.GetXSize() * rend::kScaleCoef; ++j) {
-      uint32_t color = ext.GetPixel(j / rend::kScaleCoef, i / rend::kScaleCoef);
-      wnd_->RenderFBPointAlpha(j + x_shift, ext_y_size - i - 1 + y_shift, color);
-    }
-  }
+  RenderWeapon(player->GetWeapon());
 
   int bar_y_size = bar.GetYSize() * rend::kScaleCoef;
   for (int i = 0; i < bar_y_size; ++i) {
@@ -86,6 +88,27 @@ void Renderer::RenderStatusBar(const mobj::Player* player) {
       wnd_->RenderFBPointAlpha(j, bar_y_size - i - 1, color);
     }
   }
+}
+
+void Renderer::RenderWeapon(const wpn::Weapon& w) {
+  auto arms_name = w.GetSprite();
+  auto ext = gm_->GetSprite(arms_name);
+
+  int top = w.GetWeaponTopPosition() * rend::kScaleCoef;
+
+  int ext_y_size = ext.GetYSize() * rend::kScaleCoef;
+
+  int x_shift = (160 - ext.GetXSize() / 2) * rend::kScaleCoef;
+  int y_shift = 32 * rend::kScaleCoef;
+  //int y_shift = 16 * rend::kScaleCoef;
+
+  for (int i = 0; i < top; ++i) {
+    for (int j = 0; j < ext.GetXSize() * rend::kScaleCoef; ++j) {
+      uint32_t color = ext.GetPixel(j / rend::kScaleCoef, (top - i - 1) / rend::kScaleCoef);
+      wnd_->RenderFBPointAlpha(j + x_shift, i + y_shift, color);
+    }
+  }
+
 }
 
 void Renderer::RenderFlats() {

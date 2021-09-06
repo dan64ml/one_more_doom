@@ -4,6 +4,7 @@
 #include "weapon_types.h"
 
 #include <string>
+#include <vector>
 
 #include "objects/info.h"
 
@@ -13,14 +14,19 @@ class WeaponFSM {
  public:
   WeaponFSM(const WeaponParam& p);
 
-  bool Tick();
+  // FSM can requires several commands (if some of them have tic == 0)
+  std::vector<id::FuncId> Tick();
+  
   std::string GetSpriteName() const;
+
+  void ToReadyState();
+  void ToActiveState();
+  void ToFlashState();
 
  private:
   const WeaponParam params_;
 
   id::state_t current_state_;
-
 };
 
 }

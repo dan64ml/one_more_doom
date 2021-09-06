@@ -112,21 +112,76 @@ bool Weapon::ChangeWeapon(WeaponType wp) {
 }
 
 Weapon::Weapon() {
-  //state_ = &WeaponReadyState<Pistol>::GetInstance();
-  //state_ = &WeaponReadyState<PlasmaGun>::GetInstance();
-  //state_ = &WeaponReadyState<RocketLauncher>::GetInstance();
-
   //fsm_ = new WeaponFSM(weapons_[kMissile]);
-  //state_ = new WeaponFSM(weapons_[kMissile]);
-  state_ = new WeaponFSM(weapons_[kPlasma]);
+  //fsm_ = new WeaponFSM(weapons_[kPlasma]);
+  fsm_ = new WeaponFSM(weapons_[kSuperShotgun]);
+}
+
+bool Weapon::TickTime() {
+  for (auto func : fsm_->Tick()) {
+    switch (func) {
+    case id::A_NULL:
+      break;
+    case id::A_WeaponReady:
+      WeaponReady();
+      break;
+    case id::A_Lower:
+      Lower();
+      break;
+    case id::A_Raise:
+      Raise();
+      break;
+    case id::A_ReFire:
+      ReFire();
+      break;
+    case id::A_FireShotgun2:
+      FireShotgun2();
+      break;
+    case id::A_FireMissile:
+      FireMissile();
+      break;
+    default:
+      break;
+    }
+  }
+
+  return true;
+}
+
+void Weapon::Raise() {
+  current_weapon_top_ += kRaiseSpeed;
+  if (current_weapon_top_ < kWeaponTop) {
+    return;
+  }
+
+  current_weapon_top_ = kWeaponTop;
+
+  fsm_->ToReadyState();
+}
+
+void Weapon::Lower() {
+
+}
+
+void Weapon::WeaponReady() {
+
+}
+
+void Weapon::ReFire() {
+
+}
+
+void Weapon::FireShotgun2() {
+  //fsm_->ToFlashState();
+}
+
+void Weapon::FireMissile() {
+  fsm_->ToFlashState();
+}
+
+std::variant<bool, ProjectileParams, HitscanParams> Weapon::Fire(Ammo& am) {
+  fsm_->ToActiveState();
+  return true;
 }
 
 } // namespace wpn
-
-namespace id {
-void A_WeaponReady() {
-  return;
-}
-
-}
-
