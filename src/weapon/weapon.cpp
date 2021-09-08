@@ -9,7 +9,7 @@ namespace wpn {
 const WeaponParam Weapon::weapons_[WeaponType::kWeaponNumber] = {
   {
 	  // fist
-	  //am_noammo,
+	  kAmNoAmmo,
 	  id::S_PUNCHUP,
 	  id::S_PUNCHDOWN,
 	  id::S_PUNCH,
@@ -18,7 +18,7 @@ const WeaponParam Weapon::weapons_[WeaponType::kWeaponNumber] = {
   },	
   {
     // pistol
-    //am_clip,
+    kAmClip,
     id::S_PISTOLUP,
     id::S_PISTOLDOWN,
     id::S_PISTOL,
@@ -27,7 +27,7 @@ const WeaponParam Weapon::weapons_[WeaponType::kWeaponNumber] = {
   },	
   {
     // shotgun
-    //am_shell,
+    kAmShell,
     id::S_SGUNUP,
     id::S_SGUNDOWN,
     id::S_SGUN,
@@ -36,7 +36,7 @@ const WeaponParam Weapon::weapons_[WeaponType::kWeaponNumber] = {
   },
   {
     // chaingun
-    //am_clip,
+    kAmClip,
     id::S_CHAINUP,
     id::S_CHAINDOWN,
     id::S_CHAIN,
@@ -45,7 +45,7 @@ const WeaponParam Weapon::weapons_[WeaponType::kWeaponNumber] = {
   },
   {
     // missile launcher
-    //am_misl,
+    kAmMisl,
     id::S_MISSILEUP,
     id::S_MISSILEDOWN,
     id::S_MISSILE,
@@ -54,7 +54,7 @@ const WeaponParam Weapon::weapons_[WeaponType::kWeaponNumber] = {
   },
   {
     // plasma rifle
-    //am_cell,
+    kAmCell,
     id::S_PLASMAUP,
     id::S_PLASMADOWN,
     id::S_PLASMA,
@@ -63,7 +63,7 @@ const WeaponParam Weapon::weapons_[WeaponType::kWeaponNumber] = {
   },
   {
     // bfg 9000
-    //am_cell,
+    kAmCell,
     id::S_BFGUP,
     id::S_BFGDOWN,
     id::S_BFG,
@@ -72,7 +72,7 @@ const WeaponParam Weapon::weapons_[WeaponType::kWeaponNumber] = {
   },
   {
     // chainsaw
-    //am_noammo,
+    kAmNoAmmo,
     id::S_SAWUP,
     id::S_SAWDOWN,
     id::S_SAW,
@@ -81,7 +81,7 @@ const WeaponParam Weapon::weapons_[WeaponType::kWeaponNumber] = {
   },
   {
     // super shotgun
-    //am_shell,
+    kAmShell,
     id::S_DSGUNUP,
     id::S_DSGUNDOWN,
     id::S_DSGUN,
@@ -90,28 +90,10 @@ const WeaponParam Weapon::weapons_[WeaponType::kWeaponNumber] = {
   }
 };
 
-bool Weapon::ChangeWeapon(WeaponType wp) {
-  switch (wp)
-  {
-  case WeaponType::kFist:
-    /* code */
-    break;
-  
-  case WeaponType::kPistol:
-    //state_ = &WeaponReadyState<Pistol>::GetInstance();
-    break;
-  
-  default:
-    break;
-  }
-
-  return true;
-}
-
 Weapon::Weapon() {
-  //current_weapon_ = kPistol;
+  current_weapon_ = kPistol;
   //current_weapon_ = kShotgun;
-  current_weapon_ = kSuperShotgun;
+  //current_weapon_ = kSuperShotgun;
   //current_weapon_ = kMissile;
   //current_weapon_ = kPlasma;
   //current_weapon_ = kBFG;
@@ -130,27 +112,114 @@ bool Weapon::TickTime() {
   return true; 
 }
 
+void Weapon::Fire() {
+  fire_ = true;
+}
+
+void Weapon::ChangeWeapon(WeaponType wp) {
+  if (wp == kNotPending || wp == current_weapon_) {
+    return;
+  }
+
+  if (!has_weapon_[wp]) {
+    return;
+  }
+
+  pending_weapon_ = wp;
+}
+
+void Weapon::ChangeWeapon(char key) {
+  WeaponType new_weapon;
+
+  switch (key)
+  {
+  case '1':
+    if (has_weapon_[kChainsaw]) {
+      new_weapon = kChainsaw;
+    } else {
+      new_weapon = kFist;
+    }
+    break;
+  case '2':
+    new_weapon = kPistol;
+    break;
+  case '3':
+    if (has_weapon_[kSuperShotgun]) {
+      new_weapon = kSuperShotgun;
+    } else {
+      new_weapon = kShotgun;
+    }
+    break;
+  case '4':
+    new_weapon = kChaingun;
+    break;
+  case '5':
+    new_weapon = kMissile;
+    break;
+  case '6':
+    new_weapon = kPlasma;
+    break;
+  case '7':
+    new_weapon = kBFG;
+    break;
+  case '8':
+    new_weapon = kFist;
+    break;
+  case '9':
+    new_weapon = kShotgun;
+    break;
+
+  default:
+    new_weapon = kNotPending;
+    break;
+  }
+
+  ChangeWeapon(new_weapon);
+}
+
 void Weapon::Raise() {
   std::cout << "Raise" << std::endl;
-  current_weapon_top_ += kRaiseSpeed;
-  if (current_weapon_top_ < kWeaponTop) {
+  current_weapon_top_ -= kRaiseSpeed;
+  if (current_weapon_top_ > kWeaponTop) {
     return;
   }
 
   current_weapon_top_ = kWeaponTop;
 
-  //fsm_->ToReadyState();
   weapon_fsm_.SetState(weapons_[current_weapon_].ready_state, this);
 }
 
+// Lowers current weapon and then starts raising of new weapon
 void Weapon::Lower() {
   std::cout << "Lower" << std::endl;
 
+  current_weapon_top_ += kLowerSpeed;
+  if (current_weapon_top_ < kWeaponBottom) {
+    return;
+  }
+
+  current_weapon_ = pending_weapon_;
+  pending_weapon_ = kNotPending;
+
+  weapon_fsm_.SetState(weapons_[current_weapon_].up_state, this);
 }
 
+// The place to fire or change current weapon
 void Weapon::WeaponReady() {
-  //std::cout << "WeaponReady" << std::endl;
+  // Change current weapon
+  if (pending_weapon_ != kNotPending) {
+    fire_ = false;
 
+    weapon_fsm_.SetState(weapons_[current_weapon_].down_state, this);
+
+    return;
+  }
+
+  if (fire_) {
+    fire_ = false;
+
+    FireCurrentWeapon();
+  }
 }
 
 void Weapon::ReFire() {
@@ -170,6 +239,7 @@ void Weapon::FireShotgun() {
 
 void Weapon::FirePistol() {
   std::cout << "FirePistol" << std::endl;
+  fire_ = false;
   flash_fsm_.SetState(weapons_[current_weapon_].flash_state, this);
 }
 
@@ -188,10 +258,15 @@ void Weapon::FireBFG() {
   flash_fsm_.SetState(weapons_[current_weapon_].flash_state, this);
 }
 
+void Weapon::FireCurrentWeapon() {
+  if (!CheckAmmo()) {
+    return;
+  }
 
-std::variant<bool, ProjectileParams, HitscanParams> Weapon::Fire(Ammo& am) {
-  //fsm_->ToActiveState();
-  weapon_fsm_.SetState(static_cast<id::statenum_t>(weapons_[current_weapon_].active_state), this);
+  weapon_fsm_.SetState(weapons_[current_weapon_].active_state, this);
+}
+
+bool Weapon::CheckAmmo() {
   return true;
 }
 

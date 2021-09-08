@@ -70,6 +70,47 @@ void AppClass::InitInstance() {
       this->keybd_.fire = true;
     }
 	);
+// 	SetKeyUpHandler(SDLK_SPACE, [this](const SDL_Event&) {
+//      this->keybd_.fire = true;
+//    }
+//	);
+
+  SetKeyUpHandler(SDLK_1, [this](const SDL_Event&) {
+      this->keybd_.number_key = '1';
+    }
+	); 
+  SetKeyUpHandler(SDLK_2, [this](const SDL_Event&) {
+      this->keybd_.number_key = '2';
+    }
+	); 
+  SetKeyUpHandler(SDLK_3, [this](const SDL_Event&) {
+      this->keybd_.number_key = '3';
+    }
+	); 
+  SetKeyUpHandler(SDLK_4, [this](const SDL_Event&) {
+      this->keybd_.number_key = '4';
+    }
+	); 
+  SetKeyUpHandler(SDLK_5, [this](const SDL_Event&) {
+      this->keybd_.number_key = '5';
+    }
+	); 
+  SetKeyUpHandler(SDLK_6, [this](const SDL_Event&) {
+      this->keybd_.number_key = '6';
+    }
+	); 
+  SetKeyUpHandler(SDLK_7, [this](const SDL_Event&) {
+      this->keybd_.number_key = '7';
+    }
+	); 
+  SetKeyUpHandler(SDLK_8, [this](const SDL_Event&) {
+      this->keybd_.number_key = '8';
+    }
+	); 
+  SetKeyUpHandler(SDLK_9, [this](const SDL_Event&) {
+      this->keybd_.number_key = '9';
+    }
+	); 
 }
 
 void AppClass::ProcessScene([[maybe_unused]] int ms_elapsed) {
@@ -109,8 +150,13 @@ void AppClass::ProcessScene([[maybe_unused]] int ms_elapsed) {
   keybd_.side_move = false;
 
   if (keybd_.fire) {
+    std::cout << "Fire!" << std::endl;
     player_->Fire();
     keybd_.fire = false;
+  }
+  if (keybd_.number_key) {
+    player_->ChangeWeapon(keybd_.number_key);
+    keybd_.number_key = 0;
   }
 
   player_->Move(delta_angle, forward_move, side_move);

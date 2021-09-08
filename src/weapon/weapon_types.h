@@ -16,17 +16,24 @@ enum WeaponType {
   kChainsaw,
   kSuperShotgun,
 
-  kWeaponNumber
+  kWeaponNumber,
+
+  kNotPending   // Special flag for weapon changing
 };
 
-//struct WeaponParam {
-//  int up_state;
-//  int down_state;
-//  int ready_state;
-//  int active_state;
-//  int flash_state;
-//};
+enum AmmoType {
+  kAmClip,
+  kAmShell,
+  kAmCell,
+  kAmMisl,
+
+  kAmmoNumber,
+
+  kAmNoAmmo
+};
+
 struct WeaponParam {
+  AmmoType ammo;
   id::statenum_t up_state;
   id::statenum_t down_state;
   id::statenum_t ready_state;

@@ -24,7 +24,8 @@ void Player::Move(rend::BamAngle delta_angle, double forward_move, double side_m
 }
 
 void Player::Fire() {
-  auto ret = weapon_.Fire(ammo_);
+  weapon_.Fire();
+  /*auto ret = weapon_.Fire(ammo_);
   switch (ret.index())
   {
   case 0:
@@ -47,7 +48,7 @@ void Player::Fire() {
     // something went wrong ((
     assert(false);
     break;
-  }
+  }*/
 }
 
 bool Player::TickTime() {

@@ -21,12 +21,18 @@ class Weapon {
 
   bool TickTime();
 
-  bool ChangeWeapon(WeaponType wp);
+  // Changes current weapon to new WeaponType
+  void ChangeWeapon(WeaponType wp);
+  // Change current weapon according to pressed key (hardcoded)
+  void ChangeWeapon(char key);
   
   // Depending on the active weapon and ammo Fire() can return false if there is no enough ammo,
   // true if ammo is ok but active weapon is not ready yet or Projectile/HitScan object if shot happened
-  std::variant<bool, ProjectileParams, HitscanParams> Fire(Ammo& am);
-
+  //std::variant<bool, ProjectileParams, HitscanParams> Fire(Ammo& am);
+  
+  // Requests fire
+  void Fire();
+  
   // Can return empty string if underlying FSM is disabled
   std::string GetWeaponSpriteName() const { return weapon_fsm_.GetSpriteName(); }
   std::string GetFlashSpriteName() const { return flash_fsm_.GetSpriteName(); }
@@ -34,14 +40,44 @@ class Weapon {
   int GetWeaponTopPosition() const { return current_weapon_top_; }
 
  private:
+  // Original values from id
+  const int kLowerSpeed = 6;
+  const int kRaiseSpeed = 6;
+  const int kWeaponBottom = 128;
+  const int kWeaponTop = 16;  // Original value is 32. Why?!!
+
   WeaponFSM weapon_fsm_;
   FlashFSM flash_fsm_;
 
-  int current_weapon_top_ = 0;
+  // Opened weapons
+  bool has_weapon_[WeaponType::kWeaponNumber] {
+    true,   // kFist
+    true,   // kPistol
+    true,   // kShotgun
+    true,   // kChaingun
+    true,   // kMissile
+    true,   // kPlasma
+    true,   // kBFG
+    true,   // kChainsaw
+    true,   // kSuperShotgun
+  };
+  // Ammunition
+  int ammo_[kAmmoNumber] {
+    200,    // kAmClip
+    200,    // kAmShell
+    200,    // kAmCell
+    200     // kAmMisl
+  };
+
+  // Used to raise/lower a weapon
+  int current_weapon_top_ = kWeaponBottom;
+
   bool fire_ = false;
+
   int change_weapon_ = 0;
 
   WeaponType current_weapon_;
+  WeaponType pending_weapon_ = kNotPending;
 
   void Raise();
   void Lower();
@@ -54,13 +90,12 @@ class Weapon {
   void FirePlasma();
   void FireBFG();
 
-  const static WeaponParam weapons_[WeaponType::kWeaponNumber];
+  void FireCurrentWeapon();
 
-  // Original values from id
-  const int kLowerSpeed = 6;
-  const int kRaiseSpeed = 6;
-  const int kWeaponBottom = 128;
-  const int kWeaponTop = 32;
+  // Check the ammo and change current weapon if there is not enough ammo
+  bool CheckAmmo();
+  
+  const static WeaponParam weapons_[WeaponType::kWeaponNumber];
 
   friend class WeaponFSM;
 };

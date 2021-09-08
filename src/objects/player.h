@@ -15,6 +15,8 @@ class Player : public MapObject {
   Player(const id::mobjinfo_t& info) : MapObject(info) {}
   
   void Fire();
+  void ChangeWeapon(char key) { weapon_.ChangeWeapon(key); }
+
   void Move(rend::BamAngle delta_angle, double forward_move, double side_move);
 
   bool TickTime();

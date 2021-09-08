@@ -16,6 +16,8 @@ struct Keys {
   bool run = false;
   bool side_move = false;
   bool fire = false;
+
+  char number_key = 0;
 };
 
 class AppClass : public sdl2::SdlBaseClass {
