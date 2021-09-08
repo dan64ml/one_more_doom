@@ -1,8 +1,6 @@
 #ifndef WEAPON_H_
 #define WEAPON_H_
 
-#include "weapon_state.h"
-
 #include <string>
 #include <variant>
 #include <memory>
@@ -11,6 +9,9 @@
 #include "weapon_types.h"
 #include "weapon_fsm.h"
 #include "flash_fsm.h"
+
+#include "projectile_params.h"
+#include "hitscan_params.h"
 
 namespace wpn {
 
@@ -33,7 +34,7 @@ class Weapon {
   int GetWeaponTopPosition() const { return current_weapon_top_; }
 
   //void SetNewState(WeaponState* new_state) { state_ = new_state; }
-  void SetNewState(WeaponState* new_state) {  }
+  //void SetNewState(WeaponState* new_state) {  }
 
  private:
   WeaponFSM* fsm_;

@@ -2,8 +2,6 @@
 
 #include <iostream>
 
-#include "weapon_ready_state.h"
-
 #include "objects/info.h"
 
 namespace wpn {
@@ -140,52 +138,11 @@ std::string Weapon::GetEffectSprite() const {
 }
 
 bool Weapon::TickTime() {
-  //std::cout << " <==\n";
-  /*for (auto func : fsm_->Tick()) {
-    switch (func) {
-    case id::A_NULL:
-      break;
-    case id::A_WeaponReady:
-      WeaponReady();
-      break;
-    case id::A_Lower:
-      Lower();
-      break;
-    case id::A_Raise:
-      Raise();
-      break;
-    case id::A_ReFire:
-      ReFire();
-      break;
-    case id::A_FireShotgun2:
-      FireShotgun2();
-      break;
-    case id::A_FireShotgun:
-      FireShotgun();
-      break;
-    case id::A_FirePistol:
-      FirePistol();
-      break;
-    case id::A_FireMissile:
-      FireMissile();
-      break;
-    default:
-      break;
-    }
-  }*/
-
   fsm_->Tick(this);
+
   if (effect_fsm_) {
     effect_fsm_->Tick(this);
   }
-
-  /*if (effect_fsm_) {
-    std::vector<id::FuncId> commands;
-    auto ret = effect_fsm_->Tick(commands);
-    if (!ret) {
-      effect_fsm_.release();
-    }
-  }*/
 
   return true; 
 }
@@ -209,7 +166,7 @@ void Weapon::Lower() {
 }
 
 void Weapon::WeaponReady() {
-  std::cout << "WeaponReady" << std::endl;
+  //std::cout << "WeaponReady" << std::endl;
 
 }
 
