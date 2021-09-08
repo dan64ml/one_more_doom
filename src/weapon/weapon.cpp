@@ -131,7 +131,7 @@ Weapon::Weapon() {
   
   //current_weapon_ = kChainsaw;
 
-  fsm_ = new NewWeaponFSM(static_cast<id::statenum_t>(weapons_[current_weapon_].ready_state));
+  fsm_ = new WeaponFSM(static_cast<id::statenum_t>(weapons_[current_weapon_].ready_state));
 }
 
 std::string Weapon::GetEffectSprite() const {

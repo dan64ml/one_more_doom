@@ -1,37 +1,24 @@
 #ifndef WEAPON_FSM_H_
 #define WEAPON_FSM_H_
 
-#include "weapon_types.h"
-
-#include <string>
-#include <vector>
-
-#include "objects/info.h"
+#include "objects/base_fsm.h"
 
 namespace wpn {
 
-class WeaponFSM {
- public:
-  WeaponFSM(const WeaponParam& p);
+class Weapon;
 
-  // FSM can requires several commands (if some of them have tic == 0)
-  std::vector<id::FuncId> Tick();
-  
+class WeaponFSM : public mobj::BaseFSM<Weapon> {
+ public:
+  WeaponFSM() = default;
+  WeaponFSM(id::statenum_t state) : BaseFSM(state) {}
+
   std::string GetSpriteName() const;
 
-  void ToReadyState();
-  void ToActiveState();
-  void ToFlashState();
-
-  int sx;
-  int sy;
  private:
-  const WeaponParam params_;
+  void CallStateFunction(id::FuncId foo_id, Weapon* obj) override;
 
-  id::state_t current_state_;
-  int current_state_num_;
 };
 
-}
+} // namespace wpn
 
 #endif  // WEAPON_FSM_H_

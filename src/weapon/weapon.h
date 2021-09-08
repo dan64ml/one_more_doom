@@ -10,10 +10,6 @@
 #include "ammunition.h"
 #include "weapon_types.h"
 #include "weapon_fsm.h"
-#include "effect_fsm.h"
-
-//#include "objects/base_fsm.h"
-#include "new_weapon_fsm.h"
 #include "flash_fsm.h"
 
 namespace wpn {
@@ -40,14 +36,10 @@ class Weapon {
   void SetNewState(WeaponState* new_state) {  }
 
  private:
-  //WeaponState* state_;
-  //WeaponFSM* fsm_;
-  NewWeaponFSM* fsm_;
-  //WeaponFSM* state_;
+  WeaponFSM* fsm_;
+  
   //std::unique_ptr<EffectFSM> effect_fsm_;
   std::unique_ptr<FlashFSM> effect_fsm_;
-
-  //mobj::BaseFSM<Weapon>* base_fsm_;
 
   int current_weapon_top_ = 0;
   bool fire_ = false;
@@ -74,7 +66,7 @@ class Weapon {
   const int kWeaponBottom = 128;
   const int kWeaponTop = 32;
 
-  friend class NewWeaponFSM;
+  friend class WeaponFSM;
 };
 
 } // namespace wpn

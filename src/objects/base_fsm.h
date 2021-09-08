@@ -72,7 +72,7 @@ class BaseFSM {
   }
 
  protected:
-  virtual void CallStateFunction(id::FuncId foo_id, T* obj) {}
+  virtual void CallStateFunction([[maybe_unused]] id::FuncId foo_id, [[maybe_unused]] T* obj) {}
 
  private:
   id::state_t current_state_;
