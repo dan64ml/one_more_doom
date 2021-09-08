@@ -25,20 +25,16 @@ class Weapon {
   
   // Depending on the active weapon and ammo Fire() can return false if there is no enough ammo,
   // true if ammo is ok but active weapon is not ready yet or Projectile/HitScan object if shot happened
-  //std::variant<bool, ProjectileParams, HitscanParams> Fire(Ammo& am) { return true; }
   std::variant<bool, ProjectileParams, HitscanParams> Fire(Ammo& am);
 
   //std::string GetSprite() const { return state_->GetSprite(); };
   std::string GetSprite() const { return fsm_->GetSpriteName(); }
-  std::string GetEffectSprite() const;
+  std::string GetFlashSpriteName() const;
   int GetWeaponTopPosition() const { return current_weapon_top_; }
-
-  //void SetNewState(WeaponState* new_state) { state_ = new_state; }
-  //void SetNewState(WeaponState* new_state) {  }
 
  private:
   WeaponFSM* fsm_;
-  std::unique_ptr<FlashFSM> effect_fsm_;
+  FlashFSM flash_fsm_;
 
   int current_weapon_top_ = 0;
   bool fire_ = false;

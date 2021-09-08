@@ -124,7 +124,7 @@ void Renderer::RenderWeapon(const wpn::Weapon& w) {
     }
   }*/
 
-  auto effect_name = w.GetEffectSprite();
+  auto effect_name = w.GetFlashSpriteName();
   //effect_name = "MISFA0";
   //effect_name = "SHT2I0";
   //effect_name = "SHTFA0";
