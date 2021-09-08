@@ -37,8 +37,6 @@ class Weapon {
 
  private:
   WeaponFSM* fsm_;
-  
-  //std::unique_ptr<EffectFSM> effect_fsm_;
   std::unique_ptr<FlashFSM> effect_fsm_;
 
   int current_weapon_top_ = 0;

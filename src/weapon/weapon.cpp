@@ -4,9 +4,6 @@
 
 #include "weapon_ready_state.h"
 
-#include "pistol.h"
-#include "plasma_gun.h"
-#include "rocket_launcher.h"
 #include "objects/info.h"
 
 namespace wpn {
