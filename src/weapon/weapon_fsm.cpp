@@ -7,7 +7,9 @@ namespace wpn {
 WeaponFSM::WeaponFSM(const WeaponParam& p) : params_(p) {
   //current_state_ = id::states[params_.ready_state];
   //current_state_ = id::states[params_.active_state];
-  current_state_ = id::states[params_.up_state];
+  //current_state_num_ = params_.up_state;
+  current_state_num_ = params_.up_state;
+  current_state_ = id::states[current_state_num_];
 }
 
 std::vector<id::FuncId> WeaponFSM::Tick() {
@@ -29,7 +31,9 @@ std::vector<id::FuncId> WeaponFSM::Tick() {
   // SC #2 two times in a row (??!)
   assert(current_state_.tics != 0);
 
-  actions.push_back(current_state_.action);
+  if (current_state_.tics == id::states[current_state_num_].tics) {
+    actions.push_back(current_state_.action);
+  }
 
   if (--current_state_.tics == 0) {
     current_state_ = id::states[current_state_.nextstate];
@@ -46,14 +50,17 @@ std::string WeaponFSM::GetSpriteName() const {
 }
 
 void WeaponFSM::ToReadyState() {
+  current_state_num_ = params_.ready_state;
   current_state_ = id::states[params_.ready_state];
 }
 
 void WeaponFSM::ToActiveState() {
+  current_state_num_ = params_.active_state;
   current_state_ = id::states[params_.active_state];
 }
 
 void WeaponFSM::ToFlashState() {
+  current_state_num_ = params_.flash_state;
   current_state_ = id::states[params_.flash_state];
 }
 

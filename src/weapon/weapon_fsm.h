@@ -23,10 +23,13 @@ class WeaponFSM {
   void ToActiveState();
   void ToFlashState();
 
+  int sx;
+  int sy;
  private:
   const WeaponParam params_;
 
   id::state_t current_state_;
+  int current_state_num_;
 };
 
 }

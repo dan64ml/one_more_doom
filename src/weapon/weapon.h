@@ -5,10 +5,12 @@
 
 #include <string>
 #include <variant>
+#include <memory>
 
 #include "ammunition.h"
 #include "weapon_types.h"
 #include "weapon_fsm.h"
+#include "effect_fsm.h"
 
 namespace wpn {
 
@@ -26,7 +28,8 @@ class Weapon {
   std::variant<bool, ProjectileParams, HitscanParams> Fire(Ammo& am);
 
   //std::string GetSprite() const { return state_->GetSprite(); };
-  std::string GetSprite() const { return fsm_->GetSpriteName(); };
+  std::string GetSprite() const { return fsm_->GetSpriteName(); }
+  std::string GetEffectSprite() const;
   int GetWeaponTopPosition() const { return current_weapon_top_; }
 
   //void SetNewState(WeaponState* new_state) { state_ = new_state; }
@@ -36,6 +39,7 @@ class Weapon {
   //WeaponState* state_;
   WeaponFSM* fsm_;
   //WeaponFSM* state_;
+  std::unique_ptr<EffectFSM> effect_fsm_;
 
   int current_weapon_top_ = 0;
   bool fire_ = false;
@@ -46,6 +50,8 @@ class Weapon {
   void WeaponReady();
   void ReFire();
   void FireShotgun2();
+  void FireShotgun();
+  void FirePistol();
   void FireMissile();
 
   const static WeaponParam weapons_[WeaponType::kWeaponNumber];

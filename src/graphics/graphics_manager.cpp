@@ -127,6 +127,10 @@ void GraphicsManager::LoadSpriteEntry(std::ifstream& fin, const wad::WadDirector
   }
 
   const std::string name = wad::to_string<8>(entry.name);
+  //if (name == "SHT2I0") {
+  if (name == "SHT2I0") {
+    std::cout << std::endl;
+  }
 
   auto buf = std::unique_ptr<char[]>(new char[entry.size]);
   fin.seekg(entry.offset);
@@ -137,6 +141,8 @@ void GraphicsManager::LoadSpriteEntry(std::ifstream& fin, const wad::WadDirector
   PixelPicture ret;
   ret.height = patch->height;
   ret.width = patch->width;
+  ret.left_offset = patch->left_offset;
+  ret.top_offset = patch->top_offset;
   ret.pixels.assign(patch->width * patch->height, kTransparentColor);
 
   for (int x = 0; x < patch->width; ++x) {

@@ -22,7 +22,8 @@
 
 namespace rend {
 
-const int kScaleCoef = 8;
+//const int kScaleCoef = 8;
+const int kScaleCoef = 6;
 const int kOriginXResolution = 320;
 const int kOriginYResolution = 200;
 const int kScreenXResolution = kOriginXResolution * kScaleCoef;
@@ -160,6 +161,11 @@ class Renderer {
   void RenderMasked();
   void RenderStatusBar(const mobj::Player* player);
   void RenderWeapon(const wpn::Weapon& w);
+
+  void DrawTextureWithShifts(const graph::Texture& texture, int extra_x_shift, int extra_y_shift);
+  // Tmp!!!
+  void DrawSpriteInCenter(const graph::Texture& texture, int cx, int cy);
+  void DrawSpriteTopCenter(const graph::Texture& texture, int cx, int top_y);
   
   // Segment can be partially closed by other elements. This foo creates a list
   // of visible fragments and some extra params. Returns false if all the segment

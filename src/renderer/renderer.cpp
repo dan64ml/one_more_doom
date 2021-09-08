@@ -92,7 +92,22 @@ void Renderer::RenderStatusBar(const mobj::Player* player) {
 
 void Renderer::RenderWeapon(const wpn::Weapon& w) {
   auto arms_name = w.GetSprite();
-  auto ext = gm_->GetSprite(arms_name);
+  //arms_name = "SHT2A0";
+  //arms_name = "SHTGA0";
+  //arms_name = "PISGB0";
+  auto texture = gm_->GetSprite(arms_name);
+  
+  int top = 200 + texture.GetTopOffset() - 16;
+
+  //std::cout << arms_name << " weapon: ";
+  //int top_y = 50 - texture.GetTopOffset();
+  
+  //DrawSpriteTopCenter(texture, 160, top);
+  DrawTextureWithShifts(texture, 0, 16);
+  //DrawSpriteInCenter(texture, 160, top);
+
+
+  /*auto ext = gm_->GetSprite(arms_name);
 
   int top = w.GetWeaponTopPosition() * rend::kScaleCoef;
 
@@ -107,8 +122,122 @@ void Renderer::RenderWeapon(const wpn::Weapon& w) {
       uint32_t color = ext.GetPixel(j / rend::kScaleCoef, (top - i - 1) / rend::kScaleCoef);
       wnd_->RenderFBPointAlpha(j + x_shift, i + y_shift, color);
     }
-  }
+  }*/
 
+  auto effect_name = w.GetEffectSprite();
+  //effect_name = "MISFA0";
+  //effect_name = "SHT2I0";
+  //effect_name = "SHTFA0";
+  //effect_name = "PISFA0";
+  if (effect_name.empty()) {
+    return;
+  }
+  //top = 200 - (32 - texture.GetTopOffset());
+  texture = gm_->GetSprite(effect_name);
+  top = 200 + texture.GetTopOffset() - 16;
+  //std::cout << effect_name << " effect: ";
+  //DrawSpriteTopCenter(texture, 160, top);
+  DrawTextureWithShifts(texture, 0, 16);
+
+  /*ext = gm_->GetSprite(effect_name);
+
+  top = (10 + w.GetWeaponTopPosition()) * rend::kScaleCoef;
+
+  ext_y_size = ext.GetYSize() * rend::kScaleCoef;
+
+  x_shift = (160 - ext.GetXSize() / 2) * rend::kScaleCoef;
+  y_shift = 32 * rend::kScaleCoef;
+  //int y_shift = 16 * rend::kScaleCoef;
+
+  for (int i = 0; i < top; ++i) {
+    for (int j = 0; j < ext.GetXSize() * rend::kScaleCoef; ++j) {
+      uint32_t color = ext.GetPixel(j / rend::kScaleCoef, (top - i - 1) / rend::kScaleCoef);
+      wnd_->RenderFBPointAlpha(j + x_shift, i + y_shift, color);
+    }
+  }*/
+}
+
+// extra_y_shift - positive value means shift down, extra_x_shift - shift right
+void Renderer::DrawTextureWithShifts(const graph::Texture& texture, int extra_x_shift, int extra_y_shift) {
+  int x_size = texture.GetXSize();
+  int y_size = texture.GetYSize();
+
+  int left_offset = texture.GetLeftOffset();
+  int top_offset = texture.GetTopOffset();
+
+  int sx_from = (-left_offset + extra_x_shift) * kScaleCoef;
+  int sx_to = sx_from + x_size * kScaleCoef;
+  int sx_offset = sx_from; // -
+  sx_from = std::max(0, sx_from);
+  sx_to = std::min(kScreenXResolution, sx_to);
+
+  int sy_from = (kOriginYResolution + top_offset - y_size - extra_y_shift) * kScaleCoef;
+  int sy_to = (kOriginYResolution + top_offset - extra_y_shift) * kScaleCoef;
+  int sy_offset = sy_from;  // -
+  sy_from = std::max(0, sy_from);
+  sy_to = std::min(kScreenYResolution, sy_to);
+
+  for (int x = sx_from; x < sx_to; ++x) {
+    for (int y = sy_from; y < sy_to; ++y) {
+      uint32_t color = texture.GetPixel((x - sx_offset) / kScaleCoef, y_size - 1 - (y - sy_offset) / kScaleCoef);
+      wnd_->RenderFBPointAlpha(x, y, color);
+    }
+  }
+}
+
+
+void Renderer::DrawSpriteInCenter(const graph::Texture& texture, int cx, int cy) {
+  //auto texture = gm_->GetSprite(name);
+  int x_size = texture.GetXSize();
+  int y_size = texture.GetYSize();
+
+  int sx_from = (cx - x_size / 2) * kScaleCoef;
+  int sx_to = sx_from + x_size * kScaleCoef;
+  int sx_offset = -sx_from;
+  sx_from = std::max(0, sx_from);
+  sx_to = std::min(kScreenXResolution, sx_to);
+
+  int sy_from = (cy - y_size / 2) * kScaleCoef;
+  int sy_to = sy_from + y_size * kScaleCoef;
+  int sy_offset = -sy_from;
+  sy_from = std::max(0, sy_from);
+  sy_to = std::min(kScreenYResolution, sy_to);
+
+  for (int x = sx_from; x < sx_to; ++x) {
+    for (int y = sy_from; y < sy_to; ++y) {
+      uint32_t color = texture.GetPixel((x + sx_offset) / kScaleCoef, y_size - 1 - (y + sy_offset) / kScaleCoef);
+      wnd_->RenderFBPointAlpha(x, y, color);
+    }
+  }
+}
+
+// cx - center of the sprite, top_y - screen top
+void Renderer::DrawSpriteTopCenter(const graph::Texture& texture, int cx, int top_y) {
+  //auto texture = gm_->GetSprite(name);
+  int x_size = texture.GetXSize();
+  int y_size = texture.GetYSize();
+
+  //std::cout << texture.GetLeftOffset() << ", " << texture.GetTopOffset() << std::endl;
+  //top_y = top_y - texture.GetTopOffset();
+  
+  int sx_from = (cx - x_size / 2) * kScaleCoef;
+  int sx_to = sx_from + x_size * kScaleCoef;
+  int sx_offset = -sx_from;
+  sx_from = std::max(0, sx_from);
+  sx_to = std::min(kScreenXResolution, sx_to);
+
+  int sy_from = (top_y - y_size) * kScaleCoef;
+  int sy_to = top_y * kScaleCoef;
+  int sy_offset = -sy_from;
+  sy_from = std::max(0, sy_from);
+  sy_to = std::min(kScreenYResolution, sy_to);
+
+  for (int x = sx_from; x < sx_to; ++x) {
+    for (int y = sy_from; y < sy_to; ++y) {
+      uint32_t color = texture.GetPixel((x + sx_offset) / kScaleCoef, y_size - 1 - (y + sy_offset) / kScaleCoef);
+      wnd_->RenderFBPointAlpha(x, y, color);
+    }
+  }
 }
 
 void Renderer::RenderFlats() {

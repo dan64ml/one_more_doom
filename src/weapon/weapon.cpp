@@ -1,5 +1,7 @@
 #include "weapon.h"
 
+#include <iostream>
+
 #include "weapon_ready_state.h"
 
 #include "pistol.h"
@@ -114,10 +116,23 @@ bool Weapon::ChangeWeapon(WeaponType wp) {
 Weapon::Weapon() {
   //fsm_ = new WeaponFSM(weapons_[kMissile]);
   //fsm_ = new WeaponFSM(weapons_[kPlasma]);
-  fsm_ = new WeaponFSM(weapons_[kSuperShotgun]);
+  //fsm_ = new WeaponFSM(weapons_[kSuperShotgun]);
+  fsm_ = new WeaponFSM(weapons_[kShotgun]);
+  //fsm_ = new WeaponFSM(weapons_[kPistol]);
+  //fsm_ = new WeaponFSM(weapons_[kBFG]);
+  //fsm_ = new WeaponFSM(weapons_[kChainsaw]);
+}
+
+std::string Weapon::GetEffectSprite() const {
+  if (effect_fsm_) {
+    return effect_fsm_->GetSpriteName();
+  } else {
+    return "";
+  }
 }
 
 bool Weapon::TickTime() {
+  //std::cout << " <==\n";
   for (auto func : fsm_->Tick()) {
     switch (func) {
     case id::A_NULL:
@@ -137,6 +152,12 @@ bool Weapon::TickTime() {
     case id::A_FireShotgun2:
       FireShotgun2();
       break;
+    case id::A_FireShotgun:
+      FireShotgun();
+      break;
+    case id::A_FirePistol:
+      FirePistol();
+      break;
     case id::A_FireMissile:
       FireMissile();
       break;
@@ -145,10 +166,19 @@ bool Weapon::TickTime() {
     }
   }
 
+  if (effect_fsm_) {
+    std::vector<id::FuncId> commands;
+    auto ret = effect_fsm_->Tick(commands);
+    if (!ret) {
+      effect_fsm_.release();
+    }
+  }
+
   return true;
 }
 
 void Weapon::Raise() {
+  std::cout << "Raise" << std::endl;
   current_weapon_top_ += kRaiseSpeed;
   if (current_weapon_top_ < kWeaponTop) {
     return;
@@ -160,23 +190,41 @@ void Weapon::Raise() {
 }
 
 void Weapon::Lower() {
+  std::cout << "Lower" << std::endl;
 
 }
 
 void Weapon::WeaponReady() {
+  std::cout << "WeaponReady" << std::endl;
 
 }
 
 void Weapon::ReFire() {
+  std::cout << "ReFire" << std::endl;
 
 }
 
 void Weapon::FireShotgun2() {
+  std::cout << "FireShotgun2" << std::endl;
+  effect_fsm_.reset(new EffectFSM(id::S_DSGUNFLASH1));
+  //fsm_->ToFlashState();
+}
+
+void Weapon::FireShotgun() {
+  std::cout << "FireShotgun" << std::endl;
+  effect_fsm_.reset(new EffectFSM(id::S_SGUNFLASH1));
+  //fsm_->ToFlashState();
+}
+
+void Weapon::FirePistol() {
+  std::cout << "FirePistol" << std::endl;
+  effect_fsm_.reset(new EffectFSM(id::S_PISTOLFLASH));
   //fsm_->ToFlashState();
 }
 
 void Weapon::FireMissile() {
-  fsm_->ToFlashState();
+  effect_fsm_.reset(new EffectFSM(id::S_MISSILEFLASH1));
+  //fsm_->ToFlashState();
 }
 
 std::variant<bool, ProjectileParams, HitscanParams> Weapon::Fire(Ammo& am) {

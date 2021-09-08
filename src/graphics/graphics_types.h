@@ -47,6 +47,8 @@ struct PostRaw {
 struct PixelPicture {
   int width;
   int height;
+  int left_offset;
+  int top_offset;
   std::vector<uint16_t> pixels;
 };
 

@@ -18,6 +18,8 @@ class PaletteImage {
 
   int GetXSize() const { return picture_->width; }
   int GetYSize() const { return picture_->height; }
+  int GetLeftOffset() const { return picture_->left_offset; }
+  int GetTopOffset() const { return picture_->top_offset; }
 
   void SetPalette(int idx) { palette_idx_ = idx; }
   void SetLightLevel(int level) { light_level_ = level; }
