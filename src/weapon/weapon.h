@@ -12,6 +12,9 @@
 #include "weapon_fsm.h"
 #include "effect_fsm.h"
 
+//#include "objects/base_fsm.h"
+#include "new_weapon_fsm.h"
+
 namespace wpn {
 
 class Weapon {
@@ -38,8 +41,11 @@ class Weapon {
  private:
   //WeaponState* state_;
   WeaponFSM* fsm_;
+  NewWeaponFSM* fsm1_;
   //WeaponFSM* state_;
   std::unique_ptr<EffectFSM> effect_fsm_;
+
+  //mobj::BaseFSM<Weapon>* base_fsm_;
 
   int current_weapon_top_ = 0;
   bool fire_ = false;
@@ -61,6 +67,8 @@ class Weapon {
   const int kRaiseSpeed = 6;
   const int kWeaponBottom = 128;
   const int kWeaponTop = 32;
+
+  friend class NewWeaponFSM;
 };
 
 } // namespace wpn
