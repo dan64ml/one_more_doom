@@ -117,10 +117,15 @@ Weapon::Weapon() {
   //fsm_ = new WeaponFSM(weapons_[kMissile]);
   //fsm_ = new WeaponFSM(weapons_[kPlasma]);
   //fsm_ = new WeaponFSM(weapons_[kSuperShotgun]);
-  fsm_ = new WeaponFSM(weapons_[kShotgun]);
+  //fsm_ = new NewWeaponFSM(weapons_[kShotgun]);
   //fsm_ = new WeaponFSM(weapons_[kPistol]);
   //fsm_ = new WeaponFSM(weapons_[kBFG]);
   //fsm_ = new WeaponFSM(weapons_[kChainsaw]);
+
+  //current_weapon_ = kShotgun;
+  current_weapon_ = kSuperShotgun;
+
+  fsm_ = new NewWeaponFSM(static_cast<id::statenum_t>(weapons_[current_weapon_].ready_state));
 }
 
 std::string Weapon::GetEffectSprite() const {
@@ -133,7 +138,7 @@ std::string Weapon::GetEffectSprite() const {
 
 bool Weapon::TickTime() {
   //std::cout << " <==\n";
-  for (auto func : fsm_->Tick()) {
+  /*for (auto func : fsm_->Tick()) {
     switch (func) {
     case id::A_NULL:
       break;
@@ -164,7 +169,9 @@ bool Weapon::TickTime() {
     default:
       break;
     }
-  }
+  }*/
+
+  fsm_->Tick(this);
 
   if (effect_fsm_) {
     std::vector<id::FuncId> commands;
@@ -174,7 +181,7 @@ bool Weapon::TickTime() {
     }
   }
 
-  return true;
+  return true; 
 }
 
 void Weapon::Raise() {
@@ -186,7 +193,8 @@ void Weapon::Raise() {
 
   current_weapon_top_ = kWeaponTop;
 
-  fsm_->ToReadyState();
+  //fsm_->ToReadyState();
+  fsm_->SetState(static_cast<id::statenum_t>(weapons_[current_weapon_].ready_state), this);
 }
 
 void Weapon::Lower() {
@@ -228,7 +236,8 @@ void Weapon::FireMissile() {
 }
 
 std::variant<bool, ProjectileParams, HitscanParams> Weapon::Fire(Ammo& am) {
-  fsm_->ToActiveState();
+  //fsm_->ToActiveState();
+  fsm_->SetState(static_cast<id::statenum_t>(weapons_[current_weapon_].active_state), this);
   return true;
 }
 

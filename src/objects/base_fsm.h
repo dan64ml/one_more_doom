@@ -13,22 +13,23 @@ class BaseFSM {
   BaseFSM() = default;
   BaseFSM(id::statenum_t state) {
     if (state == id::S_NULL) {
-      current_state_ = nullptr;
+      disable_ = true;
     } else {
-      current_state_ = &id::states[state];
+      current_state_ = id::states[state];
+      disable_ = false;
     }
   }
 
   // Returns false if the fsm is disabled. It can mean the object must be deleted
   bool Tick(T* obj) {
-    if (current_state_) {
+    if (!disable_) {
       // Special case, spin forever
-      if (current_state_->tics == -1) {
+      if (current_state_.tics == -1) {
         return true;
       }
 
-      if (--current_state_->tics == 0) {
-        SetState(current_state_->nextstate, obj);
+      if (--current_state_.tics == 0) {
+        SetState(current_state_.nextstate, obj);
       }
     } else {
       return false;
@@ -41,26 +42,32 @@ class BaseFSM {
     do {
       if (new_state == id::S_NULL) {
         // Disable the fsm.
-        current_state_ = nullptr;
+        disable_ = true;
         return;
       }
 
-      current_state_ = &id::states[new_state];
+      current_state_ = id::states[new_state];
+      disable_ = false;
 
-      CallStateFunction(current_state_->action, obj);
+      CallStateFunction(current_state_.action, obj);
+      if (disable_) {
+        // State function can change current state...
+        return;
+      }
 
       // Cunning case. If in new state tick == 0 we must switch to the next state immediately
-      new_state = current_state_->nextstate;
+      new_state = current_state_.nextstate;
 
-    } while(current_state_->tics == 0);
+    } while(current_state_.tics == 0);
   }
 
   // Returns sprite name without direction index
   std::string GetSpriteBaseName() const {
-    if (!current_state_) {
+    if (disable_) {
       return "";
     } else {
-      return id::sprnames[current_state_->sprite] + ('A' + current_state_->frame);
+      return std::string(id::sprnames[current_state_.sprite]) 
+        + static_cast<char>('A' + current_state_.frame);
     }
   }
 
@@ -68,7 +75,8 @@ class BaseFSM {
   virtual void CallStateFunction(id::FuncId foo_id, T* obj) {}
 
  private:
-  id::state_t* current_state_ = nullptr;
+  id::state_t current_state_;
+  bool disable_ = true;
 
 };
 

@@ -40,8 +40,8 @@ class Weapon {
 
  private:
   //WeaponState* state_;
-  WeaponFSM* fsm_;
-  NewWeaponFSM* fsm1_;
+  //WeaponFSM* fsm_;
+  NewWeaponFSM* fsm_;
   //WeaponFSM* state_;
   std::unique_ptr<EffectFSM> effect_fsm_;
 
@@ -50,6 +50,8 @@ class Weapon {
   int current_weapon_top_ = 0;
   bool fire_ = false;
   int change_weapon_ = 0;
+
+  WeaponType current_weapon_;
 
   void Raise();
   void Lower();
