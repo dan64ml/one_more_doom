@@ -35,6 +35,12 @@ void NewWeaponFSM::CallStateFunction(id::FuncId foo_id, Weapon* obj) {
     case id::A_FireMissile:
       obj->FireMissile();
       break;
+    case id::A_FirePlasma:
+      obj->FirePlasma();
+      break;
+    case id::A_FireBFG:
+      obj->FireBFG();
+      break;
     
     default:
       break;

@@ -14,6 +14,7 @@
 
 //#include "objects/base_fsm.h"
 #include "new_weapon_fsm.h"
+#include "flash_fsm.h"
 
 namespace wpn {
 
@@ -43,7 +44,8 @@ class Weapon {
   //WeaponFSM* fsm_;
   NewWeaponFSM* fsm_;
   //WeaponFSM* state_;
-  std::unique_ptr<EffectFSM> effect_fsm_;
+  //std::unique_ptr<EffectFSM> effect_fsm_;
+  std::unique_ptr<FlashFSM> effect_fsm_;
 
   //mobj::BaseFSM<Weapon>* base_fsm_;
 
@@ -61,6 +63,8 @@ class Weapon {
   void FireShotgun();
   void FirePistol();
   void FireMissile();
+  void FirePlasma();
+  void FireBFG();
 
   const static WeaponParam weapons_[WeaponType::kWeaponNumber];
 

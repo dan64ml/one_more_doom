@@ -122,8 +122,14 @@ Weapon::Weapon() {
   //fsm_ = new WeaponFSM(weapons_[kBFG]);
   //fsm_ = new WeaponFSM(weapons_[kChainsaw]);
 
+  //current_weapon_ = kPistol;
   //current_weapon_ = kShotgun;
   current_weapon_ = kSuperShotgun;
+  //current_weapon_ = kMissile;
+  //current_weapon_ = kPlasma;
+  //current_weapon_ = kBFG;
+  
+  //current_weapon_ = kChainsaw;
 
   fsm_ = new NewWeaponFSM(static_cast<id::statenum_t>(weapons_[current_weapon_].ready_state));
 }
@@ -172,14 +178,17 @@ bool Weapon::TickTime() {
   }*/
 
   fsm_->Tick(this);
-
   if (effect_fsm_) {
+    effect_fsm_->Tick(this);
+  }
+
+  /*if (effect_fsm_) {
     std::vector<id::FuncId> commands;
     auto ret = effect_fsm_->Tick(commands);
     if (!ret) {
       effect_fsm_.release();
     }
-  }
+  }*/
 
   return true; 
 }
@@ -214,26 +223,39 @@ void Weapon::ReFire() {
 
 void Weapon::FireShotgun2() {
   std::cout << "FireShotgun2" << std::endl;
-  effect_fsm_.reset(new EffectFSM(id::S_DSGUNFLASH1));
+  //effect_fsm_.reset(new EffectFSM(id::S_DSGUNFLASH1));
+  effect_fsm_.reset(new FlashFSM(static_cast<id::statenum_t>(weapons_[current_weapon_].flash_state)));
   //fsm_->ToFlashState();
 }
 
 void Weapon::FireShotgun() {
   std::cout << "FireShotgun" << std::endl;
-  effect_fsm_.reset(new EffectFSM(id::S_SGUNFLASH1));
+  effect_fsm_.reset(new FlashFSM(static_cast<id::statenum_t>(weapons_[current_weapon_].flash_state)));
+//  effect_fsm_.reset(new EffectFSM(id::S_SGUNFLASH1));
   //fsm_->ToFlashState();
 }
 
 void Weapon::FirePistol() {
   std::cout << "FirePistol" << std::endl;
-  effect_fsm_.reset(new EffectFSM(id::S_PISTOLFLASH));
+  effect_fsm_.reset(new FlashFSM(static_cast<id::statenum_t>(weapons_[current_weapon_].flash_state)));
+  //effect_fsm_.reset(new EffectFSM(id::S_PISTOLFLASH));
   //fsm_->ToFlashState();
 }
 
 void Weapon::FireMissile() {
-  effect_fsm_.reset(new EffectFSM(id::S_MISSILEFLASH1));
+  effect_fsm_.reset(new FlashFSM(static_cast<id::statenum_t>(weapons_[current_weapon_].flash_state)));
+  //effect_fsm_.reset(new EffectFSM(id::S_MISSILEFLASH1));
   //fsm_->ToFlashState();
 }
+
+void Weapon::FirePlasma() {
+  effect_fsm_.reset(new FlashFSM(static_cast<id::statenum_t>(weapons_[current_weapon_].flash_state)));
+}
+
+void Weapon::FireBFG() {
+  effect_fsm_.reset(new FlashFSM(static_cast<id::statenum_t>(weapons_[current_weapon_].flash_state)));
+}
+
 
 std::variant<bool, ProjectileParams, HitscanParams> Weapon::Fire(Ammo& am) {
   //fsm_->ToActiveState();

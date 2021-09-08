@@ -3,6 +3,7 @@ add_library(weapon
     weapon_fsm.cpp
     new_weapon_fsm.cpp
     effect_fsm.cpp
+    flash_fsm.cpp
     pistol.cpp
     plasma_gun.cpp
     rocket_launcher.cpp
