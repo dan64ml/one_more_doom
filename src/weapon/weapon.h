@@ -27,13 +27,14 @@ class Weapon {
   // true if ammo is ok but active weapon is not ready yet or Projectile/HitScan object if shot happened
   std::variant<bool, ProjectileParams, HitscanParams> Fire(Ammo& am);
 
-  //std::string GetSprite() const { return state_->GetSprite(); };
-  std::string GetSprite() const { return fsm_->GetSpriteName(); }
-  std::string GetFlashSpriteName() const;
+  // Can return empty string if underlying FSM is disabled
+  std::string GetWeaponSpriteName() const { return weapon_fsm_.GetSpriteName(); }
+  std::string GetFlashSpriteName() const { return flash_fsm_.GetSpriteName(); }
+
   int GetWeaponTopPosition() const { return current_weapon_top_; }
 
  private:
-  WeaponFSM* fsm_;
+  WeaponFSM weapon_fsm_;
   FlashFSM flash_fsm_;
 
   int current_weapon_top_ = 0;

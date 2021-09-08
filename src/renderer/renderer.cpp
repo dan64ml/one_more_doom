@@ -91,7 +91,7 @@ void Renderer::RenderStatusBar(const mobj::Player* player) {
 }
 
 void Renderer::RenderWeapon(const wpn::Weapon& w) {
-  auto arms_name = w.GetSprite();
+  auto arms_name = w.GetWeaponSpriteName();
   //arms_name = "SHT2A0";
   //arms_name = "SHTGA0";
   //arms_name = "PISGB0";

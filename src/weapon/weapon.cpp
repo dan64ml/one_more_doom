@@ -118,15 +118,12 @@ Weapon::Weapon() {
   
   //current_weapon_ = kChainsaw;
 
-  fsm_ = new WeaponFSM(weapons_[current_weapon_].ready_state);
-}
-
-std::string Weapon::GetFlashSpriteName() const {
-  return flash_fsm_.GetSpriteName();
+  //fsm_ = new WeaponFSM(weapons_[current_weapon_].ready_state);
+  weapon_fsm_.SetState(weapons_[current_weapon_].up_state, this);
 }
 
 bool Weapon::TickTime() {
-  fsm_->Tick(this);
+  weapon_fsm_.Tick(this);
 
   flash_fsm_.Tick(this);
 
@@ -143,7 +140,7 @@ void Weapon::Raise() {
   current_weapon_top_ = kWeaponTop;
 
   //fsm_->ToReadyState();
-  fsm_->SetState(static_cast<id::statenum_t>(weapons_[current_weapon_].ready_state), this);
+  weapon_fsm_.SetState(weapons_[current_weapon_].ready_state, this);
 }
 
 void Weapon::Lower() {
@@ -194,7 +191,7 @@ void Weapon::FireBFG() {
 
 std::variant<bool, ProjectileParams, HitscanParams> Weapon::Fire(Ammo& am) {
   //fsm_->ToActiveState();
-  fsm_->SetState(static_cast<id::statenum_t>(weapons_[current_weapon_].active_state), this);
+  weapon_fsm_.SetState(static_cast<id::statenum_t>(weapons_[current_weapon_].active_state), this);
   return true;
 }
 
