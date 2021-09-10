@@ -14,7 +14,7 @@ class Player : public MapObject {
  public:
   Player(const id::mobjinfo_t& info) : MapObject(info) {}
   
-  // Sets current buttun state
+  // Sets current button state
   void SetFireFlag(bool fire);
 
   void ChangeWeapon(char key) { weapon_.ChangeWeapon(key); }
@@ -23,15 +23,17 @@ class Player : public MapObject {
 
   bool TickTime();
  
-  //std::string GetWeaponSprite() const { return weapon_.GetSprite(); }
   const wpn::Weapon& GetWeapon() const { return weapon_; }
-
+  
+  int GetArmor() const { return armor_; }
  private:
   virtual bool RunIntoAction() override;
 
  private:
   wpn::Weapon weapon_;
   wpn::Ammo ammo_;
+
+  int armor_ = 42;
 };
 
 } // namespace mobj

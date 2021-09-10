@@ -11,10 +11,37 @@ namespace rend {
 void StatusBarRenderer::Render(sdl2::SdlWindow* wnd, const mobj::Player* player, const graph::GraphicsManager* gm) {
   DrawBaseBar(wnd, gm);
   DrawAmmo(wnd, gm, player);
+  DrawPlayerArmorHealth(wnd, gm, player);
 
   //auto test = gm->GetSprite("AMMNUM0");
   auto test = gm->GetSTBarElement("STFB2");
   DrawTextureAt(wnd, test, 300, 300);
+}
+
+void StatusBarRenderer::DrawPlayerArmorHealth(sdl2::SdlWindow* wnd, const graph::GraphicsManager* gm, const mobj::Player* player) {
+  auto percent = gm->GetSTBarElement("STTPRCNT");
+  DrawTextureAt(wnd, percent, kHealthXPos, kHealthYPos);
+  DrawTextureAt(wnd, percent, kArmorXPos, kArmorYPos);
+
+  int health = player->GetHealth();
+  int digit_x_pos = kHealthXPos;
+  do {
+    char digit = '0' + health % 10;
+    health /= 10;
+
+    int width = DrawDigitAt(wnd, gm, digit, digit_x_pos, kHealthYPos, FontType::kLargeRed);
+    digit_x_pos -= width;
+  } while (health);
+
+  int armor = player->GetArmor();
+  digit_x_pos = kArmorXPos;
+  do {
+    char digit = '0' + armor % 10;
+    armor /= 10;
+
+    int width = DrawDigitAt(wnd, gm, digit, digit_x_pos, kHealthYPos, FontType::kLargeRed);
+    digit_x_pos -= width;
+  } while (armor);
 }
 
 void StatusBarRenderer::DrawAmmo(sdl2::SdlWindow* wnd, const graph::GraphicsManager* gm, const mobj::Player* player) {
