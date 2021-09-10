@@ -52,6 +52,7 @@ const char *sprnames[NUMSPRITES] = {
     "HDB4","HDB5","HDB6","POB1","POB2","BRS1","TLMP","TLP2"
 };
 
+
 state_t	states[NUMSTATES] = {
     {SPR_TROO,0,-1,{A_NULL},S_NULL,0,0},	// S_NULL
     {SPR_SHTG,4,0,{A_Light0},S_NULL,0,0},	// S_LIGHTDONE

@@ -52,6 +52,9 @@ class Weapon {
   const int kWeaponBottom = 128;
   const int kWeaponTop = 16;  // Original value is 32. Why?!!
 
+  // Power for one BFG shot
+  const int kBFGCharge = 40;
+
   WeaponFSM weapon_fsm_;
   FlashFSM flash_fsm_;
 
@@ -61,11 +64,11 @@ class Weapon {
     true,   // kPistol
     true,   // kShotgun
     true,   // kChaingun
-    true,   // kMissile
+    false,   // kMissile
     true,   // kPlasma
     true,   // kBFG
-    true,   // kChainsaw
-    true,   // kSuperShotgun
+    false,   // kChainsaw
+    false,   // kSuperShotgun
   };
   // Ammunition
   int ammo_[kAmmoNumber] {

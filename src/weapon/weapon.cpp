@@ -255,36 +255,43 @@ void Weapon::ReFire() {
 
 void Weapon::FireShotgun2() {
   std::cout << "FireShotgun2" << std::endl;
+  ammo_[weapons_[current_weapon_].ammo] -= 2;
   flash_fsm_.SetState(weapons_[current_weapon_].flash_state, this);
 }
 
 void Weapon::FireShotgun() {
   std::cout << "FireShotgun" << std::endl;
+  ammo_[weapons_[current_weapon_].ammo]--;
   flash_fsm_.SetState(weapons_[current_weapon_].flash_state, this);
 }
 
 void Weapon::FirePistol() {
   std::cout << "FirePistol" << std::endl;
+  ammo_[weapons_[current_weapon_].ammo]--;
   flash_fsm_.SetState(weapons_[current_weapon_].flash_state, this);
 }
 
 void Weapon::FireMissile() {
   std::cout << "FireMissile" << std::endl;
+  ammo_[weapons_[current_weapon_].ammo]--;
   flash_fsm_.SetState(weapons_[current_weapon_].flash_state, this);
 }
 
 void Weapon::FirePlasma() {
   std::cout << "FirePlasma" << std::endl;
+  ammo_[weapons_[current_weapon_].ammo]--;
   flash_fsm_.SetState(weapons_[current_weapon_].flash_state, this);
 }
 
 void Weapon::FireBFG() {
   std::cout << "FireBFG" << std::endl;
+  ammo_[weapons_[current_weapon_].ammo] -= kBFGCharge;
   flash_fsm_.SetState(weapons_[current_weapon_].flash_state, this);
 }
 
 void Weapon::FireChaingun() {
   std::cout << "FireBFG" << std::endl;
+  ammo_[weapons_[current_weapon_].ammo]--;
   flash_fsm_.SetState(weapons_[current_weapon_].flash_state, this);
 }
 
@@ -297,7 +304,50 @@ void Weapon::FireCurrentWeapon() {
 }
 
 bool Weapon::CheckAmmo() {
-  return true;
+  int ammo_num = 1;
+  switch (current_weapon_)
+  {
+    case kBFG:
+      ammo_num = kBFGCharge;
+      break;
+    case kSuperShotgun:
+      ammo_num = 2;
+      break;
+    
+    default:
+      ammo_num = 1;
+      break;
+  }
+
+  if (weapons_[current_weapon_].ammo == kAmNoAmmo 
+      || ammo_[weapons_[current_weapon_].ammo] >= ammo_num) {
+    return true;
+  }
+
+  // Select new weapon. Keep original behavior
+  if (ammo_[kAmCell] && has_weapon_[kPlasma]) {
+    pending_weapon_ = kPlasma;
+  } else if (ammo_[kAmShell] > 2 && has_weapon_[kSuperShotgun]) {
+    pending_weapon_ = kSuperShotgun;
+  } else if (ammo_[kAmClip] && has_weapon_[kChaingun]) {
+    pending_weapon_ = kChaingun;
+  } else if (ammo_[kAmShell] && has_weapon_[kShotgun]) {
+    pending_weapon_ = kShotgun;
+  } else if (ammo_[kAmClip] && has_weapon_[kPistol]) {
+    pending_weapon_ = kPistol;
+  } else if (has_weapon_[kChainsaw]) {
+    pending_weapon_ = kChainsaw;
+  } else if (ammo_[kAmMisl] && has_weapon_[kMissile]) {
+    pending_weapon_ = kMissile;
+  } else if (ammo_[kAmCell] > kBFGCharge && has_weapon_[kBFG]) {
+    pending_weapon_ = kBFG;
+  } else {
+    pending_weapon_ = kFist;
+  }
+
+  weapon_fsm_.SetState(weapons_[current_weapon_].down_state, this);
+
+  return false;
 }
 
 } // namespace wpn
