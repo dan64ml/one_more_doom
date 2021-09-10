@@ -3,5 +3,6 @@ add_library(renderer
     renderer.cpp
     bam.cpp
     masked_object.cpp
+    status_bar_renderer.cpp
     )
     

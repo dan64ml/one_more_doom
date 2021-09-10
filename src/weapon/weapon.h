@@ -39,6 +39,9 @@ class Weapon {
 
   int GetWeaponTopPosition() const { return current_weapon_top_; }
 
+  // For status bar
+  int GetCurrentAmmoNumber() const { return ammo_[weapons_[current_weapon_].ammo]; }
+
  private:
   // Original values from id
   const int kLowerSpeed = 6;
