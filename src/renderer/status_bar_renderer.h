@@ -39,12 +39,24 @@ class StatusBarRenderer {
   static const int kCurrentAmmoXPos = 44 * kScaleCoef;
   static const int kCurrentAmmoYPos = 171 * kScaleCoef;
 
+  static const int kAvailWeaponXPos = 111 * kScaleCoef;
+  static const int kAvailWeaponYPos = 172 * kScaleCoef;
+  static const int kAvailWeaponXShift = 12 * kScaleCoef;
+  static const int kAvailWeaponYShift = 10 * kScaleCoef;
+
+  static const int kBulletXPos = 288 * kScaleCoef;
+  static const int kMaxBulletXShift = 26 * kScaleCoef;
+  static const int kBulletYPos1 = 173 * kScaleCoef;
+  static const int kBulletYPos2 = 179 * kScaleCoef;
+  static const int kBulletYPos3 = 185 * kScaleCoef;
+  static const int kBulletYPos4 = 191 * kScaleCoef;
+
   static void DrawTextureAt(sdl2::SdlWindow* wnd, const graph::Texture& texture, int x_pos, int y_pos);
-  // Draw symbol in top left corner. Returns width of the symbol
+  // Draw a symbol. Returns width of the symbol
   static int DrawDigitAt(sdl2::SdlWindow* wnd, const graph::GraphicsManager* gm, const char digit,
                          int x_pos, int y_pos, FontType font, Align align = Align::kTopRight);
-  // Draw symbol in top right corner. Returns width of the symbol
-  static int DrawDigitAtRight(sdl2::SdlWindow* wnd, const graph::GraphicsManager* gm, const char digit, int x_pos, int y_pos, FontType font);
+  static void DrawAmmoString(sdl2::SdlWindow* wnd, const graph::GraphicsManager* gm, int current_num,
+                              int max_num, int x_pos, int y_pos);
 
   static void DrawBaseBar(sdl2::SdlWindow* wnd, const graph::GraphicsManager* gm);
   static void DrawAmmo(sdl2::SdlWindow* wnd, const graph::GraphicsManager* gm, const mobj::Player* player);

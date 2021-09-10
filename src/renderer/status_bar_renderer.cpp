@@ -13,7 +13,7 @@ void StatusBarRenderer::Render(sdl2::SdlWindow* wnd, const mobj::Player* player,
   DrawAmmo(wnd, gm, player);
 
   //auto test = gm->GetSprite("AMMNUM0");
-  auto test = gm->GetSTBarElement("STCFN048");
+  auto test = gm->GetSTBarElement("STFB2");
   DrawTextureAt(wnd, test, 300, 300);
 }
 
@@ -29,12 +29,38 @@ void StatusBarRenderer::DrawAmmo(sdl2::SdlWindow* wnd, const graph::GraphicsMana
     char digit = '0' + num % 10;
     num /= 10;
 
-    int width = DrawDigitAtRight(wnd, gm, digit, digit_x_pos, kCurrentAmmoYPos, FontType::kLargeRed);
+    int width = DrawDigitAt(wnd, gm, digit, digit_x_pos, kCurrentAmmoYPos, FontType::kLargeRed);
     digit_x_pos -= width;
   } while (num);
 
   // Available weapon
-  DrawDigitAt(wnd, gm, '2', 111 * kScaleCoef, 172 * kScaleCoef, FontType::kSmallGray, Align::kTopLeft);
+  FontType font = weapon.IsWeaponAvailable(2) ? FontType::kSmallRed : FontType::kSmallGray;
+  DrawDigitAt(wnd, gm, '2', kAvailWeaponXPos, kAvailWeaponYPos, font, Align::kTopLeft);
+
+  font = weapon.IsWeaponAvailable(3) ? FontType::kSmallRed : FontType::kSmallGray;
+  DrawDigitAt(wnd, gm, '3', kAvailWeaponXPos + kAvailWeaponXShift, kAvailWeaponYPos, font, Align::kTopLeft);
+
+  font = weapon.IsWeaponAvailable(4) ? FontType::kSmallRed : FontType::kSmallGray;
+  DrawDigitAt(wnd, gm, '4', kAvailWeaponXPos + 2 * kAvailWeaponXShift, kAvailWeaponYPos, font, Align::kTopLeft);
+
+  font = weapon.IsWeaponAvailable(5) ? FontType::kSmallRed : FontType::kSmallGray;
+  DrawDigitAt(wnd, gm, '5', kAvailWeaponXPos, kAvailWeaponYPos + kAvailWeaponYShift, font, Align::kTopLeft);
+
+  font = weapon.IsWeaponAvailable(6) ? FontType::kSmallRed : FontType::kSmallGray;
+  DrawDigitAt(wnd, gm, '6', kAvailWeaponXPos + kAvailWeaponXShift, kAvailWeaponYPos + kAvailWeaponYShift, font, Align::kTopLeft);
+
+  font = weapon.IsWeaponAvailable(7) ? FontType::kSmallRed : FontType::kSmallGray;
+  DrawDigitAt(wnd, gm, '7', kAvailWeaponXPos + 2 * kAvailWeaponXShift, kAvailWeaponYPos + kAvailWeaponYShift, font, Align::kTopLeft);
+
+  // Ammunition
+  auto bullet = weapon.GetAmmo(wpn::kAmClip);
+  DrawAmmoString(wnd, gm, bullet.first, bullet.second, kBulletXPos, kBulletYPos1);
+  auto shell = weapon.GetAmmo(wpn::kAmShell);
+  DrawAmmoString(wnd, gm, shell.first, shell.second, kBulletXPos, kBulletYPos2);
+  auto rocket = weapon.GetAmmo(wpn::kAmMisl);
+  DrawAmmoString(wnd, gm, rocket.first, rocket.second, kBulletXPos, kBulletYPos3);
+  auto cell = weapon.GetAmmo(wpn::kAmCell);
+  DrawAmmoString(wnd, gm, cell.first, cell.second, kBulletXPos, kBulletYPos4);
 }
 
 void StatusBarRenderer::DrawBaseBar(sdl2::SdlWindow* wnd, const graph::GraphicsManager* gm) {
@@ -88,19 +114,26 @@ int StatusBarRenderer::DrawDigitAt(sdl2::SdlWindow* wnd, const graph::GraphicsMa
     texture_name = "STYSNUM";
     break;
   case FontType::kSmallRed:
-    texture_name = "STCFN0";
+    //texture_name = "STCFN0";
+    texture_name = "STGNUM";
     break;
   
   default:
     break;
   }
 
+//  if (font == FontType::kSmallRed) {
+//    texture_name += std::to_string(static_cast<int>(digit));
+//  } else {
+//    texture_name += digit;
+//  }
+  texture_name += digit;
+  auto texture = gm->GetSTBarElement(texture_name);
+
   if (font == FontType::kSmallRed) {
-    texture_name += std::to_string(static_cast<int>(digit));
-  } else {
-    texture_name += digit;
+    texture.SetPalette(4);
+    texture.SetLightLevel(0);
   }
-  const auto texture = gm->GetSTBarElement(texture_name);
 
   int x_size = texture.GetXSize() * kScaleCoef;
   if (align == Align::kTopRight) {
@@ -111,18 +144,25 @@ int StatusBarRenderer::DrawDigitAt(sdl2::SdlWindow* wnd, const graph::GraphicsMa
   return x_size;
 }
 
-int StatusBarRenderer::DrawDigitAtRight(sdl2::SdlWindow* wnd, const graph::GraphicsManager* gm, const char digit, int x_pos, int y_pos, FontType font) {
-  if (digit < '0' || digit > '9') {
-    return 0;
-  }
+void StatusBarRenderer::DrawAmmoString(sdl2::SdlWindow* wnd, const graph::GraphicsManager* gm, int current_num,
+                                       int max_num, int x_pos, int y_pos) {
+  int digit_x_pos = x_pos;
+  do {
+    char digit = '0' + current_num % 10;
+    current_num /= 10;
 
-  std::string texture_name = std::string("STTNUM") + digit;
-  const auto texture = gm->GetSTBarElement(texture_name);
+    int width = DrawDigitAt(wnd, gm, digit, digit_x_pos, y_pos, FontType::kSmallYellow);
+    digit_x_pos -= width;
+  } while (current_num);
 
-  int x_size = texture.GetXSize() * kScaleCoef;
-  DrawTextureAt(wnd, texture, x_pos - x_size, y_pos);
+  digit_x_pos = x_pos + kMaxBulletXShift;
+  do {
+    char digit = '0' + max_num % 10;
+    max_num /= 10;
 
-  return x_size;
+    int width = DrawDigitAt(wnd, gm, digit, digit_x_pos, y_pos, FontType::kSmallYellow);
+    digit_x_pos -= width;
+  } while (max_num);
 }
 
 } // namespace rend

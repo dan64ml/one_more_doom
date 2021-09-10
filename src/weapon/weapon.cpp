@@ -177,6 +177,31 @@ void Weapon::ChangeWeapon(char key) {
   ChangeWeapon(new_weapon);
 }
 
+bool Weapon::IsWeaponAvailable(int keyboard_key) const {
+  switch (keyboard_key)
+  {
+    case 2:
+      return has_weapon_[kPistol];
+    case 3:
+      return (has_weapon_[kShotgun] || has_weapon_[kSuperShotgun]);
+    case 4:
+      return has_weapon_[kChaingun];
+    case 5:
+      return has_weapon_[kMissile];
+    case 6:
+      return has_weapon_[kPlasma];
+    case 7:
+      return has_weapon_[kBFG];
+    
+    default:
+      return false;
+  }
+}
+
+std::pair<int, int> Weapon::GetAmmo(AmmoType am) const {
+  return {ammo_[am], max_ammo_[am]};
+}
+
 void Weapon::Raise() {
   //std::cout << "Raise" << std::endl;
   current_weapon_top_ -= kRaiseSpeed;

@@ -41,6 +41,9 @@ class Weapon {
 
   // For status bar
   int GetCurrentAmmoNumber() const { return ammo_[weapons_[current_weapon_].ammo]; }
+  bool IsWeaponAvailable(int keyboard_key) const;
+  // Returns current/maximum amount
+  std::pair<int, int> GetAmmo(AmmoType am) const;
 
  private:
   // Original values from id
@@ -66,10 +69,16 @@ class Weapon {
   };
   // Ammunition
   int ammo_[kAmmoNumber] {
+    20,    // kAmClip
+    20,    // kAmShell
+    20,    // kAmCell
+    20     // kAmMisl
+  };
+  const int max_ammo_[kAmmoNumber] {
     200,    // kAmClip
-    200,    // kAmShell
-    200,    // kAmCell
-    200     // kAmMisl
+    50,    // kAmShell
+    300,    // kAmCell
+    50     // kAmMisl
   };
 
   // Used to raise/lower a weapon
