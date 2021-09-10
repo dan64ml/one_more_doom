@@ -112,8 +112,8 @@ bool Weapon::TickTime() {
   return true; 
 }
 
-void Weapon::Fire() {
-  fire_ = true;
+void Weapon::SetFireFlag(bool fire) {
+  fire_flag_ = fire;
 }
 
 void Weapon::ChangeWeapon(WeaponType wp) {
@@ -178,7 +178,7 @@ void Weapon::ChangeWeapon(char key) {
 }
 
 void Weapon::Raise() {
-  std::cout << "Raise" << std::endl;
+  //std::cout << "Raise" << std::endl;
   current_weapon_top_ -= kRaiseSpeed;
   if (current_weapon_top_ > kWeaponTop) {
     return;
@@ -191,7 +191,7 @@ void Weapon::Raise() {
 
 // Lowers current weapon and then starts raising of new weapon
 void Weapon::Lower() {
-  std::cout << "Lower" << std::endl;
+  //std::cout << "Lower" << std::endl;
 
   current_weapon_top_ += kLowerSpeed;
   if (current_weapon_top_ < kWeaponBottom) {
@@ -206,25 +206,26 @@ void Weapon::Lower() {
 
 // The place to fire or change current weapon
 void Weapon::WeaponReady() {
+  //std::cout << "WeaponReady" << std::endl;
   // Change current weapon
   if (pending_weapon_ != kNotPending) {
-    fire_ = false;
+    fire_flag_ = false;
 
     weapon_fsm_.SetState(weapons_[current_weapon_].down_state, this);
 
     return;
   }
 
-  if (fire_) {
-    fire_ = false;
-
+  if (fire_flag_) {
     FireCurrentWeapon();
   }
 }
 
 void Weapon::ReFire() {
   std::cout << "ReFire" << std::endl;
-
+  if (fire_flag_) {
+    FireCurrentWeapon();
+  }
 }
 
 void Weapon::FireShotgun2() {
@@ -239,7 +240,6 @@ void Weapon::FireShotgun() {
 
 void Weapon::FirePistol() {
   std::cout << "FirePistol" << std::endl;
-  fire_ = false;
   flash_fsm_.SetState(weapons_[current_weapon_].flash_state, this);
 }
 
@@ -254,6 +254,11 @@ void Weapon::FirePlasma() {
 }
 
 void Weapon::FireBFG() {
+  std::cout << "FireBFG" << std::endl;
+  flash_fsm_.SetState(weapons_[current_weapon_].flash_state, this);
+}
+
+void Weapon::FireChaingun() {
   std::cout << "FireBFG" << std::endl;
   flash_fsm_.SetState(weapons_[current_weapon_].flash_state, this);
 }

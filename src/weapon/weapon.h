@@ -30,8 +30,8 @@ class Weapon {
   // true if ammo is ok but active weapon is not ready yet or Projectile/HitScan object if shot happened
   //std::variant<bool, ProjectileParams, HitscanParams> Fire(Ammo& am);
   
-  // Requests fire
-  void Fire();
+  // Fire flag will be analyzed by weapon fsm
+  void SetFireFlag(bool fire);
   
   // Can return empty string if underlying FSM is disabled
   std::string GetWeaponSpriteName() const { return weapon_fsm_.GetSpriteName(); }
@@ -72,7 +72,8 @@ class Weapon {
   // Used to raise/lower a weapon
   int current_weapon_top_ = kWeaponBottom;
 
-  bool fire_ = false;
+  // Reflects fire button state. Should be updated every tick.
+  bool fire_flag_ = false;
 
   int change_weapon_ = 0;
 
@@ -89,6 +90,7 @@ class Weapon {
   void FireMissile();
   void FirePlasma();
   void FireBFG();
+  void FireChaingun();
 
   void FireCurrentWeapon();
 

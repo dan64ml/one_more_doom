@@ -23,32 +23,8 @@ void Player::Move(rend::BamAngle delta_angle, double forward_move, double side_m
   mom_y += dy;
 }
 
-void Player::Fire() {
-  weapon_.Fire();
-  /*auto ret = weapon_.Fire(ammo_);
-  switch (ret.index())
-  {
-  case 0:
-    if (!std::get<bool>(ret)) {
-      // change active weapon
-    }
-    break;
-  
-  case 1:
-    // process Projectile
-    //world_->SpawnProjectile(std::unique_ptr<Projectile>(new Projectile(std::get<wpn::ProjectileParams>(ret))), this);
-    world_->SpawnProjectile(std::unique_ptr<Projectile>(new Projectile(std::get<wpn::ProjectileParams>(ret), this)));
-    break;
-
-  case 2:
-    // process Hitscan
-    break;
-
-  default:
-    // something went wrong ((
-    assert(false);
-    break;
-  }*/
+void Player::SetFireFlag(bool fire) {
+  weapon_.SetFireFlag(fire);
 }
 
 bool Player::TickTime() {

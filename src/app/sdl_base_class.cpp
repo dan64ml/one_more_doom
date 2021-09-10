@@ -117,12 +117,19 @@ void SdlBaseClass::ProcessEvents() {
     }
   }
 
+  //SDL_PumpEvents();
+  
   const Uint8* key_states = SDL_GetKeyboardState(NULL);
   for (const auto& [key, handler] : key_state_handlers_) {
     if (key_states[key]) {
       handler();
     }
   }
+}
+
+bool SdlBaseClass::IsButtonPressed(SDL_Scancode key) const {
+  const Uint8* key_states = SDL_GetKeyboardState(NULL);
+  return key_states[key];
 }
 
 void SdlBaseClass::OnKeyboardUpEvent(const SDL_Event& event) {

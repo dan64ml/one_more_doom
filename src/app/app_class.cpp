@@ -36,22 +36,22 @@ void AppClass::InitInstance() {
   //map_.LoadLevel(25); //16 // 27 - sprites // flats 12 // 25, 2, 4, 13 /* textures 8, 11 */
 
 
- 	SetKeyStateHandler(SDL_SCANCODE_RIGHT/*SDL_SCANCODE_D*/, [this]() {
+ 	SetKeyStateHandler(SDL_SCANCODE_RIGHT, [this]() {
       this->keybd_.right = true;
     }
 	);
 
- 	SetKeyStateHandler(SDL_SCANCODE_LEFT/*SDL_SCANCODE_A*/, [this]() {
+ 	SetKeyStateHandler(SDL_SCANCODE_LEFT, [this]() {
       this->keybd_.left = true;
     }
 	);
 
- 	SetKeyStateHandler(SDL_SCANCODE_UP/*SDL_SCANCODE_W*/, [this]() {
+ 	SetKeyStateHandler(SDL_SCANCODE_UP, [this]() {
       this->keybd_.up = true;
     }
 	);
 
- 	SetKeyStateHandler(SDL_SCANCODE_DOWN/*SDL_SCANCODE_S*/, [this]() {
+ 	SetKeyStateHandler(SDL_SCANCODE_DOWN, [this]() {
       this->keybd_.down = true;
     }
 	);
@@ -61,19 +61,10 @@ void AppClass::InitInstance() {
     }
 	);
 
- 	SetKeyStateHandler(SDL_SCANCODE_LCTRL/*SDL_SCANCODE_LALT*/, [this]() {
+ 	SetKeyStateHandler(SDL_SCANCODE_LCTRL, [this]() {
       this->keybd_.side_move = true;
     }
 	);
-
- 	SetKeyStateHandler(SDL_SCANCODE_SPACE, [this]() {
-      this->keybd_.fire = true;
-    }
-	);
-// 	SetKeyUpHandler(SDLK_SPACE, [this](const SDL_Event&) {
-//      this->keybd_.fire = true;
-//    }
-//	);
 
   SetKeyUpHandler(SDLK_1, [this](const SDL_Event&) {
       this->keybd_.number_key = '1';
@@ -149,11 +140,8 @@ void AppClass::ProcessScene([[maybe_unused]] int ms_elapsed) {
   keybd_.run = false;
   keybd_.side_move = false;
 
-  if (keybd_.fire) {
-    std::cout << "Fire!" << std::endl;
-    player_->Fire();
-    keybd_.fire = false;
-  }
+  player_->SetFireFlag(IsButtonPressed(SDL_SCANCODE_SPACE));
+
   if (keybd_.number_key) {
     player_->ChangeWeapon(keybd_.number_key);
     keybd_.number_key = 0;

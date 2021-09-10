@@ -30,6 +30,8 @@ class SdlBaseClass {
   void SetKeyUpHandler(SDL_Keycode key, std::function<void(const SDL_Event&)> handler);
   void SetKeyStateHandler(SDL_Scancode key, std::function<void(void)> handler);
 
+  bool IsButtonPressed(SDL_Scancode key) const;
+
  protected:
   SdlWindow* CreateWindow(std::string caption, int x_size = 800, int y_size = 600,
 	 		                      int x_pos = SDL_WINDOWPOS_CENTERED, int y_pos = SDL_WINDOWPOS_CENTERED);
