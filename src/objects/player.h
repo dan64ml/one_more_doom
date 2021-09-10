@@ -10,6 +10,17 @@
 
 namespace mobj {
 
+enum CardType {
+  kBlueCard,
+  kYellowCard,
+  kRedCard,
+  kBlueScull,
+  kYellowScull,
+  kRedScull,
+
+  kCardsNumber
+};
+
 class Player : public MapObject {
  public:
   Player(const id::mobjinfo_t& info) : MapObject(info) {}
@@ -26,6 +37,8 @@ class Player : public MapObject {
   const wpn::Weapon& GetWeapon() const { return weapon_; }
   
   int GetArmor() const { return armor_; }
+  bool IsCardPresent(CardType c) const { return cards_[c]; }
+
  private:
   virtual bool RunIntoAction() override;
 
@@ -34,6 +47,15 @@ class Player : public MapObject {
   wpn::Ammo ammo_;
 
   int armor_ = 42;
+
+  bool cards_[kCardsNumber] = {
+    true,
+    true,
+    false,
+    false,
+    true,
+    true
+  };
 };
 
 } // namespace mobj

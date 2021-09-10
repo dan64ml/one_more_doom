@@ -12,10 +12,35 @@ void StatusBarRenderer::Render(sdl2::SdlWindow* wnd, const mobj::Player* player,
   DrawBaseBar(wnd, gm);
   DrawAmmo(wnd, gm, player);
   DrawPlayerArmorHealth(wnd, gm, player);
+  DrawCards(wnd, gm, player);
 
   //auto test = gm->GetSprite("AMMNUM0");
   auto test = gm->GetSTBarElement("STFB2");
   DrawTextureAt(wnd, test, 300, 300);
+}
+
+void StatusBarRenderer::DrawCards(sdl2::SdlWindow* wnd, const graph::GraphicsManager* gm, const mobj::Player* player) {
+  graph::Texture card;
+
+  const int x_pos = kKeysXPos;
+  std::string base_name = "STKEYS";
+
+  for (int i = 0; i < 3; ++i) {
+    int y_pos = kKeysYPos[i];
+    if (player->IsCardPresent(static_cast<mobj::CardType>(i))
+        && player->IsCardPresent(static_cast<mobj::CardType>(i + 3))) {
+      card = gm->GetSTBarElement(base_name + std::to_string(i + 3));
+      DrawTextureAt(wnd, card, x_pos - kScaleCoef, y_pos - kScaleCoef);
+      card = gm->GetSTBarElement(base_name + std::to_string(i));
+      DrawTextureAt(wnd, card, x_pos + kScaleCoef, y_pos + 2 * kScaleCoef);
+    } else if (player->IsCardPresent(static_cast<mobj::CardType>(i + 3))) {
+      card = gm->GetSTBarElement(base_name + std::to_string(i + 3));
+      DrawTextureAt(wnd, card, x_pos, y_pos);
+    } else if (player->IsCardPresent(static_cast<mobj::CardType>(i))) {
+      card = gm->GetSTBarElement(base_name + std::to_string(i));
+      DrawTextureAt(wnd, card, x_pos, y_pos + kScaleCoef);
+    }
+  }
 }
 
 void StatusBarRenderer::DrawPlayerArmorHealth(sdl2::SdlWindow* wnd, const graph::GraphicsManager* gm, const mobj::Player* player) {
