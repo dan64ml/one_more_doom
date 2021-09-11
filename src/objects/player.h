@@ -39,6 +39,8 @@ class Player : public MapObject {
   int GetArmor() const { return armor_; }
   bool IsCardPresent(CardType c) const { return cards_[c]; }
 
+  std::string GetFaceSpriteName() const { return "STFST01"; }
+
  private:
   virtual bool RunIntoAction() override;
 

@@ -63,9 +63,10 @@ class StatusBarRenderer {
     191 * kScaleCoef
   };
 
-  static const int kBlueKeyYPos = 171 * kScaleCoef;
-  static const int kYellowKeyYPos = 181 * kScaleCoef;
-  static const int kRedKeyYPos = 191 * kScaleCoef;
+  static const int kFaceXPos = 143 * kScaleCoef;
+  static const int kFaceYPos = 169 * kScaleCoef;
+  static const int kFaceCenterXShift = 5 * kScaleCoef;
+  static const int kFaceCenterYShift = 1 * kScaleCoef;
 
   static void DrawTextureAt(sdl2::SdlWindow* wnd, const graph::Texture& texture, int x_pos, int y_pos);
   // Draw a symbol. Returns width of the symbol
@@ -78,6 +79,7 @@ class StatusBarRenderer {
   static void DrawAmmo(sdl2::SdlWindow* wnd, const graph::GraphicsManager* gm, const mobj::Player* player);
   static void DrawPlayerArmorHealth(sdl2::SdlWindow* wnd, const graph::GraphicsManager* gm, const mobj::Player* player);
   static void DrawCards(sdl2::SdlWindow* wnd, const graph::GraphicsManager* gm, const mobj::Player* player);
+  static void DrawFace(sdl2::SdlWindow* wnd, const graph::GraphicsManager* gm, const mobj::Player* player);
 };
 
 }

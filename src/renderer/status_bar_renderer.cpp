@@ -13,10 +13,20 @@ void StatusBarRenderer::Render(sdl2::SdlWindow* wnd, const mobj::Player* player,
   DrawAmmo(wnd, gm, player);
   DrawPlayerArmorHealth(wnd, gm, player);
   DrawCards(wnd, gm, player);
+  DrawFace(wnd, gm, player);
 
   //auto test = gm->GetSprite("AMMNUM0");
-  auto test = gm->GetSTBarElement("STFB2");
-  DrawTextureAt(wnd, test, 300, 300);
+  //auto test = gm->GetSTBarElement("STPB0");
+  //DrawTextureAt(wnd, test, 300, 300);
+}
+
+void StatusBarRenderer::DrawFace(sdl2::SdlWindow* wnd, const graph::GraphicsManager* gm, const mobj::Player* player) {
+  auto background_texture = gm->GetSTBarElement("STFB1");
+  DrawTextureAt(wnd, background_texture, kFaceXPos, kFaceYPos);
+
+  auto texture_name = player->GetFaceSpriteName();
+  auto texture = gm->GetSTBarElement(texture_name);
+  DrawTextureAt(wnd, texture, kFaceXPos + kFaceCenterXShift, kFaceYPos + kFaceCenterYShift);
 }
 
 void StatusBarRenderer::DrawCards(sdl2::SdlWindow* wnd, const graph::GraphicsManager* gm, const mobj::Player* player) {
