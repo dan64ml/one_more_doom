@@ -74,7 +74,7 @@ class Weapon {
   int ammo_[kAmmoNumber] {
     20,    // kAmClip
     20,    // kAmShell
-    20,    // kAmCell
+    300,    // kAmCell
     20     // kAmMisl
   };
   const int max_ammo_[kAmmoNumber] {

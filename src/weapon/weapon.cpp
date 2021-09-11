@@ -1,6 +1,7 @@
 #include "weapon.h"
 
 #include <iostream>
+#include <cstdlib>
 
 #include "objects/info.h"
 
@@ -91,11 +92,11 @@ const WeaponParam Weapon::weapons_[WeaponType::kWeaponNumber] = {
 };
 
 Weapon::Weapon() {
-  current_weapon_ = kPistol;
+  //current_weapon_ = kPistol;
   //current_weapon_ = kShotgun;
   //current_weapon_ = kSuperShotgun;
   //current_weapon_ = kMissile;
-  //current_weapon_ = kPlasma;
+  current_weapon_ = kPlasma;
   //current_weapon_ = kBFG;
   
   //current_weapon_ = kChainsaw;
@@ -280,7 +281,12 @@ void Weapon::FireMissile() {
 void Weapon::FirePlasma() {
   std::cout << "FirePlasma" << std::endl;
   ammo_[weapons_[current_weapon_].ammo]--;
-  flash_fsm_.SetState(weapons_[current_weapon_].flash_state, this);
+  // Keep original behavior
+  if (rand() % 2) {
+    flash_fsm_.SetState(id::S_PLASMAFLASH1, this);
+  } else {
+    flash_fsm_.SetState(id::S_PLASMAFLASH2, this);
+  }
 }
 
 void Weapon::FireBFG() {
