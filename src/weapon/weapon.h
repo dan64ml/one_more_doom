@@ -65,7 +65,7 @@ class Weapon {
     true,   // kPistol
     true,   // kShotgun
     true,   // kChaingun
-    false,   // kMissile
+    true,   // kMissile
     true,   // kPlasma
     true,   // kBFG
     false,   // kChainsaw
@@ -76,7 +76,7 @@ class Weapon {
     20,    // kAmClip
     20,    // kAmShell
     300,    // kAmCell
-    20     // kAmMisl
+    50     // kAmMisl
   };
   const int max_ammo_[kAmmoNumber] {
     200,    // kAmClip

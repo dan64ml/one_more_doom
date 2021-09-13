@@ -277,10 +277,12 @@ void Weapon::FireMissile() {
   std::cout << "FireMissile" << std::endl;
   ammo_[weapons_[current_weapon_].ammo]--;
   flash_fsm_.SetState(weapons_[current_weapon_].flash_state, this);
+
+  player_->FireMissile();
 }
 
 void Weapon::FirePlasma() {
-  std::cout << "FirePlasma" << std::endl;
+  //std::cout << "FirePlasma" << std::endl;
   ammo_[weapons_[current_weapon_].ammo]--;
   // Keep original behavior
   if (rand() % 2) {

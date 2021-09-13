@@ -37,7 +37,7 @@ bool Player::RunIntoAction() {
 }
 
 void Player::FireMissile() {
-
+  world_->SpawnProjectile(id::MT_ROCKET, this);
 }
 
 void Player::FirePlasma() {
