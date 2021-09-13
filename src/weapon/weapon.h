@@ -10,7 +10,6 @@
 #include "weapon_fsm.h"
 #include "flash_fsm.h"
 
-#include "projectile_params.h"
 #include "hitscan_params.h"
 
 namespace mobj {
@@ -29,10 +28,6 @@ class Weapon {
   void ChangeWeapon(WeaponType wp);
   // Change current weapon according to pressed key (hardcoded)
   void ChangeWeapon(char key);
-  
-  // Depending on the active weapon and ammo Fire() can return false if there is no enough ammo,
-  // true if ammo is ok but active weapon is not ready yet or Projectile/HitScan object if shot happened
-  //std::variant<bool, ProjectileParams, HitscanParams> Fire(Ammo& am);
   
   // Fire flag will be analyzed by weapon fsm
   void SetFireFlag(bool fire);

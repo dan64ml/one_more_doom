@@ -4,7 +4,6 @@
 #include <vector>
 
 #include "map_object.h"
-#include "weapon/projectile_params.h"
 
 namespace mobj {
 
