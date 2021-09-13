@@ -293,13 +293,8 @@ void World::PutMobjOnMap(std::unique_ptr<mobj::MapObject> obj) {
 //
 //}
 
-void World::SpawnProjectile(std::unique_ptr<mobj::MapObject> proj) {
-//  proj->x = parent->x;
-//  proj->y = parent->y;
-//  proj->z = parent->z;
-//
-//  proj->mom_x = 3;
-
+void World::SpawnProjectile(id::mobjtype_t type, mobj::MapObject* parent) {
+  auto proj = std::unique_ptr<mobj::MapObject>(new mobj::Projectile(type, parent));
   PutMobjOnMap(std::move(proj));
 }
 

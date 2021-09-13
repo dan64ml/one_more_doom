@@ -23,7 +23,7 @@ enum CardType {
 
 class Player : public MapObject {
  public:
-  Player(const id::mobjinfo_t& info) : MapObject(info) {}
+  Player(const id::mobjinfo_t& info) : MapObject(info), weapon_(this) {}
   
   // Sets current button state
   void SetFireFlag(bool fire);
@@ -40,6 +40,9 @@ class Player : public MapObject {
   bool IsCardPresent(CardType c) const { return cards_[c]; }
 
   std::string GetFaceSpriteName() const { return "STFST01"; }
+
+  void FireMissile();
+  void FirePlasma();
 
  private:
   virtual bool RunIntoAction() override;

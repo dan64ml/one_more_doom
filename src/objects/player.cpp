@@ -36,4 +36,12 @@ bool Player::RunIntoAction() {
   return true;
 }
 
+void Player::FireMissile() {
+
+}
+
+void Player::FirePlasma() {
+  world_->SpawnProjectile(id::MT_PLASMA, this);
+}
+
 } // namespace mobj

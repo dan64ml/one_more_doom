@@ -33,8 +33,8 @@ class World {
 
   mobj::Player* GetPlayer() { return reinterpret_cast<mobj::Player*>(player_.get()); };
 
-  //void SpawnProjectile(std::unique_ptr<mobj::MapObject> proj, const mobj::MapObject* parent);
-  void SpawnProjectile(std::unique_ptr<mobj::MapObject> proj);
+  // Spawn plasma ball or missile.
+  void SpawnProjectile(id::mobjtype_t type, mobj::MapObject* parent);
 
   void DoBlastDamage(int damage, int x, int y) {}
 
@@ -54,7 +54,7 @@ class World {
   
   BlockMap blocks_;
 
-  //std::unique_ptr<mobj::MapObject> player_;
+  // Player is a special mobj
   std::unique_ptr<mobj::Player> player_;
 
   id::MobjFactory spawner_;

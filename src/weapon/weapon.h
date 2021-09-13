@@ -13,11 +13,15 @@
 #include "projectile_params.h"
 #include "hitscan_params.h"
 
+namespace mobj {
+class Player;
+}
+
 namespace wpn {
 
 class Weapon {
  public:
-  Weapon();
+  Weapon(mobj::Player* player);
 
   bool TickTime();
 
@@ -46,6 +50,8 @@ class Weapon {
   std::pair<int, int> GetAmmo(AmmoType am) const;
 
  private:
+  mobj::Player* player_;
+
   // Original values from id
   const int kLowerSpeed = 6;
   const int kRaiseSpeed = 6;
@@ -89,8 +95,6 @@ class Weapon {
 
   // Reflects fire button state. Should be updated every tick.
   bool fire_flag_ = false;
-
-  int change_weapon_ = 0;
 
   WeaponType current_weapon_;
   WeaponType pending_weapon_ = kNotPending;

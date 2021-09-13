@@ -5,12 +5,12 @@
 
 namespace wpn {
 
-struct ProjectileParams {
-  int blast_damage;
-  int spawn_height;
-
-  id::mobjtype_t type;
-};
+//struct ProjectileParams {
+//  int blast_damage;
+//  int spawn_height;
+//
+//  id::mobjtype_t type;
+//};
 
 } // namespace wpn
 

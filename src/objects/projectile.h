@@ -10,7 +10,7 @@ namespace mobj {
 
 class Projectile : public MapObject {
  public:
-  Projectile(const wpn::ProjectileParams& param, const MapObject* parent);
+  Projectile(id::mobjtype_t type, MapObject* parent);
 
   bool TickTime() override;
 
@@ -22,6 +22,9 @@ class Projectile : public MapObject {
   bool ProcessLine(const world::Line* line) override;
 
  private:
+  const int kRocketBlastDamage = 150;
+  const int kBarrelHeight = 42; // ??
+
   int damage_;
   int blast_damage_;
   int speed_;

@@ -4,6 +4,7 @@
 #include <cstdlib>
 
 #include "objects/info.h"
+#include "objects/player.h"
 
 namespace wpn {
 
@@ -91,7 +92,7 @@ const WeaponParam Weapon::weapons_[WeaponType::kWeaponNumber] = {
   }
 };
 
-Weapon::Weapon() {
+Weapon::Weapon(mobj::Player* player) : player_(player) {
   //current_weapon_ = kPistol;
   //current_weapon_ = kShotgun;
   //current_weapon_ = kSuperShotgun;
@@ -287,6 +288,8 @@ void Weapon::FirePlasma() {
   } else {
     flash_fsm_.SetState(id::S_PLASMAFLASH2, this);
   }
+
+  player_->FirePlasma();
 }
 
 void Weapon::FireBFG() {

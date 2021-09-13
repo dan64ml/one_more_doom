@@ -4,7 +4,6 @@ add_library(mobjs
     info.cpp
     fsm.cpp
     mobj_factory.cpp
-    stub.cpp
     projectile.cpp
     )
     
