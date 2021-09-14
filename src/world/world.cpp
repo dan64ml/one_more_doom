@@ -289,13 +289,40 @@ void World::PutMobjOnMap(std::unique_ptr<mobj::MapObject> obj) {
   mobjs_.push_back(std::move(obj));
 }
 
-//void World::DeleteMobj(const mobj::MapObject* obj) {
-//
-//}
-
 void World::SpawnProjectile(id::mobjtype_t type, mobj::MapObject* parent) {
   auto proj = std::unique_ptr<mobj::MapObject>(new mobj::Projectile(type, parent));
   PutMobjOnMap(std::move(proj));
+}
+
+void World::DoBlastDamage(int damage, int x, int y) {
+  BBox bb {x - damage, x + damage, y + damage, y - damage};
+  for (auto obj :blocks_.GetMapObjects(bb)) {
+    if (!(obj->flags & mobj::MF_SHOOTABLE)) {
+      continue;
+    }
+    // This monsters can't be hit by blast
+    if (obj->type == id::MT_CYBORG || obj->type == id::MT_SPIDER) {
+      continue;
+    }
+
+    int dx = abs(x - obj->x);
+    int dy = abs(y - obj->y);
+    // Original algorithm uses max projection instead real distance. Keep it.
+    int dist = std::max(dx, dy);
+    dist = std::max(0, dist - obj->radius);
+    // The mobj too far
+    if (dist >= damage) {
+      continue;
+    }
+
+    if (IsMobjVisible(x, y, obj)) {
+      obj->CauseDamage(damage - dist);
+    }
+  }
+}
+
+bool World::IsMobjVisible(int vp_x, int vp_y, const mobj::MapObject* obj) const {
+  return true;
 }
 
 } // namespace world

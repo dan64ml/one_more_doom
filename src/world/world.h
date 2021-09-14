@@ -36,7 +36,7 @@ class World {
   // Spawn plasma ball or missile.
   void SpawnProjectile(id::mobjtype_t type, mobj::MapObject* parent);
 
-  void DoBlastDamage(int damage, int x, int y) {}
+  void DoBlastDamage(int damage, int x, int y);
 
  private:
   std::string wad_file_name_;
@@ -74,7 +74,9 @@ class World {
   void CreateMapObjectList(std::ifstream& fin);
 
   void PutMobjOnMap(std::unique_ptr<mobj::MapObject> obj);
-  //void DeleteMobj(const mobj::MapObject* obj);
+
+  // Checks if the mobj is visible from {vp_x, vp_y}
+  bool IsMobjVisible(int vp_x, int vp_y, const mobj::MapObject* obj) const;
 
   friend class mobj::MapObject;
 };

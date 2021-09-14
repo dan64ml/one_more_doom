@@ -21,7 +21,7 @@ class Projectile : public MapObject {
   bool ProcessLine(const world::Line* line) override;
 
  private:
-  const int kRocketBlastDamage = 150;
+  const int kRocketBlastDamage = 128;
   const int kBarrelHeight = 42; // ??
 
   int damage_;
