@@ -79,6 +79,9 @@ class World {
 
   void PutMobjOnMap(std::unique_ptr<mobj::MapObject> obj, bool put_on_floor);
 
+  void SpawnBulletPuff();
+  void SpawnBulletBlood();
+
   // Checks if the mobj is visible from {vp_x, vp_y}
   bool IsMobjVisible(int vp_x, int vp_y, const mobj::MapObject* obj) const;
 

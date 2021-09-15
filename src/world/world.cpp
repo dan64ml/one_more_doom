@@ -371,31 +371,120 @@ std::vector<IntersectedObject> World::CreateIntersectedObjList(int from_x, int f
 }
 
 void World::HitLineAttack(mobj::MapObject* parent, int damage, int distance, rend::BamAngle da) {
-  auto objs = CreateIntersectedObjList(parent->x, parent->y, parent->angle + da, distance);
+  auto crossed_objects = CreateIntersectedObjList(parent->x, parent->y, parent->angle + da, distance);
 
-  if (objs.empty()) {
-    return;
+  // FOV
+  double coef_high_opening = 100.0 / 160;
+  double coef_low_opening = 100.0 / 160;
+  // If bullet doesn't hit any monster, but hit a line on its original height
+  // it should draw bullet hole
+  int first_line_distance = 0;
+
+  int vp_z = player_->z + 42; // Weapon height, TODO!!!
+
+  for (auto obj : crossed_objects) {
+    int idx = obj.obj.index();
+
+    if (idx == 0) {
+      // Line
+      auto l = std::get<0>(obj.obj);
+      std::cout << "Hit line (" << l->x1 << ", " << l->y1 << ") -> (" << l->x2 << ", " << l->y2 << ")" << std::endl;
+
+      if (!(l->flags & kLDFTwoSided)) {
+        // wall
+
+        if (first_line_distance) {
+          break;
+        }
+
+        std::unique_ptr<mobj::MapObject> bullet( new mobj::MapObject(id::mobjinfo[id::MT_PUFF]));
+        bullet->x = parent->x + (obj.distance - 3) * rend::BamCos(parent->angle + da);
+        bullet->y = parent->y + (obj.distance - 3) * rend::BamSin(parent->angle + da);
+        bullet->z = parent->z + 42;
+        bullet->flags |= mobj::MF_NOGRAVITY;
+
+        PutMobjOnMap(std::move(bullet), false);
+
+        return;
+      }
+
+      int high_z = vp_z + obj.distance * coef_high_opening;
+      int low_z = vp_z - obj.distance * coef_low_opening;
+
+      int line_low = std::max(l->sides[0]->sector->floor_height, l->sides[1]->sector->floor_height);
+      int line_high = std::min(l->sides[0]->sector->ceiling_height, l->sides[1]->sector->ceiling_height);
+
+      if (!first_line_distance && (vp_z < line_low || vp_z > line_high)) {
+        first_line_distance = obj.distance;
+      }
+
+      if (line_low > high_z || line_high < low_z) {
+        // Portal closes view
+
+        if (first_line_distance) {
+          break;
+        }
+
+        std::unique_ptr<mobj::MapObject> bullet( new mobj::MapObject(id::mobjinfo[id::MT_PUFF]));
+        bullet->x = parent->x + (obj.distance - 3) * rend::BamCos(parent->angle + da);
+        bullet->y = parent->y + (obj.distance - 3) * rend::BamSin(parent->angle + da);
+        bullet->z = parent->z + 42;
+        bullet->flags |= mobj::MF_NOGRAVITY;
+
+        PutMobjOnMap(std::move(bullet), false);
+
+        return;
+      } else {
+        // Correct opening if it's necessary
+        if (line_low > low_z) {
+          coef_low_opening = static_cast<double>(vp_z - line_low) / obj.distance;
+        }
+        if (line_high < high_z) {
+          coef_high_opening = static_cast<double>(line_high - vp_z) / obj.distance;
+        }
+      }
+    } else if (idx == 1) {
+      // MapObject
+      auto m = std::get<1>(obj.obj);
+      std::cout << "Hit mobj (" << m->x << ", " << m->y << ")" << std::endl;
+
+      int high_z = vp_z + obj.distance * coef_high_opening;
+      int low_z = vp_z - obj.distance * coef_low_opening;
+
+      if ((m->z > low_z) && (m->z < high_z)) {
+        m->CauseDamage(damage);
+        
+        std::unique_ptr<mobj::MapObject> bullet( new mobj::MapObject(id::mobjinfo[id::MT_BLOOD]));
+        bullet->x = parent->x + (obj.distance - 3) * rend::BamCos(parent->angle + da);
+        bullet->y = parent->y + (obj.distance - 3) * rend::BamSin(parent->angle + da);
+        bullet->z = m->z + m->height / 2;
+        bullet->flags |= mobj::MF_NOGRAVITY;
+
+        PutMobjOnMap(std::move(bullet), false);
+
+        return;
+      }
+    }
   }
 
-  auto ml = objs[0].obj;
-  int idx = ml.index();
+  if (first_line_distance) {
+      std::unique_ptr<mobj::MapObject> bullet( new mobj::MapObject(id::mobjinfo[id::MT_PUFF]));
+      bullet->x = parent->x + (first_line_distance - 3) * rend::BamCos(parent->angle + da);
+      bullet->y = parent->y + (first_line_distance - 3) * rend::BamSin(parent->angle + da);
+      bullet->z = parent->z + 42;
+      bullet->flags |= mobj::MF_NOGRAVITY;
 
-  if (idx == 0) {
-    auto l = std::get<0>(objs[0].obj);
-    std::cout << "Hit line (" << l->x1 << ", " << l->y1 << ") -> (" << l->x2 << ", " << l->y2 << ")" << std::endl;
-  } else if (idx == 1) {
-    auto m = std::get<1>(objs[0].obj);
-    std::cout << "Hit mobj (" << m->x << ", " << m->y << ")" << std::endl;
-  } else {
-    return;
+      PutMobjOnMap(std::move(bullet), false);
   }
-  //std::get<1>(objs[0].obj)->CauseDamage(damage);
+}
 
-  std::unique_ptr<mobj::MapObject> bullet( new mobj::MapObject(id::mobjinfo[id::MT_BLOOD]));
-  bullet->x = parent->x + (objs[0].distance - 3) * rend::BamCos(parent->angle + da);
-  bullet->y = parent->y + (objs[0].distance - 3) * rend::BamSin(parent->angle + da);
-  bullet->z = parent->z + 42;
-  bullet->flags |= mobj::MF_NOGRAVITY;
+void World::SpawnBulletPuff() {
+  std::unique_ptr<mobj::MapObject> bullet( new mobj::MapObject(id::mobjinfo[id::MT_PUFF]));
+
+  //bullet->x = parent->x + (obj.distance - 3) * rend::BamCos(parent->angle + da);
+  //bullet->y = parent->y + (obj.distance - 3) * rend::BamSin(parent->angle + da);
+  //bullet->z = parent->z + 42;
+  //bullet->flags |= mobj::MF_NOGRAVITY;
 
   PutMobjOnMap(std::move(bullet), false);
 }
