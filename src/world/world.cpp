@@ -451,9 +451,9 @@ void World::HitLineAttack(mobj::MapObject* parent, int damage, int distance, ren
       int high_z = vp_z + obj.distance * coef_high_opening;
       int low_z = vp_z - obj.distance * coef_low_opening;
 
-      if ((m->z > low_z) && (m->z < high_z)) {
+      if (!((m->z > high_z) || (m->z + m->height < low_z))) {
         m->CauseDamage(damage);
-        
+
         std::unique_ptr<mobj::MapObject> bullet( new mobj::MapObject(id::mobjinfo[id::MT_BLOOD]));
         bullet->x = parent->x + (obj.distance - 3) * rend::BamCos(parent->angle + da);
         bullet->y = parent->y + (obj.distance - 3) * rend::BamSin(parent->angle + da);
