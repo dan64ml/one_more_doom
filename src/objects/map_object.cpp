@@ -45,7 +45,8 @@ std::string MapObject::GetSpriteName(int vp_x, int vp_y) const {
 }
 
 bool MapObject::TickTime() {
-  fsm_.Tick();
+  // TODO: should I use return value??? E.g. for deleting the mobj?
+  fsm_.Tick(this);
   
   MoveObject();
   return true;
@@ -314,14 +315,14 @@ void MapObject::CauseDamage(int damage) {
 
   if (health_ > 0) {
     if (rand() % 256 < pain_chance_) {
-      fsm_.ToPainState();
+      fsm_.ToPainState(this);
     }
     return;
   } else {
     if (health_ < -spawn_health_) {
-      fsm_.ToXDeathState();
+      fsm_.ToXDeathState(this);
     } else {
-      fsm_.ToDeathState();
+      fsm_.ToDeathState(this);
     }
 
     // remains are visible but not interactable

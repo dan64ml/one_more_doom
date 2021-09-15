@@ -31,14 +31,14 @@ bool Projectile::TickTime() {
   if (!met_obstacle) {
     return mobj::MapObject::TickTime();
   } else {
-    return fsm_.Tick();
+    return fsm_.Tick(this);
   }
 }
 
 bool Projectile::RunIntoAction() {
   met_obstacle = true;
 
-  fsm_.ToDeathState();
+  fsm_.ToDeathState(this);
 
   if (blast_damage_ != 0) {
     world_->DoBlastDamage(blast_damage_, x, y);

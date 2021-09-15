@@ -5,8 +5,8 @@
 
 namespace mobj {
 
-FSM::FSM(const id::mobjinfo_t& info) {
-  current_state = id::states[info.spawnstate];
+FSM::FSM(const id::mobjinfo_t& info) : BaseFSM(static_cast<id::statenum_t>(info.spawnstate)) {
+  //current_state = id::states[info.spawnstate];
 
   spawn_state = static_cast<id::statenum_t>(info.spawnstate);
   see_state = static_cast<id::statenum_t>(info.seestate);
@@ -18,60 +18,41 @@ FSM::FSM(const id::mobjinfo_t& info) {
   raise_state = static_cast<id::statenum_t>(info.raisestate);
 }
 
-bool FSM::Tick() {
-  if (current_state.tics == -1 || current_state.tics == 0) {
-    return true;
-  }
-  
-  // TODO: run an action
-
-  if (--current_state.tics == 0) {
-    // check if it's the last state
-    if (current_state.nextstate == id::S_NULL) {
-      return false;
-    }
-    current_state = id::states[current_state.nextstate];
-  }
-
-  return true;
-}
-
 std::string FSM::GetSpriteName() const {
-  std::string result = id::sprnames[current_state.sprite];
-  result += 'A' + current_state.frame;
-  return result;
+  return GetSpriteBaseName();
 }
 
-void FSM::ToSeeState() {
+void FSM::ToSeeState(MapObject* obj) {
   if (see_state == id::S_NULL) {
+    // TODO: assert() would be better?
     return;
   }
 
-  current_state = id::states[see_state];
+  SetState(see_state, obj);
 }
 
-void FSM::ToDeathState() {
+void FSM::ToDeathState(MapObject* obj) {
   if (death_state == id::S_NULL) {
     return;
   }
 
-  current_state = id::states[death_state];
+  SetState(death_state, obj);
 }
 
-void FSM::ToXDeathState() {
+void FSM::ToXDeathState(MapObject* obj) {
   if (xdeath_state == id::S_NULL) {
     return;
   }
 
-  current_state = id::states[xdeath_state];
+  SetState(xdeath_state, obj);
 }
 
-void FSM::ToPainState() {
+void FSM::ToPainState(MapObject* obj) {
   if (pain_state == id::S_NULL) {
     return;
   }
 
-  current_state = id::states[pain_state];
+  SetState(pain_state, obj);
 }
 
 } // namespace fsm

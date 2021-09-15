@@ -5,25 +5,25 @@
 #include <string>
 
 #include "info.h"
+#include "base_fsm.h"
 
 namespace mobj {
 
-class FSM {
+class MapObject;
+
+class FSM : public BaseFSM<MapObject> {
  public:
   FSM() = default;
   FSM(const id::mobjinfo_t& info);
-  bool Tick();
 
   std::string GetSpriteName() const;
   
-  void ToSeeState();
-  void ToDeathState();
-  void ToXDeathState();
-  void ToPainState();
+  void ToSeeState(MapObject* obj);
+  void ToDeathState(MapObject* obj);
+  void ToXDeathState(MapObject* obj);
+  void ToPainState(MapObject* obj);
 
  private:
-  id::state_t current_state;
-
   id::statenum_t spawn_state;
   id::statenum_t see_state;
   id::statenum_t pain_state;
