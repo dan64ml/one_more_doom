@@ -1,5 +1,5 @@
-#ifndef PLANE_UTILS_H_
-#define PLANE_UTILS_H_
+#ifndef WORLD_UTILS_H_
+#define WORLD_UTILS_H_
 
 #include "world/world_types.h"
 
@@ -18,6 +18,12 @@ ObjPosition LinePointPosition(const world::Line* line, int x, int y);
 // Finds position of the BBox relative to the line
 ObjPosition LineBBoxPosition(const world::Line* line, const world::BBox* bbox);
 
+bool IsLineIntersectMobj(int x1, int y1, int x2, int y2, const mobj::MapObject* mobj);
+
+// Returns distance from {x1, y2} to intersection point with mobj. Returns -1 if there is
+// no intersection. Mobj is supposed to be a sprite section.
+double GetDistanceToIntersection(int x1, int y1, int x2, int y2, const mobj::MapObject* mobj);
+
 } // namespace math
 
-#endif  // PLANE_UTILS_H_
+#endif  // WORLD_UTILS_H_

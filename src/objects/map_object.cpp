@@ -6,7 +6,7 @@
 #include <cmath>
 
 #include "world/world.h"
-#include "utils/plane_utils.h"
+#include "utils/world_utils.h"
 #include "renderer/plane_utils.h"
 
 #define DEBUG_CODE
@@ -114,7 +114,7 @@ void MapObject::ZMove() {
     if (mom_z < 0) {
       mom_z = 0;
     } 
-  } else {
+  } else if (!(flags & MF_NOGRAVITY)) {
     if (mom_z == 0) {
       mom_z = -kGravity;
     } else {

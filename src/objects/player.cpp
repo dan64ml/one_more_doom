@@ -44,4 +44,8 @@ void Player::FirePlasma() {
   world_->SpawnProjectile(id::MT_PLASMA, this);
 }
 
+void Player::FirePistol() {
+  world_->HitLineAttack(this, 1, 1024, 0);
+}
+
 } // namespace mobj

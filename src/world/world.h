@@ -36,6 +36,10 @@ class World {
   // Spawn plasma ball or missile.
   void SpawnProjectile(id::mobjtype_t type, mobj::MapObject* parent);
 
+  // Line attack has only two mobjtype_t: MT_BLOOD if hit and MT_PUFF if miss.
+  // It the weapon in refire state, accuracy decreases and da != 0
+  void HitLineAttack(mobj::MapObject* parent, int damage, int distance, rend::BamAngle da);
+
   void DoBlastDamage(int damage, int x, int y);
 
  private:
@@ -73,10 +77,13 @@ class World {
   // Loads things from .wad and creates list of MapObjects
   void CreateMapObjectList(std::ifstream& fin);
 
-  void PutMobjOnMap(std::unique_ptr<mobj::MapObject> obj);
+  void PutMobjOnMap(std::unique_ptr<mobj::MapObject> obj, bool put_on_floor);
 
   // Checks if the mobj is visible from {vp_x, vp_y}
   bool IsMobjVisible(int vp_x, int vp_y, const mobj::MapObject* obj) const;
+
+  // Returns sorted list of objects (lines and mobjs) that are projected on the section {from_x, from_y, angle, distance}
+  std::vector<IntersectedObject> CreateIntersectedObjList(int from_x, int from_y, rend::BamAngle angle, int distance);
 
   friend class mobj::MapObject;
 };

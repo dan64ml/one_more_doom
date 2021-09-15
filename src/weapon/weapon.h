@@ -73,7 +73,7 @@ class Weapon {
   };
   // Ammunition
   int ammo_[kAmmoNumber] {
-    20,    // kAmClip
+    200,    // kAmClip
     20,    // kAmShell
     300,    // kAmCell
     50     // kAmMisl

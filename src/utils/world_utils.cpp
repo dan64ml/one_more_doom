@@ -1,4 +1,5 @@
-#include "plane_utils.h"
+#include "world_utils.h"
+#include "renderer/plane_utils.h"
 
 namespace math {
 
@@ -65,6 +66,39 @@ ObjPosition LineBBoxPosition(const world::Line* line, const world::BBox* bbox) {
   }
 
   return kCross;
+}
+
+bool IsLineIntersectMobj(int x1, int y1, int x2, int y2, const mobj::MapObject* mobj) {
+  
+}
+
+double GetDistanceToIntersection(int x1, int y1, int x2, int y2, const mobj::MapObject* mobj) {
+  world::BBox bb {x1, x2, y1, y2};
+  if (bb.left > bb.right) {
+    std::swap(bb.left, bb.right);
+  }
+  if (bb.top < bb.bottom) {
+    std::swap(bb.top, bb.bottom);
+  }
+
+  // Definitely don't cross
+  if (mobj->x - mobj->radius > bb.right || mobj->x + mobj->radius < bb.left) {
+    return -1;
+  }
+  if (mobj->y + mobj->radius < bb.bottom || mobj->y - mobj->radius > bb.top) {
+    return -1;
+  }
+
+  auto center_angle = rend::CalcAngle(x1, y1, mobj->x, mobj->y);
+  auto cp_angle = rend::CalcAngle(x1, y1, x2, y2);
+  double center_dist = rend::SegmentLength(x1, y1, mobj->x, mobj->y);
+  double cp_dist = center_dist * rend::BamTan(center_angle - cp_angle);
+
+  if (cp_dist > mobj->radius) {
+    return -1;
+  }
+
+  return sqrt(center_dist * center_dist + cp_dist * cp_dist);
 }
 
 } // namespace math

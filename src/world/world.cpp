@@ -3,10 +3,13 @@
 #include <fstream>
 #include <exception>
 #include <memory>
+#include <algorithm>
 
 #include "wad_utils.h"
 #include "wad_raw_types.h"
 #include "renderer/bam.h"
+#include "utils/world_utils.h"
+#include "renderer/plane_utils.h"
 
 namespace world {
 
@@ -260,19 +263,19 @@ void World::CreateMapObjectList(std::ifstream& fin) {
       auto mobj = spawner_.Create(items[i]);
       if (mobj) {
         // TODO: move??
-        PutMobjOnMap(std::move(mobj));
+        PutMobjOnMap(std::move(mobj), true);
       }
     }
   }
 }
 
-void World::PutMobjOnMap(std::unique_ptr<mobj::MapObject> obj) {
+void World::PutMobjOnMap(std::unique_ptr<mobj::MapObject> obj, bool put_on_floor) {
   int ss_idx = bsp_.GetSubSectorIdx(obj->x, obj->y);
   obj->ss = &sub_sectors_[ss_idx];
 
   obj->floor_z = sub_sectors_[ss_idx].sector->floor_height;
-  if (!(obj->flags & mobj::MF_MISSILE)) {
-    // Don't put projectiles on floor
+  if (put_on_floor) {
+    // // Don't put projectiles on floor
     obj->z = obj->floor_z;
   }
 
@@ -291,7 +294,7 @@ void World::PutMobjOnMap(std::unique_ptr<mobj::MapObject> obj) {
 
 void World::SpawnProjectile(id::mobjtype_t type, mobj::MapObject* parent) {
   auto proj = std::unique_ptr<mobj::MapObject>(new mobj::Projectile(type, parent));
-  PutMobjOnMap(std::move(proj));
+  PutMobjOnMap(std::move(proj), false);
 }
 
 void World::DoBlastDamage(int damage, int x, int y) {
@@ -323,6 +326,63 @@ void World::DoBlastDamage(int damage, int x, int y) {
 
 bool World::IsMobjVisible(int vp_x, int vp_y, const mobj::MapObject* obj) const {
   return true;
+}
+
+std::vector<IntersectedObject> World::CreateIntersectedObjList(int from_x, int from_y, 
+                                                               rend::BamAngle angle, int distance) {
+  std::vector<IntersectedObject> result;
+
+  // Scan objects
+  int to_x = from_x + distance * rend::BamCos(angle);
+  int to_y = from_y + distance * rend::BamSin(angle);
+
+  BBox bb {from_x, to_x, to_y, from_y};
+  if (bb.left > bb.right) {
+    std::swap(bb.left, bb.right);
+  }
+  if (bb.top < bb.bottom) {
+    std::swap(bb.top, bb.bottom);
+  }
+
+  for (auto obj : blocks_.GetMapObjects(bb)) {
+    if (!(obj->flags & mobj::MF_SHOOTABLE)) {
+      continue;
+    }
+
+    auto dist = math::GetDistanceToIntersection(from_x, from_y, to_x, to_y, obj);
+    if (dist > 0) {
+      //int dist = rend::SegmentLength(from_x, from_y, to_x, to_y);
+      result.push_back(IntersectedObject {static_cast<int>(dist), obj});
+    }
+  }
+
+  // Scan lines
+  for (auto line : blocks_.GetLines(bb)) {
+
+  }
+
+  std::sort(begin(result), end(result), [](const auto& lhs, const auto& rhs) { 
+            return lhs.distance < rhs.distance; });
+
+  return result;
+}
+
+void World::HitLineAttack(mobj::MapObject* parent, int damage, int distance, rend::BamAngle da) {
+  auto objs = CreateIntersectedObjList(parent->x, parent->y, parent->angle + da, distance);
+
+  if (objs.empty()) {
+    return;
+  }
+
+  std::get<1>(objs[0].obj)->CauseDamage(damage);
+
+  std::unique_ptr<mobj::MapObject> bullet( new mobj::MapObject(id::mobjinfo[id::MT_BLOOD]));
+  bullet->x = parent->x + (objs[0].distance - 3) * rend::BamCos(parent->angle + da);
+  bullet->y = parent->y + (objs[0].distance - 3) * rend::BamSin(parent->angle + da);
+  bullet->z = parent->z + 42;
+  bullet->flags |= mobj::MF_NOGRAVITY;
+
+  PutMobjOnMap(std::move(bullet), false);
 }
 
 } // namespace world

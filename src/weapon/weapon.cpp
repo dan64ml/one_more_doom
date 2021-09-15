@@ -271,6 +271,8 @@ void Weapon::FirePistol() {
   std::cout << "FirePistol" << std::endl;
   ammo_[weapons_[current_weapon_].ammo]--;
   flash_fsm_.SetState(weapons_[current_weapon_].flash_state, this);
+
+  player_->FirePistol();
 }
 
 void Weapon::FireMissile() {

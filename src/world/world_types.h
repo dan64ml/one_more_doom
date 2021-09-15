@@ -4,6 +4,7 @@
 #include <string>
 #include <list>
 #include <vector>
+#include <variant>
 
 #include "objects/map_object.h"
 
@@ -110,6 +111,13 @@ struct LumpPos {
 struct RawVertex {
   int16_t x;
   int16_t y;
+};
+
+// Helper type 
+struct IntersectedObject {
+  int distance;
+
+  std::variant<const Line*, mobj::MapObject*> obj;
 };
 
 } // namespace world
