@@ -120,12 +120,18 @@ double GetDistanceToIntersection(int x1, int y1, int x2, int y2, const world::Li
   auto [n1, d1] = rend::CreateLine(x1, y1, x2, y2);
   auto [n2, d2] = rend::CreateLine(line);
 
-  auto [cx, cy] = rend::CalcIntersectionPoint(n1, d1, n2, d2);
-
-  if (cx < bb.left || cx > bb.right || cy < bb.bottom || cy > bb.top) {
+  //auto [cx, cy] = rend::CalcIntersectionPoint(n1, d1, n2, d2);
+  double cx, cy;
+  if (!rend::FindIntersectionPoint(cx, cy, n1, d1, n2, d2)) {
     return -1;
   }
-  if (cx < line->bbox.left || cx > line->bbox.right || cy < line->bbox.bottom || cy > line->bbox.top) {
+
+  int bb_eps = 2;
+
+  if (cx + bb_eps < bb.left || cx - bb_eps > bb.right || cy + bb_eps < bb.bottom || cy - bb_eps > bb.top) {
+    return -1;
+  }
+  if (cx + bb_eps < line->bbox.left || cx - bb_eps > line->bbox.right || cy + bb_eps < line->bbox.bottom || cy - bb_eps > line->bbox.top) {
     return -1;
   }
 

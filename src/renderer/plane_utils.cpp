@@ -207,6 +207,17 @@ std::pair<double, double> CalcIntersectionPoint(math::Vec2d n1, double d1, math:
   return {x, y};
 }
 
+bool FindIntersectionPoint(double& cx, double& cy, math::Vec2d n1, double d1, math::Vec2d n2, double d2, double eps) {
+  double det = n1.x * n2.y - n1.y * n2.x;
+  if (std::abs(det) < eps) {
+    return false;
+  }
+
+  cx = (d2 * n1.y - d1 * n2.y) / det;
+  cy = (d1 * n2.x - d2 * n1.x) / det;
+
+  return true;
+}
 
 int DefineVpSide(const world::Line* line, int vp_x, int vp_y) {
   int dx = line->x2 - line->x1;

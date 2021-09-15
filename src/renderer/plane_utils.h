@@ -43,6 +43,8 @@ std::pair<math::Vec2d, double> CreateLine(int x, int y, BamAngle direction);
 // Calculate the point of intersection of two lines.
 // ATTENTION! It does not check for intersection!
 std::pair<double, double> CalcIntersectionPoint(math::Vec2d n1, double d1, math::Vec2d n2, double d2);
+// ???
+bool FindIntersectionPoint(double& cx, double& cy, math::Vec2d n1, double d1, math::Vec2d n2, double d2, double eps = .0001);
 
 // 0 - right side, 1 - left
 int DefineVpSide(int x1, int y1, int x2, int y2, int vp_x, int vp_y);
