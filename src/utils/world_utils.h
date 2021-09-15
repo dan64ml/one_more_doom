@@ -23,6 +23,8 @@ bool IsLineIntersectMobj(int x1, int y1, int x2, int y2, const mobj::MapObject* 
 // Returns distance from {x1, y2} to intersection point with mobj. Returns -1 if there is
 // no intersection. Mobj is supposed to be a sprite section.
 double GetDistanceToIntersection(int x1, int y1, int x2, int y2, const mobj::MapObject* mobj);
+// The same for lines
+double GetDistanceToIntersection(int x1, int y1, int x2, int y2, const world::Line* line);
 
 } // namespace math
 

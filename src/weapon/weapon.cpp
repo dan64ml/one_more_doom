@@ -249,7 +249,7 @@ void Weapon::WeaponReady() {
 }
 
 void Weapon::ReFire() {
-  std::cout << "ReFire" << std::endl;
+  //std::cout << "ReFire" << std::endl;
   if (fire_flag_) {
     FireCurrentWeapon();
   }
@@ -268,7 +268,7 @@ void Weapon::FireShotgun() {
 }
 
 void Weapon::FirePistol() {
-  std::cout << "FirePistol" << std::endl;
+  //std::cout << "FirePistol" << std::endl;
   ammo_[weapons_[current_weapon_].ammo]--;
   flash_fsm_.SetState(weapons_[current_weapon_].flash_state, this);
 

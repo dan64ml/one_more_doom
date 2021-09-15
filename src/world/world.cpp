@@ -4,6 +4,7 @@
 #include <exception>
 #include <memory>
 #include <algorithm>
+#include <iostream>
 
 #include "wad_utils.h"
 #include "wad_raw_types.h"
@@ -351,14 +352,16 @@ std::vector<IntersectedObject> World::CreateIntersectedObjList(int from_x, int f
 
     auto dist = math::GetDistanceToIntersection(from_x, from_y, to_x, to_y, obj);
     if (dist > 0) {
-      //int dist = rend::SegmentLength(from_x, from_y, to_x, to_y);
       result.push_back(IntersectedObject {static_cast<int>(dist), obj});
     }
   }
 
   // Scan lines
   for (auto line : blocks_.GetLines(bb)) {
-
+    auto dist = math::GetDistanceToIntersection(from_x, from_y, to_x, to_y, line);
+    if (dist > 0) {
+      result.push_back(IntersectedObject {static_cast<int>(dist), line});
+    }
   }
 
   std::sort(begin(result), end(result), [](const auto& lhs, const auto& rhs) { 
@@ -374,7 +377,19 @@ void World::HitLineAttack(mobj::MapObject* parent, int damage, int distance, ren
     return;
   }
 
-  std::get<1>(objs[0].obj)->CauseDamage(damage);
+  auto ml = objs[0].obj;
+  int idx = ml.index();
+
+  if (idx == 0) {
+    auto l = std::get<0>(objs[0].obj);
+    std::cout << "Hit line (" << l->x1 << ", " << l->y1 << ") -> (" << l->x2 << ", " << l->y2 << ")" << std::endl;
+  } else if (idx == 1) {
+    auto m = std::get<1>(objs[0].obj);
+    std::cout << "Hit mobj (" << m->x << ", " << m->y << ")" << std::endl;
+  } else {
+    return;
+  }
+  //std::get<1>(objs[0].obj)->CauseDamage(damage);
 
   std::unique_ptr<mobj::MapObject> bullet( new mobj::MapObject(id::mobjinfo[id::MT_BLOOD]));
   bullet->x = parent->x + (objs[0].distance - 3) * rend::BamCos(parent->angle + da);

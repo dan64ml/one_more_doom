@@ -92,13 +92,44 @@ double GetDistanceToIntersection(int x1, int y1, int x2, int y2, const mobj::Map
   auto center_angle = rend::CalcAngle(x1, y1, mobj->x, mobj->y);
   auto cp_angle = rend::CalcAngle(x1, y1, x2, y2);
   double center_dist = rend::SegmentLength(x1, y1, mobj->x, mobj->y);
-  double cp_dist = center_dist * rend::BamTan(center_angle - cp_angle);
+  double cp_dist = abs(center_dist * rend::BamTan(center_angle - cp_angle));
 
   if (cp_dist > mobj->radius) {
     return -1;
   }
 
   return sqrt(center_dist * center_dist + cp_dist * cp_dist);
+}
+
+double GetDistanceToIntersection(int x1, int y1, int x2, int y2, const world::Line* line) {
+  world::BBox bb {x1, x2, y1, y2};
+  if (bb.left > bb.right) {
+    std::swap(bb.left, bb.right);
+  }
+  if (bb.top < bb.bottom) {
+    std::swap(bb.top, bb.bottom);
+  }
+
+  if (bb.left > line->bbox.right || bb.right < line->bbox.left) {
+    return -1;
+  }
+  if (bb.bottom > line->bbox.top || bb.top < line->bbox.bottom) {
+    return -1;
+  }
+
+  auto [n1, d1] = rend::CreateLine(x1, y1, x2, y2);
+  auto [n2, d2] = rend::CreateLine(line);
+
+  auto [cx, cy] = rend::CalcIntersectionPoint(n1, d1, n2, d2);
+
+  if (cx < bb.left || cx > bb.right || cy < bb.bottom || cy > bb.top) {
+    return -1;
+  }
+  if (cx < line->bbox.left || cx > line->bbox.right || cy < line->bbox.bottom || cy > line->bbox.top) {
+    return -1;
+  }
+
+  return rend::SegmentLength(x1, y1, cx, cy);
 }
 
 } // namespace math

@@ -48,7 +48,7 @@ std::pair<double, double> CalcIntersectionPoint(math::Vec2d n1, double d1, math:
 int DefineVpSide(int x1, int y1, int x2, int y2, int vp_x, int vp_y);
 int DefineVpSide(const world::Line* line, int vp_x, int vp_y);
 
-// Calculate intersection of two renges. {0, -1} if there is no intersection.
+// Calculate intersection of two ranges. {0, -1} if there is no intersection.
 std::pair<int, int> CreateIntersection(int r1_left, int r1_right, int r2_left, int r2_right);
 
 // Calculate distance between two points
