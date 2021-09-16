@@ -44,8 +44,18 @@ void Player::FirePlasma() {
   world_->SpawnProjectile(id::MT_PLASMA, this);
 }
 
-void Player::FirePistol() {
-  world_->HitLineAttack(this, 1, 1024, 0);
+void Player::FirePistol(bool refire) {
+  int damage = 5 * (rand() % 3 + 1);
+  rend::BamAngle da = refire ? (rand() - rand()) % 256 : 0;
+  world_->HitLineAttack(this, damage, kMissileRange, da);
+}
+
+void Player::FireShotgun() {
+  for (int i = 0; i < 7; ++i) {
+    int damage = 5 * (rand() % 3 + 1);
+    rend::BamAngle da = (rand() - rand()) % 512;
+    world_->HitLineAttack(this, damage, kMissileRange, da);
+  }
 }
 
 } // namespace mobj

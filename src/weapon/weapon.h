@@ -59,6 +59,8 @@ class Weapon {
   WeaponFSM weapon_fsm_;
   FlashFSM flash_fsm_;
 
+  int refire_count_ = 0;
+
   // Opened weapons
   bool has_weapon_[WeaponType::kWeaponNumber] {
     true,   // kFist
@@ -74,7 +76,7 @@ class Weapon {
   // Ammunition
   int ammo_[kAmmoNumber] {
     200,    // kAmClip
-    20,    // kAmShell
+    50,    // kAmShell
     300,    // kAmCell
     50     // kAmMisl
   };

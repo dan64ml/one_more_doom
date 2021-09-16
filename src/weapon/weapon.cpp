@@ -93,8 +93,8 @@ const WeaponParam Weapon::weapons_[WeaponType::kWeaponNumber] = {
 };
 
 Weapon::Weapon(mobj::Player* player) : player_(player) {
-  current_weapon_ = kPistol;
-  //current_weapon_ = kShotgun;
+  //current_weapon_ = kPistol;
+  current_weapon_ = kShotgun;
   //current_weapon_ = kSuperShotgun;
   //current_weapon_ = kMissile;
   //current_weapon_ = kPlasma;
@@ -251,7 +251,10 @@ void Weapon::WeaponReady() {
 void Weapon::ReFire() {
   //std::cout << "ReFire" << std::endl;
   if (fire_flag_) {
+    ++refire_count_;
     FireCurrentWeapon();
+  } else {
+    refire_count_ = 0;
   }
 }
 
@@ -265,6 +268,8 @@ void Weapon::FireShotgun() {
   std::cout << "FireShotgun" << std::endl;
   ammo_[weapons_[current_weapon_].ammo]--;
   flash_fsm_.SetState(weapons_[current_weapon_].flash_state, this);
+
+  player_->FireShotgun();
 }
 
 void Weapon::FirePistol() {
@@ -272,7 +277,7 @@ void Weapon::FirePistol() {
   ammo_[weapons_[current_weapon_].ammo]--;
   flash_fsm_.SetState(weapons_[current_weapon_].flash_state, this);
 
-  player_->FirePistol();
+  player_->FirePistol(refire_count_);
 }
 
 void Weapon::FireMissile() {

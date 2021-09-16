@@ -37,7 +37,7 @@ class World {
   void SpawnProjectile(id::mobjtype_t type, mobj::MapObject* parent);
 
   // Line attack has only two mobjtype_t: MT_BLOOD if hit and MT_PUFF if miss.
-  // It the weapon in refire state, accuracy decreases and da != 0
+  // If the weapon in refire state, accuracy decreases and da != 0.
   void HitLineAttack(mobj::MapObject* parent, int damage, int distance, rend::BamAngle da);
 
   void DoBlastDamage(int damage, int x, int y);

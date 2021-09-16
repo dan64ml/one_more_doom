@@ -20,6 +20,8 @@ namespace mobj {
 const int kMaxRadius = 32;
 const double kGravity = 1.0;
 
+const int kMissileRange = 32 * 64;
+
 /*=========================================================================
 Need access to:
 - BlockMap class data
