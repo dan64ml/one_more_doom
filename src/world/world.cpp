@@ -333,7 +333,6 @@ std::vector<IntersectedObject> World::CreateIntersectedObjList(int from_x, int f
                                                                rend::BamAngle angle, int distance) {
   std::vector<IntersectedObject> result;
 
-  // Scan objects
   int to_x = from_x + distance * rend::BamCos(angle);
   int to_y = from_y + distance * rend::BamSin(angle);
 
@@ -345,23 +344,32 @@ std::vector<IntersectedObject> World::CreateIntersectedObjList(int from_x, int f
     std::swap(bb.top, bb.bottom);
   }
 
+  // Scan objects
   for (auto obj : blocks_.GetMapObjects(bb)) {
     if (!(obj->flags & mobj::MF_SHOOTABLE)) {
       continue;
     }
 
-    auto dist = math::GetDistanceToIntersection(from_x, from_y, to_x, to_y, obj);
-    if (dist > 0) {
-      result.push_back(IntersectedObject {static_cast<int>(dist), obj});
+    auto [cross, cx, cy] = math::GetMobjIntersection(from_x, from_y, to_x, to_y, obj);
+    double dist = rend::SegmentLength(from_x, from_y, cx, cy);
+    //auto dist = math::GetDistanceToIntersection(from_x, from_y, to_x, to_y, obj);
+    //if (dist > 0) {
+    //  result.push_back(IntersectedObject {dist, 0, 0, obj});
+    //}
+    if (cross) {
+      result.push_back(IntersectedObject {dist, static_cast<int>(cx), static_cast<int>(cy), obj});
     }
   }
 
   // Scan lines
   for (auto line : blocks_.GetLines(bb)) {
-    auto dist = math::GetDistanceToIntersection(from_x, from_y, to_x, to_y, line);
-    if (dist > 0) {
-      result.push_back(IntersectedObject {static_cast<int>(dist), line});
+    auto [cross, cx, cy] = math::GetSegmentsIntersection(from_x, from_y, to_x, to_y, line);
+    if (!cross) {
+      continue;
     }
+
+    double dist = rend::SegmentLength(from_x, from_y, cx, cy);
+    result.push_back(IntersectedObject {dist, static_cast<int>(cx), static_cast<int>(cy), line});
   }
 
   std::sort(begin(result), end(result), [](const auto& lhs, const auto& rhs) { 
@@ -376,8 +384,8 @@ void World::HitLineAttack(mobj::MapObject* parent, int damage, int distance, ren
   // FOV
   double coef_high_opening = 100.0 / 160;
   double coef_low_opening = 100.0 / 160;
-  // If bullet doesn't hit any monster, but hit a line on its original height
-  // it should draw bullet hole
+  // If bullet doesn't hit any monster, but hit a line on its original height,
+  // the bullet hole must be drawn on that first wall
   int first_line_distance = 0;
 
   int vp_z = player_->z + 42; // Weapon height, TODO!!!
@@ -478,13 +486,24 @@ void World::HitLineAttack(mobj::MapObject* parent, int damage, int distance, ren
   }
 }
 
-void World::SpawnBulletPuff() {
+void World::SpawnBulletPuff(int x, int y, int z) {
   std::unique_ptr<mobj::MapObject> bullet( new mobj::MapObject(id::mobjinfo[id::MT_PUFF]));
 
-  //bullet->x = parent->x + (obj.distance - 3) * rend::BamCos(parent->angle + da);
-  //bullet->y = parent->y + (obj.distance - 3) * rend::BamSin(parent->angle + da);
-  //bullet->z = parent->z + 42;
-  //bullet->flags |= mobj::MF_NOGRAVITY;
+  bullet->x = x;
+  bullet->y = y;
+  bullet->z = z;
+  bullet->flags |= mobj::MF_NOGRAVITY;
+
+  PutMobjOnMap(std::move(bullet), false);
+}
+
+void World::SpawnBulletBlood(int x, int y, int z) {
+  std::unique_ptr<mobj::MapObject> bullet( new mobj::MapObject(id::mobjinfo[id::MT_BLOOD]));
+
+  bullet->x = x;
+  bullet->y = y;
+  bullet->z = z;
+  bullet->flags |= mobj::MF_NOGRAVITY;
 
   PutMobjOnMap(std::move(bullet), false);
 }

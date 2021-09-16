@@ -115,7 +115,10 @@ struct RawVertex {
 
 // Helper type 
 struct IntersectedObject {
-  int distance;
+  double distance;
+
+  int x;
+  int y;
 
   std::variant<const Line*, mobj::MapObject*> obj;
 };
