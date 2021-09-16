@@ -123,6 +123,14 @@ struct IntersectedObject {
   std::variant<const Line*, mobj::MapObject*> obj;
 };
 
+// For hitscan etc...
+struct Opening {
+  double coef_high_opening = 100.0 / 160;
+  double coef_low_opening = 100.0 / 160;
+
+  int view_line_z;
+};
+
 } // namespace world
 
 #endif  // WORLD_TYPES_H_

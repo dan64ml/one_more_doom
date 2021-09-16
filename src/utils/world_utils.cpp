@@ -154,4 +154,35 @@ std::tuple<bool, double, double> GetSegmentsIntersection(int x1, int y1, int x2,
   return GetSegmentsIntersection(x1, y1, x2, y2, line->x1, line->y1, line->x2, line->y2);
 }
 
+std::pair<int, int> ShiftToCenter(int cx, int cy, int x, int y, int shift) {
+  x += (x > cx) ? -shift : shift;
+  y += (y > cy) ? -shift : shift;
+  return {x, y};
+}
+
+bool CorrectOpening(world::Opening& op, const world::Line* line, double distance) {
+  const double kEps = 0.001;
+  if (std::abs(distance) < kEps) {
+    return true;
+  }
+
+  // Current opening
+  int high_z = op.view_line_z + distance * op.coef_high_opening;
+  int low_z = op.view_line_z - distance * op.coef_low_opening;
+  // Line opening
+  int line_low = std::max(line->sides[0]->sector->floor_height, line->sides[1]->sector->floor_height);
+  int line_high = std::min(line->sides[0]->sector->ceiling_height, line->sides[1]->sector->ceiling_height);
+
+  if (line_low > low_z) {
+    low_z = line_low;
+    op.coef_low_opening = (op.view_line_z - low_z) / distance;
+  }
+  if (line_high < high_z) {
+    high_z = line_high;
+    op.coef_high_opening = (high_z - op.view_line_z) / distance;
+  }
+
+  return high_z > low_z;
+}
+
 } // namespace math

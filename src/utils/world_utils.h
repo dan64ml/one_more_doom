@@ -33,6 +33,12 @@ std::tuple<bool, double, double> GetSegmentsIntersection(int x1, int y1, int x2,
 std::tuple<bool, double, double> GetSegmentsIntersection(int s1_x1, int s1_y1, int s1_x2, int s1_y2,
                                                          int s2_x1, int s2_y1, int s2_x2, int s2_y2);
 
+// "Shift" point closer to the center. 
+std::pair<int, int> ShiftToCenter(int cx, int cy, int x, int y, int shift = 1);
+
+// Corrects opening using Line. Returns false if opening is closed
+bool CorrectOpening(world::Opening& op, const world::Line* line, double dist);
+
 } // namespace math
 
 #endif  // WORLD_UTILS_H_
