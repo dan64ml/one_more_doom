@@ -20,13 +20,6 @@ ObjPosition LinePointPosition(const world::Line* line, int x, int y);
 // Finds position of the BBox relative to the line
 ObjPosition LineBBoxPosition(const world::Line* line, const world::BBox* bbox);
 
-
-// Returns distance from {x1, y2} to intersection point with mobj. Returns -1 if there is
-// no intersection. Mobj is supposed to be a sprite section.
-double GetDistanceToIntersection(int x1, int y1, int x2, int y2, const mobj::MapObject* mobj);
-// The same for lines
-double GetDistanceToIntersection(int x1, int y1, int x2, int y2, const world::Line* line);
-
 // Returns intersection point with mobj (if exist).
 std::tuple<bool, double, double> GetMobjIntersection(int x1, int y1, int x2, int y2, const mobj::MapObject* mobj);
 

@@ -351,12 +351,8 @@ std::vector<IntersectedObject> World::CreateIntersectedObjList(int from_x, int f
     }
 
     auto [cross, cx, cy] = math::GetMobjIntersection(from_x, from_y, to_x, to_y, obj);
-    double dist = rend::SegmentLength(from_x, from_y, cx, cy);
-    //auto dist = math::GetDistanceToIntersection(from_x, from_y, to_x, to_y, obj);
-    //if (dist > 0) {
-    //  result.push_back(IntersectedObject {dist, 0, 0, obj});
-    //}
     if (cross) {
+      double dist = rend::SegmentLength(from_x, from_y, cx, cy);
       result.push_back(IntersectedObject {dist, static_cast<int>(cx), static_cast<int>(cy), obj});
     }
   }
@@ -364,12 +360,10 @@ std::vector<IntersectedObject> World::CreateIntersectedObjList(int from_x, int f
   // Scan lines
   for (auto line : blocks_.GetLines(bb)) {
     auto [cross, cx, cy] = math::GetSegmentsIntersection(from_x, from_y, to_x, to_y, line);
-    if (!cross) {
-      continue;
+    if (cross) {
+      double dist = rend::SegmentLength(from_x, from_y, cx, cy);
+      result.push_back(IntersectedObject {dist, static_cast<int>(cx), static_cast<int>(cy), line});
     }
-
-    double dist = rend::SegmentLength(from_x, from_y, cx, cy);
-    result.push_back(IntersectedObject {dist, static_cast<int>(cx), static_cast<int>(cy), line});
   }
 
   std::sort(begin(result), end(result), [](const auto& lhs, const auto& rhs) { 
