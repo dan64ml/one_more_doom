@@ -182,6 +182,9 @@ bool CorrectOpening(world::Opening& op, const world::Line* line, double distance
     op.coef_high_opening = (high_z - op.view_line_z) / distance;
   }
 
+  op.high_z = high_z;
+  op.low_z = low_z;
+  
   return high_z > low_z;
 }
 

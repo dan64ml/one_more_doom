@@ -375,114 +375,71 @@ std::vector<IntersectedObject> World::CreateIntersectedObjList(int from_x, int f
 void World::HitLineAttack(mobj::MapObject* parent, int damage, int distance, rend::BamAngle da) {
   auto crossed_objects = CreateIntersectedObjList(parent->x, parent->y, parent->angle + da, distance);
 
-  // FOV
-  double coef_high_opening = 100.0 / 160;
-  double coef_low_opening = 100.0 / 160;
-  
   Opening op;
-  op.view_line_z = player_->z + 42;
+  op.view_line_z = parent->z + 42; // Weapon height, TODO!!!
+
   // If bullet doesn't hit any monster, but hit a line on its original height,
-  // the bullet hole must be drawn on that first wall
-  int first_line_distance = 0;
+  // the bullet hole must be drawn on that first wall (NOT on the last wall)
+  bool save_first_wall = false;
+  int fw_x = 0, fw_y = 0;
 
-  int vp_z = player_->z + 42; // Weapon height, TODO!!!
-
-  for (auto obj : crossed_objects) {
-    int idx = obj.obj.index();
+  for (auto elem : crossed_objects) {
+    int idx = elem.obj.index();
 
     if (idx == 0) {
-      // Line
-      auto l = std::get<0>(obj.obj);
+      auto l = std::get<0>(elem.obj);
       std::cout << "Hit line (" << l->x1 << ", " << l->y1 << ") -> (" << l->x2 << ", " << l->y2 << ")" << std::endl;
 
       // Solid wall
       if (!(l->flags & kLDFTwoSided)) {
-        if (first_line_distance) {
+        if (save_first_wall) {
           break;
+        } else {
+          auto [x, y] = math::ShiftToCenter(parent->x, parent->y, elem.x, elem.y, 2);
+          SpawnBulletPuff(x, y, op.view_line_z);
+          return;
         }
-
-        auto [x, y] = math::ShiftToCenter(parent->x, parent->y, obj.x, obj.y);
-        SpawnBulletPuff(x, y, parent->z + 42);
-
-        return;
       }
 
-      int high_z = vp_z + obj.distance * coef_high_opening;
-      int low_z = vp_z - obj.distance * coef_low_opening;
+      bool is_open = math::CorrectOpening(op, l, elem.distance);
 
-      int line_low = std::max(l->sides[0]->sector->floor_height, l->sides[1]->sector->floor_height);
-      int line_high = std::min(l->sides[0]->sector->ceiling_height, l->sides[1]->sector->ceiling_height);
-
-      bool is_open = math::CorrectOpening(op, l, obj.distance);
-
-      if (!first_line_distance && (vp_z < line_low || vp_z > line_high)) {
-//      if (!first_line_distance && is_open) {
-        first_line_distance = obj.distance;
+      if (!save_first_wall && (op.view_line_z < op.low_z || op.view_line_z > op.high_z)) {
+        save_first_wall = true;
+        fw_x = elem.x;
+        fw_y = elem.y;
       }
 
-//      if (line_low > high_z || line_high < low_z) {
       if (!is_open) {
-        // Portal closes view
-
-        if (first_line_distance) {
+        if (save_first_wall) {
           break;
-        }
-
-        //std::unique_ptr<mobj::MapObject> bullet( new mobj::MapObject(id::mobjinfo[id::MT_PUFF]));
-        //bullet->x = parent->x + (obj.distance - 3) * rend::BamCos(parent->angle + da);
-        //bullet->y = parent->y + (obj.distance - 3) * rend::BamSin(parent->angle + da);
-        //bullet->z = parent->z + 42;
-        //bullet->flags |= mobj::MF_NOGRAVITY;
-
-        //PutMobjOnMap(std::move(bullet), false);
-
-        auto [x, y] = math::ShiftToCenter(parent->x, parent->y, obj.x, obj.y);
-        SpawnBulletPuff(x, y, parent->z + 42);
-
-        return;
-      } else {
-        // Correct opening if it's necessary
-        if (line_low > low_z) {
-          coef_low_opening = static_cast<double>(vp_z - line_low) / obj.distance;
-        }
-        if (line_high < high_z) {
-          coef_high_opening = static_cast<double>(line_high - vp_z) / obj.distance;
+        } else {
+          auto [x, y] = math::ShiftToCenter(parent->x, parent->y, elem.x, elem.y, 2);
+          SpawnBulletPuff(x, y, op.view_line_z);
+          return;
         }
       }
     } else if (idx == 1) {
       // MapObject
-      auto m = std::get<1>(obj.obj);
-      std::cout << "Hit mobj (" << m->x << ", " << m->y << ")" << std::endl;
+      auto mobj = std::get<1>(elem.obj);
+      std::cout << "Hit mobj (" << mobj->x << ", " << mobj->y << ")" << std::endl;
 
-      int high_z = vp_z + obj.distance * op.coef_high_opening;
-      int low_z = vp_z - obj.distance * op.coef_low_opening;
+      int high_z = op.view_line_z + elem.distance * op.coef_high_opening;
+      int low_z = op.view_line_z - elem.distance * op.coef_low_opening;
 
-      if (!((m->z > high_z) || (m->z + m->height < low_z))) {
-        m->CauseDamage(damage);
+      if (!((mobj->z > high_z) || (mobj->z + mobj->height < low_z))) {
+        mobj->CauseDamage(damage);
 
-        //std::unique_ptr<mobj::MapObject> bullet( new mobj::MapObject(id::mobjinfo[id::MT_BLOOD]));
-        //bullet->x = parent->x + (obj.distance - 3) * rend::BamCos(parent->angle + da);
-        //bullet->y = parent->y + (obj.distance - 3) * rend::BamSin(parent->angle + da);
-        //bullet->z = m->z + m->height / 2;
-        //bullet->flags |= mobj::MF_NOGRAVITY;
-
-        //PutMobjOnMap(std::move(bullet), false);
-        auto [x, y] = math::ShiftToCenter(parent->x, parent->y, obj.x, obj.y);
-        SpawnBulletBlood(x, y, m->z + m->height / 2);
+        auto [x, y] = math::ShiftToCenter(parent->x, parent->y, elem.x, elem.y, 2);
+        SpawnBulletBlood(x, y, mobj->z + mobj->height / 2);
 
         return;
       }
     }
   }
 
-  if (first_line_distance) {
-      std::unique_ptr<mobj::MapObject> bullet( new mobj::MapObject(id::mobjinfo[id::MT_PUFF]));
-      bullet->x = parent->x + (first_line_distance - 3) * rend::BamCos(parent->angle + da);
-      bullet->y = parent->y + (first_line_distance - 3) * rend::BamSin(parent->angle + da);
-      bullet->z = parent->z + 42;
-      bullet->flags |= mobj::MF_NOGRAVITY;
-
-      PutMobjOnMap(std::move(bullet), false);
+  if (save_first_wall) {
+      auto [x, y] = math::ShiftToCenter(parent->x, parent->y, fw_x, fw_y, 2);
+      SpawnBulletPuff(x, y, op.view_line_z);
   }
 }
 

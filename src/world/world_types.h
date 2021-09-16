@@ -129,6 +129,10 @@ struct Opening {
   double coef_low_opening = 100.0 / 160;
 
   int view_line_z;
+
+  // Ceiling and floor after last correction
+  int high_z;
+  int low_z;
 };
 
 } // namespace world
