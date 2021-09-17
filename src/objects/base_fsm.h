@@ -77,7 +77,6 @@ class BaseFSM {
  private:
   id::state_t current_state_;
   bool disable_ = true;
-
 };
 
 } // namespace mobj

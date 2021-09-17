@@ -310,9 +310,13 @@ void Weapon::FireBFG() {
 }
 
 void Weapon::FireChaingun() {
-  std::cout << "FireBFG" << std::endl;
+  //std::cout << "FireChainGun" << std::endl;
   ammo_[weapons_[current_weapon_].ammo]--;
-  flash_fsm_.SetState(weapons_[current_weapon_].flash_state, this);
+  // Chaingun's FSM makes two shots per cycle. Hack to draw fire.
+  id::statenum_t sn = (ammo_[kAmClip] % 2) ? id::S_CHAINFLASH1 : id::S_CHAINFLASH2;
+  flash_fsm_.SetState(sn, this);
+
+  player_->FirePistol(refire_count_);
 }
 
 void Weapon::FireCurrentWeapon() {
