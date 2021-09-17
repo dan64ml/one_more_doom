@@ -45,18 +45,13 @@ void Player::FirePlasma() {
 }
 
 void Player::FirePistol(bool refire) {
+  auto slope = world_->GetTargetAngle(x, y, z + kWeaponHeight, angle, kMissileRange);
   int damage = 5 * (rand() % 3 + 1);
-  rend::BamAngle da = refire ? (rand() - rand()) % 256 : 0;
-  world_->HitLineAttack(this, damage, kMissileRange, da);
-}
+  rend::BamAngle dh = refire ? (rand() - rand()) % 512 : 0;
+  rend::BamAngle dv = (rand() - rand()) % 128;
 
-//void Player::FireShotgun() {
-//  for (int i = 0; i < 7; ++i) {
-//    int damage = 5 * (rand() % 3 + 1);
-//    rend::BamAngle da = (rand() - rand()) % 512;
-//    world_->HitLineAttack(this, damage, kMissileRange, da);
-//  }
-//}
+  world_->HitAngleLineAttack(this, damage, kMissileRange, angle + dh, slope + dv);
+}
 
 void Player::FireShotgun() {
   auto slope = world_->GetTargetAngle(x, y, z + kWeaponHeight, angle, kMissileRange);
