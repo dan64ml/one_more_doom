@@ -458,17 +458,14 @@ void World::HitAngleLineAttack(mobj::MapObject* parent, int damage, int distance
       //std::cout << "Hit line (" << line->x1 << ", " << line->y1 << ") -> (" << line->x2 << ", " << line->y2 << ")" << std::endl;
 
       int hit_line_height = view_line_z + elem.distance * height_coef;
+      // Check for hitting the sky
+      if (hit_line_height > line->sides[0]->sector->ceiling_height && 
+          line->sides[0]->sector->ceiling_pic == "F_SKY1") {
+        return;
+      }
 
       // Solid wall
       if (!(line->flags & kLDFTwoSided)) {
-        std::cout << "Hit wall line (" << line->x1 << ", " << line->y1 << ") -> (" << line->x2 << ", " << line->y2 << ")" << std::endl;
-        
-        if (line->sides[0]->sector->ceiling_pic == "F_SKY1" && 
-            hit_line_height > line->sides[0]->sector->ceiling_height) {
-          // It's the sky
-          return;
-        }
-
         auto [x, y] = math::ShiftToCenter(parent->x, parent->y, elem.x, elem.y, 2);
         SpawnBulletPuff(x, y, hit_line_height);
         return;
@@ -482,15 +479,9 @@ void World::HitAngleLineAttack(mobj::MapObject* parent, int damage, int distance
             line->sides[1]->sector->ceiling_pic == "F_SKY1" &&
             line->sides[0]->sector->ceiling_height > line->sides[1]->sector->ceiling_height) {
           // It's the sky
-          std::cout << "Hit sky line (" << line->x1 << ", " << line->y1 << ") -> (" << line->x2 << ", " << line->y2 << ")" << std::endl;
           return;
         }
 
-        if (hit_line_height > opening_top && line->sides[0]->sector->ceiling_pic == "F_SKY1") {
-          return;
-        }
-
-        std::cout << "Hit porta line (" << line->x1 << ", " << line->y1 << ") -> (" << line->x2 << ", " << line->y2 << ")" << std::endl;
         auto [x, y] = math::ShiftToCenter(parent->x, parent->y, elem.x, elem.y, 2);
         SpawnBulletPuff(x, y, hit_line_height);
         return;
