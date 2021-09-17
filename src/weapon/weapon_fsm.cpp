@@ -44,6 +44,9 @@ void WeaponFSM::CallStateFunction(id::FuncId foo_id, Weapon* obj) {
     case id::A_FireCGun:
       obj->FireChaingun();
       break;
+    case id::A_Punch:
+      obj->Punch();
+      break;
 //    case id::A_FireCrackle:
 //      obj->FireChaingun();
 //      break;

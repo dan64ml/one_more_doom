@@ -319,6 +319,11 @@ void Weapon::FireChaingun() {
   player_->FirePistol(refire_count_);
 }
 
+void Weapon::Punch() {
+  //std::cout << "Punch" << std::endl;
+  player_->Punch();
+}
+
 void Weapon::FireCurrentWeapon() {
   if (!CheckAmmo()) {
     return;

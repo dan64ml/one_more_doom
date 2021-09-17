@@ -77,4 +77,12 @@ void Player::FireSuperShotgun() {
   }
 }
 
+void Player::Punch() {
+  auto hit_direction = angle + (rand() - rand()) % 128;
+  auto slope = world_->GetTargetAngle(x, y, z + kWeaponHeight, hit_direction, kMeleeRange);
+
+  int damage = 2 * (rand() % 10 + 1);
+  world_->HitAngleLineAttack(this, damage, kMeleeRange, hit_direction, slope);
+}
+
 } // namespace mobj

@@ -21,6 +21,7 @@ const int kMaxRadius = 32;
 const double kGravity = 1.0;
 
 const int kMissileRange = 32 * 64;
+const int kMeleeRange = 64;
 
 const int kWeaponHeight = 42; // Why??!
 

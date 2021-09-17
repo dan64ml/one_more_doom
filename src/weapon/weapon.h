@@ -107,6 +107,8 @@ class Weapon {
   void FirePlasma();
   void FireBFG();
   void FireChaingun();
+  void Punch();
+  void ChainSaw();
 
   void FireCurrentWeapon();
 
