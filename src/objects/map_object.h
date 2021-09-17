@@ -49,6 +49,8 @@ struct MapObject {
   int height;
   int radius;
 
+  int speed;
+  
   // Original DOOM flags
   uint32_t flags;
 

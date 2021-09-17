@@ -13,9 +13,11 @@ class Projectile : public MapObject {
 
   bool TickTime() override;
 
+  void SetVerticalAngle(rend::BamAngle an);
+
  protected:
   void SlowDown() override {}
-  void ZMove() override {}
+  void ZMove() override;
   bool RunIntoAction() override;
   bool InfluenceObject(MapObject*) override;
   bool ProcessLine(const world::Line* line) override;
@@ -26,7 +28,7 @@ class Projectile : public MapObject {
 
   int damage_;
   int blast_damage_;
-  int speed_;
+  //int speed_;
   
   bool met_obstacle = false;
 };

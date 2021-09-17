@@ -17,13 +17,13 @@ Projectile::Projectile(id::mobjtype_t type, MapObject* parent)
   z = parent->z + kBarrelHeight;
 
   damage_ = id::mobjinfo[type].damage;
-  speed_ = id::mobjinfo[type].speed;
+  //speed_ = id::mobjinfo[type].speed;
   blast_damage_ = (type == id::MT_ROCKET) ? kRocketBlastDamage : 0;
   
   angle = parent->angle;
 
-  mom_x = speed_ * rend::BamCos(parent->angle);
-  mom_y = speed_ * rend::BamSin(parent->angle);
+  mom_x = speed * rend::BamCos(parent->angle);
+  mom_y = speed * rend::BamSin(parent->angle);
   mom_z = 0;
 }
 
@@ -86,6 +86,14 @@ bool Projectile::ProcessLine(const world::Line* line) {
   // TODO: Do I have to check any line's flags here???
 
   return true;
+}
+
+//void Projectile::SetVerticalAngle(rend::BamAngle an) {
+//  mom_z = speed_ * rend::BamSin(an);
+//}
+
+void Projectile::ZMove() {
+  z += mom_z;
 }
 
 } // namespace wpn

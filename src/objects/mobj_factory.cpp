@@ -27,7 +27,7 @@ std::unique_ptr<mobj::MapObject> MobjFactory::Create(const wad::WadMapThing& thi
   obj->angle = rend::DegreesToBam(thing.angle);
 
   obj->type = thing.type;
-  
+
   return obj;
 }
 

@@ -26,7 +26,8 @@ MapObject::MapObject(const id::mobjinfo_t& info) : fsm_(info) {
   flags = info.flags;
   height = info.height;
   radius = info.radius;
-
+  speed = info.speed;
+  
   spawn_health_ = health_ = info.spawnhealth;
   pain_chance_ = info.painchance;
 }
