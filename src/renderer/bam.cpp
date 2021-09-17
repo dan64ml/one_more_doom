@@ -24,4 +24,9 @@ BamAngle DegreesToBam(int angle) {
   return (kBamAngle360 / 360.) * angle;
 }
 
+BamAngle BamArcSin(double v) {
+  double an = asin(v);
+  return kBamAngle180 * an / kPi;
+}
+
 } // namespace rend

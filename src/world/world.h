@@ -38,7 +38,14 @@ class World {
 
   // Line attack has only two mobjtype_t: MT_BLOOD if hit and MT_PUFF if miss.
   // If the weapon in refire state, accuracy decreases and da != 0.
+  // ? Obsolete ?
   void HitLineAttack(mobj::MapObject* parent, int damage, int distance, rend::BamAngle da);
+
+  // Line attack with horisontal (dir_angle) and vertical (vert_angle) angles
+  void HitAngleLineAttack(mobj::MapObject* parent, int damage, int distance, rend::BamAngle dir_angle, rend::BamAngle vert_angle);
+
+  // Looks for a target. Returns vertical angle to the target. Zero if target not found
+  rend::BamAngle GetTargetAngle(int from_x, int from_y, int from_z, rend::BamAngle direction, int distance);
 
   void DoBlastDamage(int damage, int x, int y);
 

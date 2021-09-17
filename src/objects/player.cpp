@@ -50,11 +50,35 @@ void Player::FirePistol(bool refire) {
   world_->HitLineAttack(this, damage, kMissileRange, da);
 }
 
+//void Player::FireShotgun() {
+//  for (int i = 0; i < 7; ++i) {
+//    int damage = 5 * (rand() % 3 + 1);
+//    rend::BamAngle da = (rand() - rand()) % 512;
+//    world_->HitLineAttack(this, damage, kMissileRange, da);
+//  }
+//}
+
 void Player::FireShotgun() {
+  auto slope = world_->GetTargetAngle(x, y, z + kWeaponHeight, angle, kMissileRange);
+
   for (int i = 0; i < 7; ++i) {
     int damage = 5 * (rand() % 3 + 1);
-    rend::BamAngle da = (rand() - rand()) % 512;
-    world_->HitLineAttack(this, damage, kMissileRange, da);
+    rend::BamAngle dh = (rand() - rand()) % 512;
+    rend::BamAngle dv = (rand() - rand()) % 128;
+
+    world_->HitAngleLineAttack(this, damage, kMissileRange, angle + dh, slope + dv);
+  }
+}
+
+void Player::FireSuperShotgun() {
+  auto slope = world_->GetTargetAngle(x, y, z + kWeaponHeight, angle, kMissileRange);
+
+  for (int i = 0; i < 20; ++i) {
+    int damage = 5 * (rand() % 3 + 1);
+    rend::BamAngle dh = (rand() - rand()) % 1400;
+    rend::BamAngle dv = (rand() - rand()) % 1400;
+
+    world_->HitAngleLineAttack(this, damage, kMissileRange, angle + dh, slope + dv);
   }
 }
 

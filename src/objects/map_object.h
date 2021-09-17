@@ -22,6 +22,8 @@ const double kGravity = 1.0;
 
 const int kMissileRange = 32 * 64;
 
+const int kWeaponHeight = 42; // Why??!
+
 /*=========================================================================
 Need access to:
 - BlockMap class data

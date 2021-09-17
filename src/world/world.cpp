@@ -443,6 +443,101 @@ void World::HitLineAttack(mobj::MapObject* parent, int damage, int distance, ren
   }
 }
 
+void World::HitAngleLineAttack(mobj::MapObject* parent, int damage, int distance,
+                               rend::BamAngle dir_angle, rend::BamAngle vert_angle) {
+  auto crossed_objects = CreateIntersectedObjList(parent->x, parent->y, dir_angle, distance);
+
+  double height_coef = rend::BamSin(vert_angle);
+  int view_line_z = parent->z + mobj::kWeaponHeight; // Weapon height, TODO!!!
+
+  for (auto elem : crossed_objects) {
+    int idx = elem.obj.index();
+
+    if (idx == 0) {
+      auto line = std::get<0>(elem.obj);
+      std::cout << "Hit line (" << line->x1 << ", " << line->y1 << ") -> (" << line->x2 << ", " << line->y2 << ")" << std::endl;
+
+      int hit_line_height = view_line_z + elem.distance * height_coef;
+
+      // Solid wall
+      if (!(line->flags & kLDFTwoSided)) {
+        auto [x, y] = math::ShiftToCenter(parent->x, parent->y, elem.x, elem.y, 2);
+        SpawnBulletPuff(x, y, hit_line_height);
+        return;
+      }
+
+      int opening_bottom = std::max(line->sides[0]->sector->floor_height, line->sides[1]->sector->floor_height);
+      int opening_top = std::min(line->sides[0]->sector->ceiling_height, line->sides[1]->sector->ceiling_height);
+
+      if (hit_line_height < opening_bottom || hit_line_height > opening_top) {
+        auto [x, y] = math::ShiftToCenter(parent->x, parent->y, elem.x, elem.y, 2);
+        SpawnBulletPuff(x, y, hit_line_height);
+        return;
+      }
+    } else if (idx == 1) {
+      // MapObject
+      auto mobj = std::get<1>(elem.obj);
+      std::cout << "Hit mobj (" << mobj->x << ", " << mobj->y << ")" << std::endl;
+
+      int hit_line_height = view_line_z + elem.distance * height_coef;
+
+      if (!((mobj->z > hit_line_height) || (mobj->z + mobj->height < hit_line_height))) {
+        mobj->CauseDamage(damage);
+
+        auto [x, y] = math::ShiftToCenter(parent->x, parent->y, elem.x, elem.y, 2);
+        SpawnBulletBlood(x, y, hit_line_height);
+
+        return;
+      }
+    }
+  }
+}
+
+rend::BamAngle World::GetTargetAngle(int from_x, int from_y, int from_z, rend::BamAngle direction, int distance) {
+  auto crossed_objects = CreateIntersectedObjList(from_x, from_y, direction, distance);
+
+  Opening op;
+  op.view_line_z = from_z;
+
+  for (auto elem : crossed_objects) {
+    int idx = elem.obj.index();
+
+    if (idx == 0) {
+      auto line = std::get<0>(elem.obj);
+      std::cout << "Hit line (" << line->x1 << ", " << line->y1 << ") -> (" << line->x2 << ", " << line->y2 << ")" << std::endl;
+
+      // Solid wall
+      if (!(line->flags & kLDFTwoSided)) {
+        return 0;
+      }
+
+      bool is_open = math::CorrectOpening(op, line, elem.distance);
+      if (!is_open) {
+        return 0;
+      }
+    } else if (idx == 1) {
+      // MapObject
+      auto mobj = std::get<1>(elem.obj);
+      std::cout << "Hit mobj (" << mobj->x << ", " << mobj->y << ")" << std::endl;
+
+      int high_z = op.view_line_z + elem.distance * op.coef_high_opening;
+      int low_z = op.view_line_z - elem.distance * op.coef_low_opening;
+
+      if (!((mobj->z > high_z) || (mobj->z + mobj->height < low_z))) {
+        // Found the target
+        int visible_top = std::min(mobj->z + mobj->height, high_z);
+        int visible_bottom = std::max(mobj->z, low_z);
+
+        double target_center = (visible_top + visible_bottom) / 2;
+
+        return rend::BamArcSin((target_center - op.view_line_z) / elem.distance);
+      }
+    }
+  }
+
+  return 0;
+}
+
 void World::SpawnBulletPuff(int x, int y, int z) {
   std::unique_ptr<mobj::MapObject> bullet( new mobj::MapObject(id::mobjinfo[id::MT_PUFF]));
 

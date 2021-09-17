@@ -29,6 +29,7 @@ double BamCos(BamAngle a);
 double BamSin(BamAngle a);
 double BamTan(BamAngle a);
 
+BamAngle BamArcSin(double);
 
 } // namespace rend
 
