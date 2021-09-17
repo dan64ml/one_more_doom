@@ -455,12 +455,20 @@ void World::HitAngleLineAttack(mobj::MapObject* parent, int damage, int distance
 
     if (idx == 0) {
       auto line = std::get<0>(elem.obj);
-      std::cout << "Hit line (" << line->x1 << ", " << line->y1 << ") -> (" << line->x2 << ", " << line->y2 << ")" << std::endl;
+      //std::cout << "Hit line (" << line->x1 << ", " << line->y1 << ") -> (" << line->x2 << ", " << line->y2 << ")" << std::endl;
 
       int hit_line_height = view_line_z + elem.distance * height_coef;
 
       // Solid wall
       if (!(line->flags & kLDFTwoSided)) {
+        std::cout << "Hit wall line (" << line->x1 << ", " << line->y1 << ") -> (" << line->x2 << ", " << line->y2 << ")" << std::endl;
+        
+        if (line->sides[0]->sector->ceiling_pic == "F_SKY1" && 
+            hit_line_height > line->sides[0]->sector->ceiling_height) {
+          // It's the sky
+          return;
+        }
+
         auto [x, y] = math::ShiftToCenter(parent->x, parent->y, elem.x, elem.y, 2);
         SpawnBulletPuff(x, y, hit_line_height);
         return;
@@ -470,6 +478,19 @@ void World::HitAngleLineAttack(mobj::MapObject* parent, int damage, int distance
       int opening_top = std::min(line->sides[0]->sector->ceiling_height, line->sides[1]->sector->ceiling_height);
 
       if (hit_line_height < opening_bottom || hit_line_height > opening_top) {
+        if (line->sides[0]->sector->ceiling_pic == "F_SKY1" &&
+            line->sides[1]->sector->ceiling_pic == "F_SKY1" &&
+            line->sides[0]->sector->ceiling_height > line->sides[1]->sector->ceiling_height) {
+          // It's the sky
+          std::cout << "Hit sky line (" << line->x1 << ", " << line->y1 << ") -> (" << line->x2 << ", " << line->y2 << ")" << std::endl;
+          return;
+        }
+
+        if (hit_line_height > opening_top && line->sides[0]->sector->ceiling_pic == "F_SKY1") {
+          return;
+        }
+
+        std::cout << "Hit porta line (" << line->x1 << ", " << line->y1 << ") -> (" << line->x2 << ", " << line->y2 << ")" << std::endl;
         auto [x, y] = math::ShiftToCenter(parent->x, parent->y, elem.x, elem.y, 2);
         SpawnBulletPuff(x, y, hit_line_height);
         return;
@@ -504,7 +525,7 @@ rend::BamAngle World::GetTargetAngle(int from_x, int from_y, int from_z, rend::B
 
     if (idx == 0) {
       auto line = std::get<0>(elem.obj);
-      std::cout << "Hit line (" << line->x1 << ", " << line->y1 << ") -> (" << line->x2 << ", " << line->y2 << ")" << std::endl;
+      //std::cout << "Hit line (" << line->x1 << ", " << line->y1 << ") -> (" << line->x2 << ", " << line->y2 << ")" << std::endl;
 
       // Solid wall
       if (!(line->flags & kLDFTwoSided)) {
@@ -518,7 +539,7 @@ rend::BamAngle World::GetTargetAngle(int from_x, int from_y, int from_z, rend::B
     } else if (idx == 1) {
       // MapObject
       auto mobj = std::get<1>(elem.obj);
-      std::cout << "Hit mobj (" << mobj->x << ", " << mobj->y << ")" << std::endl;
+      //std::cout << "Hit mobj (" << mobj->x << ", " << mobj->y << ")" << std::endl;
 
       int high_z = op.view_line_z + elem.distance * op.coef_high_opening;
       int low_z = op.view_line_z - elem.distance * op.coef_low_opening;
