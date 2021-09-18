@@ -45,6 +45,7 @@ class Player : public MapObject {
   void FirePlasma();
 
   void Punch();
+  void ChainSaw();
   void FirePistol(bool refire);
   void FireShotgun();
   void FireSuperShotgun();

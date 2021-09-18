@@ -70,8 +70,8 @@ class Weapon {
     true,   // kMissile
     true,   // kPlasma
     true,   // kBFG
-    false,   // kChainsaw
-    false,   // kSuperShotgun
+    true,   // kChainsaw
+    true,   // kSuperShotgun
   };
   // Ammunition
   int ammo_[kAmmoNumber] {

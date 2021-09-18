@@ -316,12 +316,18 @@ void Weapon::FireChaingun() {
   id::statenum_t sn = (ammo_[kAmClip] % 2) ? id::S_CHAINFLASH1 : id::S_CHAINFLASH2;
   flash_fsm_.SetState(sn, this);
 
+  // Chaingun shot is the same as pistol shot
   player_->FirePistol(refire_count_);
 }
 
 void Weapon::Punch() {
   //std::cout << "Punch" << std::endl;
   player_->Punch();
+}
+
+void Weapon::ChainSaw() {
+  //std::cout << "ChainSaw" << std::endl;
+  player_->ChainSaw();
 }
 
 void Weapon::FireCurrentWeapon() {

@@ -85,4 +85,13 @@ void Player::Punch() {
   world_->HitAngleLineAttack(this, damage, kMeleeRange, hit_direction, slope);
 }
 
+void Player::ChainSaw() {
+  auto hit_direction = angle + (rand() - rand()) % 512;
+  auto slope = world_->GetTargetAngle(x, y, z + kWeaponHeight, hit_direction, kMeleeRange);
+  rend::BamAngle dv = (rand() - rand()) % 512;
+
+  int damage = 2 * (rand() % 10 + 1);
+  world_->HitAngleLineAttack(this, damage, kMeleeRange, hit_direction, slope + dv);
+}
+
 } // namespace mobj
