@@ -323,22 +323,51 @@ void World::DoBlastDamage(int damage, int x, int y) {
       continue;
     }
 
-    if (IsMobjVisible(x, y, obj)) {
+    if (IsMobjBlastVisible(x, y, obj)) {
       obj->CauseDamage(damage - dist);
     }
   }
 }
 
-bool World::IsMobjVisible(int vp_x, int vp_y, const mobj::MapObject* obj) const {
+bool World::IsMobjBlastVisible(int vp_x, int vp_y, const mobj::MapObject* obj) const {
+  auto crossed_objects = CreateIntersectedObjList(vp_x, vp_y, obj->x, obj->y);
+
+  for (const auto item : crossed_objects) {
+    int idx = item.obj.index();
+
+    if (idx == 0) {
+      const auto line = std::get<0>(item.obj);
+      if (!(line->flags & kLDFTwoSided)) {
+        return false;
+      }
+
+      if (line->sides[1]->sector->ceiling_height <= line->sides[1]->sector->floor_height) {
+        // Portal is closed
+        return false;
+      }
+    } else {
+      const auto mobj = std::get<1>(item.obj);
+      if (mobj == obj) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  }
+
   return true;
 }
 
 std::vector<IntersectedObject> World::CreateIntersectedObjList(int from_x, int from_y, 
-                                                               rend::BamAngle angle, int distance) {
-  std::vector<IntersectedObject> result;
-
+                                                               rend::BamAngle angle, int distance) const {
   int to_x = from_x + distance * rend::BamCos(angle);
   int to_y = from_y + distance * rend::BamSin(angle);
+
+  return CreateIntersectedObjList(from_x, from_y, to_x, to_y);
+}
+
+std::vector<IntersectedObject> World::CreateIntersectedObjList(int from_x, int from_y, int to_x, int to_y) const {
+  std::vector<IntersectedObject> result;
 
   BBox bb {from_x, to_x, to_y, from_y};
   if (bb.left > bb.right) {

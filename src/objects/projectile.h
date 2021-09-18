@@ -28,7 +28,6 @@ class Projectile : public MapObject {
 
   int damage_;
   int blast_damage_;
-  //int speed_;
   
   bool met_obstacle = false;
 };

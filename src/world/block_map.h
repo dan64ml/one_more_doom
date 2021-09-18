@@ -29,9 +29,9 @@ class BlockMap {
   bool MoveMapObject(mobj::MapObject* mobj, int new_x, int new_y);
 
   //MobjRange GetMapObjects(int left_x, int right_x, int top_y, int bottom_y);
-  MobjRange GetMapObjects(const BBox& bbox);
+  MobjRange GetMapObjects(const BBox& bbox) const;
   //LineRange GetLines(int left_x, int right_x, int top_y, int bottom_y);
-  LineRange GetLines(const BBox& bbox);
+  LineRange GetLines(const BBox& bbox) const;
 
  private:
   // Contains lines and items that can be affected by other objects

@@ -32,7 +32,7 @@ void BlockMap::Load(std::ifstream& fin, int offset, int size, const std::vector<
   }
 }
 
-MobjRange BlockMap::GetMapObjects(const BBox& bbox) {
+MobjRange BlockMap::GetMapObjects(const BBox& bbox) const {
   MobjRange result;
   int left_idx = (bbox.left - x_offset_) >> kBlockShift;
   int right_idx = (bbox.right - x_offset_) >> kBlockShift;
@@ -53,7 +53,7 @@ MobjRange BlockMap::GetMapObjects(const BBox& bbox) {
   return result;
 }
 
-LineRange BlockMap::GetLines(const BBox& bbox) {
+LineRange BlockMap::GetLines(const BBox& bbox) const {
   LineRange result;
   int left_idx = (bbox.left - x_offset_) >> kBlockShift;
   int right_idx = (bbox.right - x_offset_) >> kBlockShift;

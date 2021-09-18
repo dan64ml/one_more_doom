@@ -89,11 +89,12 @@ class World {
   void SpawnBulletPuff(int x, int y, int z);
   void SpawnBulletBlood(int x, int y, int z);
 
-  // Checks if the mobj is visible from {vp_x, vp_y}
-  bool IsMobjVisible(int vp_x, int vp_y, const mobj::MapObject* obj) const;
+  // Checks if the mobj is reachable for a blast from {vp_x, vp_y}
+  bool IsMobjBlastVisible(int vp_x, int vp_y, const mobj::MapObject* obj) const;
 
   // Returns sorted list of objects (lines and mobjs) that are projected on the section {from_x, from_y, angle, distance}
-  std::vector<IntersectedObject> CreateIntersectedObjList(int from_x, int from_y, rend::BamAngle angle, int distance);
+  std::vector<IntersectedObject> CreateIntersectedObjList(int from_x, int from_y, rend::BamAngle angle, int distance) const;
+  std::vector<IntersectedObject> CreateIntersectedObjList(int from_x, int from_y, int to_x, int to_y) const;
 
   friend class mobj::MapObject;
 };
