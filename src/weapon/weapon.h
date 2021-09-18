@@ -70,7 +70,7 @@ class Weapon {
     true,   // kMissile
     true,   // kPlasma
     true,   // kBFG
-    false,   // kChainsaw
+    true,   // kChainsaw
     true,   // kSuperShotgun
   };
   // Ammunition
@@ -107,6 +107,8 @@ class Weapon {
   void FirePlasma();
   void FireBFG();
   void FireChaingun();
+  void Punch();
+  void ChainSaw();
 
   void FireCurrentWeapon();
 
