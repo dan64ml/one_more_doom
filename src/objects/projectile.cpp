@@ -28,6 +28,10 @@ Projectile::Projectile(id::mobjtype_t type, MapObject* parent)
 }
 
 bool Projectile::TickTime() {
+  if (hit_sky_) {
+    return false;
+  }
+
   if (!met_obstacle) {
     return mobj::MapObject::TickTime();
   } else {
@@ -36,6 +40,10 @@ bool Projectile::TickTime() {
 }
 
 bool Projectile::RunIntoAction() {
+  if (hit_sky_) {
+    return false;
+  }
+
   met_obstacle = true;
 
   fsm_.ToDeathState(this);
@@ -72,6 +80,19 @@ bool Projectile::InfluenceObject(MapObject* obj) {
 
 bool Projectile::ProcessLine(const world::Line* line) {
   if (line->sides[1] == nullptr) {
+    if (line->sides[0]->sector->ceiling_height < z &&
+        line->sides[0]->sector->ceiling_pic == "F_SKY1") {
+      hit_sky_ = true;
+    }
+    return false;
+  }
+
+  if (line->sides[0]->sector->ceiling_pic == "F_SKY1" &&
+      line->sides[1]->sector->ceiling_pic == "F_SKY1" &&
+      line->sides[0]->sector->ceiling_height > line->sides[1]->sector->ceiling_height &&
+      line->sides[1]->sector->ceiling_height < (z + height)) {
+    // It's the sky
+    hit_sky_ = true;
     return false;
   }
 
@@ -87,10 +108,6 @@ bool Projectile::ProcessLine(const world::Line* line) {
 
   return true;
 }
-
-//void Projectile::SetVerticalAngle(rend::BamAngle an) {
-//  mom_z = speed_ * rend::BamSin(an);
-//}
 
 void Projectile::ZMove() {
   z += mom_z;

@@ -30,6 +30,7 @@ class Projectile : public MapObject {
   int blast_damage_;
   
   bool met_obstacle = false;
+  bool hit_sky_ = false;
 };
 
 
