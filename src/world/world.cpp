@@ -92,11 +92,15 @@ void World::LoadLevel(size_t level) {
   blocks_.Load(fin, block_map_lump.position, block_map_lump.size, lines_);
 
   CreateMapObjectList(fin);
+
+  flat_animator_.CreateFlatsList(sectors_);
 }
 
 void World::TickTime() {
   player_->TickTime();
 
+  flat_animator_.TickTime();
+  
   for (auto it = begin(mobjs_); it != end(mobjs_);) {
     if ((*it)->TickTime()) {
       ++it;

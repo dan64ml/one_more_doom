@@ -14,6 +14,8 @@
 #include "objects/mobj_factory.h"
 #include "objects/projectile.h"
 
+#include "flats_animator.h"
+
 namespace mobj {
   class MapObject;
 }
@@ -77,6 +79,8 @@ class World {
   // TMP!!!!
   //std::list<mobj::MapObject> mobjs_;
   std::list<std::unique_ptr<mobj::MapObject>> mobjs_;
+  
+  FlatsAnimator flat_animator_;
   
  private:
   void ClearLevel();
