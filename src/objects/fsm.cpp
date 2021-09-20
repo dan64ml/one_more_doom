@@ -55,4 +55,18 @@ void FSM::ToPainState(MapObject* obj) {
   SetState(pain_state, obj);
 }
 
+void FSM::CallStateFunction([[maybe_unused]] id::FuncId foo_id, [[maybe_unused]] MapObject* obj) {
+  switch (foo_id)
+  {
+    case id::A_NULL:
+      break;
+    case id::A_BFGSpray:
+      //obj->WeaponReady();
+      break;
+
+    default:
+      break;
+  }
+}
+
 } // namespace fsm

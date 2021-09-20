@@ -97,8 +97,8 @@ Weapon::Weapon(mobj::Player* player) : player_(player) {
   //current_weapon_ = kShotgun;
   //current_weapon_ = kSuperShotgun;
   //current_weapon_ = kMissile;
-  current_weapon_ = kPlasma;
-  //current_weapon_ = kBFG;
+  //current_weapon_ = kPlasma;
+  current_weapon_ = kBFG;
   
   //current_weapon_ = kChainsaw;
 
@@ -307,6 +307,8 @@ void Weapon::FireBFG() {
   std::cout << "FireBFG" << std::endl;
   ammo_[weapons_[current_weapon_].ammo] -= kBFGCharge;
   flash_fsm_.SetState(weapons_[current_weapon_].flash_state, this);
+
+  player_->FireBFG();
 }
 
 void Weapon::FireChaingun() {

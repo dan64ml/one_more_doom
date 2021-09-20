@@ -94,4 +94,8 @@ void Player::ChainSaw() {
   world_->HitAngleLineAttack(this, damage, kMeleeRange, hit_direction, slope + dv);
 }
 
+void Player::FireBFG() {
+  world_->SpawnProjectile(id::MT_BFG, this);
+}
+
 } // namespace mobj

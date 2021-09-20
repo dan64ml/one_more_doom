@@ -49,6 +49,7 @@ class Player : public MapObject {
   void FirePistol(bool refire);
   void FireShotgun();
   void FireSuperShotgun();
+  void FireBFG();
 
  private:
   virtual bool RunIntoAction() override;

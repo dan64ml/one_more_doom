@@ -17,7 +17,6 @@ Projectile::Projectile(id::mobjtype_t type, MapObject* parent)
   z = parent->z + kBarrelHeight;
 
   damage_ = id::mobjinfo[type].damage;
-  //speed_ = id::mobjinfo[type].speed;
   blast_damage_ = (type == id::MT_ROCKET) ? kRocketBlastDamage : 0;
   
   angle = parent->angle;
