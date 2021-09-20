@@ -40,6 +40,14 @@ void FlatWallAnimator::CreateWallsList(std::vector<SideDef>& sides) {
   }
 }
 
+void FlatWallAnimator::CreateScrollingWallsList(std::vector<Line>& lines) {
+  for (auto& line : lines) {
+    if (line.specials == 48) {
+      scrolling_walls_.push_back(&line);
+    }
+  }
+}
+
 int FlatWallAnimator::GetFlatIdx(const std::string& flat_name) const {
   for (size_t i = 0; i < flat_names_.size(); ++i) {
     const auto& names = flat_names_[i];
@@ -63,6 +71,11 @@ int FlatWallAnimator::GetTextureIdx(const std::string& texture_name) const {
 }
 
 void FlatWallAnimator::TickTime() {
+  // Scrolling walls
+  for (auto line : scrolling_walls_) {
+    line->sides[0]->texture_offset++;
+  }
+
   ++tick_counter_;
   if (tick_counter_ < kTicksPerStep) {
     return;

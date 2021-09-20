@@ -15,6 +15,7 @@ class FlatWallAnimator {
 
   void CreateFlatsList(std::vector<Sector>& sectors);
   void CreateWallsList(std::vector<SideDef>& sides);
+  void CreateScrollingWallsList(std::vector<Line>& lines);
 
   void TickTime();
 
@@ -58,6 +59,8 @@ class FlatWallAnimator {
   std::vector<std::vector<SideDef*>> top_textures_;
   std::vector<std::vector<SideDef*>> bottom_textures_;
   std::vector<int> texture_idxs_;
+
+  std::vector<Line*> scrolling_walls_;
 
   const int kTicksPerStep = 8;
   int tick_counter_ = 0;

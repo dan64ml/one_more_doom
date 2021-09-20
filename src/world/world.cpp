@@ -95,6 +95,7 @@ void World::LoadLevel(size_t level) {
 
   flat_animator_.CreateFlatsList(sectors_);
   flat_animator_.CreateWallsList(sides_);
+  flat_animator_.CreateScrollingWallsList(lines_);
 }
 
 void World::TickTime() {

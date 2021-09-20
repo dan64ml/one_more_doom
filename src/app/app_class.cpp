@@ -17,7 +17,7 @@ void AppClass::InitInstance() {
   gm_.Load("/home/dan/tmp/DOOM2.WAD");
 //  gm_.Load("/home/dan/tmp/Wads/Doom1.WAD");
 
-  int level = 24; //21; // 12 - wide open space // 29 - issue with clipping mobj (BFG9000)
+  int level = 29; //21; // 12 - wide open space // 29 - issue with clipping mobj (BFG9000)
                   // 23, 24 - animated floor and wall
                   // 29 - scrolling wall
                   // 22 - lots of barrels
