@@ -26,9 +26,9 @@ class Projectile : public MapObject {
 
  private:
   void BFGSpray();
-  
+
   const int kRocketBlastDamage = 128;
-  const int kBarrelHeight = 42; // ??
+  const int kBarrelHeight = 32; // original value
 
   int damage_;
   int blast_damage_;

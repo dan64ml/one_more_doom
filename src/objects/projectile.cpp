@@ -137,7 +137,7 @@ void Projectile::BFGSpray() {
     if (target) {
       auto [vx, vy] = math::ShiftToCenter(player->x, player->y, target->x, target->y, 2);
 
-      world_->SpawnBFGExplode(vx, vy, target->z);
+      world_->SpawnBFGExplode(vx, vy, target->z + target->height / 4);
 
       // Keep original behavior
       int damage = 0;

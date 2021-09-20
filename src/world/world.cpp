@@ -649,7 +649,7 @@ void World::SpawnBFGExplode(int x, int y, int z) {
   bfg->x = x;
   bfg->y = y;
   bfg->z = z;
-  bfg->flags |= mobj::MF_NOGRAVITY;
+//  bfg->flags |= mobj::MF_NOGRAVITY;
 
   PutMobjOnMap(std::move(bfg), false);
 }
