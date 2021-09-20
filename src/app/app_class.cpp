@@ -64,7 +64,7 @@ void AppClass::InitInstance() {
     }
 	);
 
- 	SetKeyStateHandler(SDL_SCANCODE_LCTRL, [this]() {
+ 	SetKeyStateHandler(SDL_SCANCODE_LALT, [this]() {
       this->keybd_.side_move = true;
     }
 	);
@@ -143,7 +143,7 @@ void AppClass::ProcessScene([[maybe_unused]] int ms_elapsed) {
   keybd_.run = false;
   keybd_.side_move = false;
 
-  player_->SetFireFlag(IsButtonPressed(SDL_SCANCODE_SPACE));
+  player_->SetFireFlag(IsButtonPressed(SDL_SCANCODE_LCTRL));
 
   if (keybd_.number_key) {
     player_->ChangeWeapon(keybd_.number_key);
