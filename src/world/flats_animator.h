@@ -35,7 +35,7 @@ class FlatsAnimator {
   std::vector<std::vector<Sector*>> floor_sectors_;
   std::vector<std::vector<Sector*>> ceiling_sectors_;
 
-  const int kTicksPerStep = 11;
+  const int kTicksPerStep = 8;
   int tick_counter_ = 0;
 };
 

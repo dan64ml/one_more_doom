@@ -5,5 +5,6 @@ add_library(world
     bsp_iterator.cpp
     block_map.cpp
     flats_animator.cpp
+    flat_wall_animator.cpp
     )
     
