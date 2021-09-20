@@ -3,6 +3,7 @@
 #include <cstdlib>
 
 #include "world/world.h"
+#include "utils/world_utils.h"
 
 namespace mobj {
 
@@ -112,4 +113,40 @@ void Projectile::ZMove() {
   z += mom_z;
 }
 
+void Projectile::CallStateFunction(id::FuncId foo_id) {
+  switch (foo_id)
+  {
+    case id::A_NULL:
+      break;
+    case id::A_BFGSpray:
+      BFGSpray();
+      break;
+
+    default:
+      break;
+  }
+}
+
+void Projectile::BFGSpray() {
+  const auto player = world_->GetPlayer();
+
+  for (int i = 0; i < 40; ++i) {
+    rend::BamAngle ang = angle - rend::kBamAngle45 + rend::kBamAngle90 / 40 * i;
+
+    mobj::MapObject* target = world_->GetTarget(player->x, player->y, player->z + mobj::kWeaponHeight, ang, 1024);
+    if (target) {
+      auto [vx, vy] = math::ShiftToCenter(player->x, player->y, target->x, target->y, 2);
+
+      world_->SpawnBFGExplode(vx, vy, target->z);
+
+      // Keep original behavior
+      int damage = 0;
+      for (int j = 0; j < 15; ++j) {
+        damage += rand() % 7 + 1;
+      }
+      target->CauseDamage(damage);
+    }
+  }
+}
+ 
 } // namespace wpn

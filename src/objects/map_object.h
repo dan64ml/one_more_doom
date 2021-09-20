@@ -109,6 +109,8 @@ struct MapObject {
   // It looks like a candidate to be virtual...
   virtual void ZMove();
 
+  virtual void CallStateFunction([[maybe_unused]] id::FuncId foo_id) {}
+
   FSM fsm_;
 
   int health_;
@@ -132,6 +134,8 @@ struct MapObject {
 
   const double kMaxMove = 30;
   const int kMaxStepSize = 24;
+
+  friend class FSM;
 };
 
 } // namespace mobj

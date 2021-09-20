@@ -3,6 +3,8 @@
 #include <cassert>
 #include <limits>
 
+#include "map_object.h"
+
 namespace mobj {
 
 FSM::FSM(const id::mobjinfo_t& info) : BaseFSM(static_cast<id::statenum_t>(info.spawnstate)) {
@@ -56,17 +58,7 @@ void FSM::ToPainState(MapObject* obj) {
 }
 
 void FSM::CallStateFunction([[maybe_unused]] id::FuncId foo_id, [[maybe_unused]] MapObject* obj) {
-  switch (foo_id)
-  {
-    case id::A_NULL:
-      break;
-    case id::A_BFGSpray:
-      //obj->WeaponReady();
-      break;
-
-    default:
-      break;
-  }
+  obj->CallStateFunction(foo_id);
 }
 
 } // namespace fsm

@@ -35,6 +35,8 @@ class World {
 
   // Spawn plasma ball or missile.
   void SpawnProjectile(id::mobjtype_t type, mobj::MapObject* parent);
+  // Spawn BFG extra hit
+  void SpawnBFGExplode(int x, int y, int z);
 
   // Line attack has only two mobjtype_t: MT_BLOOD if hit and MT_PUFF if miss.
   // If the weapon in refire state, accuracy decreases and da != 0.
@@ -46,6 +48,8 @@ class World {
 
   // Looks for a target. Returns vertical angle to the target. Zero if target not found
   rend::BamAngle GetTargetAngle(int from_x, int from_y, int from_z, rend::BamAngle direction, int distance);
+  // Returns the target
+  mobj::MapObject* GetTarget(int from_x, int from_y, int from_z, rend::BamAngle direction, int distance);
 
   void DoBlastDamage(int damage, int x, int y);
 

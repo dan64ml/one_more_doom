@@ -583,8 +583,46 @@ rend::BamAngle World::GetTargetAngle(int from_x, int from_y, int from_z, rend::B
   return 0;
 }
 
+mobj::MapObject* World::GetTarget(int from_x, int from_y, int from_z, rend::BamAngle direction, int distance) {
+  auto crossed_objects = CreateIntersectedObjList(from_x, from_y, direction, distance);
+
+  Opening op;
+  op.view_line_z = from_z;
+
+  for (auto elem : crossed_objects) {
+    int idx = elem.obj.index();
+
+    if (idx == 0) {
+      auto line = std::get<0>(elem.obj);
+
+      // Solid wall
+      if (!(line->flags & kLDFTwoSided)) {
+        return nullptr;
+      }
+
+      bool is_open = math::CorrectOpening(op, line, elem.distance);
+      if (!is_open) {
+        return nullptr;
+      }
+    } else if (idx == 1) {
+      // MapObject
+      auto mobj = std::get<1>(elem.obj);
+
+      int high_z = op.view_line_z + elem.distance * op.coef_high_opening;
+      int low_z = op.view_line_z - elem.distance * op.coef_low_opening;
+
+      if (!((mobj->z > high_z) || (mobj->z + mobj->height < low_z))) {
+        // Found the target
+        return mobj;
+      }
+    }
+  }
+
+  return nullptr;
+}
+
 void World::SpawnBulletPuff(int x, int y, int z) {
-  std::unique_ptr<mobj::MapObject> bullet( new mobj::MapObject(id::mobjinfo[id::MT_PUFF]));
+  std::unique_ptr<mobj::MapObject> bullet(new mobj::MapObject(id::mobjinfo[id::MT_PUFF]));
 
   bullet->x = x;
   bullet->y = y;
@@ -595,7 +633,7 @@ void World::SpawnBulletPuff(int x, int y, int z) {
 }
 
 void World::SpawnBulletBlood(int x, int y, int z) {
-  std::unique_ptr<mobj::MapObject> bullet( new mobj::MapObject(id::mobjinfo[id::MT_BLOOD]));
+  std::unique_ptr<mobj::MapObject> bullet(new mobj::MapObject(id::mobjinfo[id::MT_BLOOD]));
 
   bullet->x = x;
   bullet->y = y;
@@ -603,6 +641,17 @@ void World::SpawnBulletBlood(int x, int y, int z) {
   bullet->flags |= mobj::MF_NOGRAVITY;
 
   PutMobjOnMap(std::move(bullet), false);
+}
+
+void World::SpawnBFGExplode(int x, int y, int z) {
+  std::unique_ptr<mobj::MapObject> bfg(new mobj::MapObject(id::mobjinfo[id::MT_EXTRABFG]));
+
+  bfg->x = x;
+  bfg->y = y;
+  bfg->z = z;
+  bfg->flags |= mobj::MF_NOGRAVITY;
+
+  PutMobjOnMap(std::move(bfg), false);
 }
 
 } // namespace world

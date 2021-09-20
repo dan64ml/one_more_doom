@@ -22,7 +22,11 @@ class Projectile : public MapObject {
   bool InfluenceObject(MapObject*) override;
   bool ProcessLine(const world::Line* line) override;
 
+  void CallStateFunction(id::FuncId foo_id) override;
+
  private:
+  void BFGSpray();
+  
   const int kRocketBlastDamage = 128;
   const int kBarrelHeight = 42; // ??
 
