@@ -95,10 +95,10 @@ const WeaponParam Weapon::weapons_[WeaponType::kWeaponNumber] = {
 Weapon::Weapon(mobj::Player* player) : player_(player) {
   //current_weapon_ = kPistol;
   //current_weapon_ = kShotgun;
-  //current_weapon_ = kSuperShotgun;
+  current_weapon_ = kSuperShotgun;
   //current_weapon_ = kMissile;
   //current_weapon_ = kPlasma;
-  current_weapon_ = kBFG;
+  //current_weapon_ = kBFG;
   
   //current_weapon_ = kChainsaw;
 

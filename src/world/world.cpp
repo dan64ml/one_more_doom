@@ -94,6 +94,7 @@ void World::LoadLevel(size_t level) {
   CreateMapObjectList(fin);
 
   flat_animator_.CreateFlatsList(sectors_);
+  flat_animator_.CreateWallsList(sides_);
 }
 
 void World::TickTime() {

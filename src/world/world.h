@@ -81,7 +81,6 @@ class World {
   //std::list<mobj::MapObject> mobjs_;
   std::list<std::unique_ptr<mobj::MapObject>> mobjs_;
   
-  //FlatsAnimator flat_animator_;
   FlatWallAnimator flat_animator_;
   
  private:
