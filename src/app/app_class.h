@@ -17,6 +17,8 @@ struct Keys {
   bool side_move = false;
 
   char number_key = 0;
+
+  bool get_screenshot = false;
 };
 
 class AppClass : public sdl2::SdlBaseClass {
