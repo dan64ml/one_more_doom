@@ -31,7 +31,7 @@ url: "https://dan64ml.github.io" # the base hostname & protocol for your site, e
 github_username:  dan64ml
 
 # Build settings
-theme: minima
+theme: jekyll-theme-cayman
 plugins:
   - jekyll-feed
 
