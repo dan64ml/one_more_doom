@@ -110,16 +110,6 @@ void SdlWindow::RenderFBPoint(int x, int y, uint8_t r, uint8_t g, uint8_t b) {
   frame_buf_.data()[idx] = pixel;
 }
 
-/*inline
-void SdlWindow::RenderFBPointAlpha(int x, int y, uint32_t c) {
-  if (!(0xFF000000 & c)) {
-    return;
-  }
-
-  int idx = (y_size_ - (y + 1)) * x_size_ + x; 
-  frame_buf_.data()[idx] = c;
-}*/
-
 void SdlWindow::ShowFBRender() {
 	  SDL_Texture* mTexture = SDL_CreateTextureFromSurface(render_, sdl_surface_);
 
@@ -200,6 +190,14 @@ void SdlWindow::PrintString(const std::string& str) {
   SDL_Surface* text_surface = TTF_RenderText_Solid(font_, str.c_str(), {255, 255, 255, 0});
   SDL_BlitSurface(text_surface, NULL, sdl_surface_, NULL);
   SDL_FreeSurface(text_surface);
+}
+
+void SdlWindow::SaveScreenshot(const std::string& file_name) {
+  SDL_Surface* sshot = SDL_CreateRGBSurface(0, x_size_, y_size_, 32,
+                                            0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
+  SDL_RenderReadPixels(render_, NULL, SDL_PIXELFORMAT_ARGB8888, sshot->pixels, sshot->pitch);
+  SDL_SaveBMP(sshot, file_name.c_str());
+  SDL_FreeSurface(sshot);
 }
 
 }   // namespace sdl2

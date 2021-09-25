@@ -69,6 +69,7 @@ void AppClass::InitInstance() {
     }
 	);
 
+  // Change the weapon
   SetKeyUpHandler(SDLK_1, [this](const SDL_Event&) {
       this->keybd_.number_key = '1';
     }
@@ -104,10 +105,21 @@ void AppClass::InitInstance() {
   SetKeyUpHandler(SDLK_9, [this](const SDL_Event&) {
       this->keybd_.number_key = '9';
     }
+	);
+
+  // Get screenshot
+  SetKeyUpHandler(SDLK_s, [this](const SDL_Event&) {
+      this->keybd_.get_screenshot = true;
+    }
 	); 
 }
 
 void AppClass::ProcessScene([[maybe_unused]] int ms_elapsed) {
+  if (keybd_.get_screenshot) {
+    keybd_.get_screenshot = false;
+    wnd_.SaveScreenshot("screen.bmp");
+  }
+
   int speed_idx = keybd_.run ? 1 : 0;
 
   int delta_angle = 0;

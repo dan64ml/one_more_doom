@@ -62,6 +62,8 @@ public:
   void MoveOrigin(int dx, int dy) { origin_x_shift_ = dx; origin_y_shift_ = dy; }
   void SetYUp(bool up) { y_direction_ = up ? -1 : 1; }
 
+  void SaveScreenshot(const std::string& file_name);
+
 private:
   void clear();
 
