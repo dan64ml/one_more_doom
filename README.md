@@ -6,3 +6,6 @@ requires to use ideas and small parts of the original DOOM code. Here is the ori
 
 [Original DOOM Repository](https://github.com/id-Software/DOOM)
 
+News and the current state of the project you can find on the link:
+
+[Project site](https://dan64ml.github.io/one_more_doom/)
