@@ -202,6 +202,9 @@ void World::LoadLines(std::ifstream& fin, RawVertex* vertexes) {
       line.bbox.top = line.y2;
     }
 
+    if (line.specials) {
+      std::cout << "Specials = " << line.specials << ", tag = " << line.tag << std::endl;
+    }
     lines_.push_back(std::move(line));
   }
 }
