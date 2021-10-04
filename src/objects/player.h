@@ -21,12 +21,16 @@ enum CardType {
   kCardsNumber
 };
 
+// Max distance to button or door to get it used
+const int kUseDistance = 48;
+
 class Player : public MapObject {
  public:
   Player(const id::mobjinfo_t& info) : MapObject(info), weapon_(this) {}
   
   // Sets current button state
   void SetFireFlag(bool fire);
+  void SetUseFlag() { use_command_ = true; }
 
   void ChangeWeapon(char key) { weapon_.ChangeWeapon(key); }
 
@@ -54,6 +58,8 @@ class Player : public MapObject {
  private:
   virtual bool RunIntoAction() override;
 
+  world::Line* FindSpecialLine();
+
  private:
   wpn::Weapon weapon_;
   wpn::Ammo ammo_;
@@ -68,6 +74,9 @@ class Player : public MapObject {
     true,
     true
   };
+
+  // Use command flag
+  bool use_command_ = false;
 };
 
 } // namespace mobj

@@ -188,4 +188,13 @@ bool CorrectOpening(world::Opening& op, const world::Line* line, double distance
   return high_z > low_z;
 }
 
+int GetOpenRange(const world::Line* line) {
+  if (line->sides[1] == nullptr) {
+    return 0;
+  }
+
+  return std::min(line->sides[0]->sector->ceiling_height - line->sides[0]->sector->floor_height,
+                  line->sides[1]->sector->ceiling_height - line->sides[1]->sector->floor_height);
+}
+
 } // namespace math

@@ -96,12 +96,15 @@ void World::LoadLevel(size_t level) {
   flat_animator_.CreateFlatsList(sectors_);
   flat_animator_.CreateWallsList(sides_);
   flat_animator_.CreateScrollingWallsList(lines_);
+
+  spec_lines_controller_.reset(new sobj::SpecialLinesController(this));
 }
 
 void World::TickTime() {
   player_->TickTime();
 
   flat_animator_.TickTime();
+  spec_lines_controller_->TickTime();
   
   for (auto it = begin(mobjs_); it != end(mobjs_);) {
     if ((*it)->TickTime()) {
@@ -661,6 +664,18 @@ void World::SpawnBFGExplode(int x, int y, int z) {
 //  bfg->flags |= mobj::MF_NOGRAVITY;
 
   PutMobjOnMap(std::move(bfg), false);
+}
+
+void World::UseLine(world::Line* line, mobj::MapObject* mobj) {
+  spec_lines_controller_->UseLine(line, mobj);
+}
+
+void World::HitLine(world::Line* line, mobj::MapObject* mobj) {
+  spec_lines_controller_->HitLine(line, mobj);
+}
+
+void World::CrossLine(world::Line* line, mobj::MapObject* mobj) {
+  spec_lines_controller_->CrossLine(line, mobj);
 }
 
 } // namespace world

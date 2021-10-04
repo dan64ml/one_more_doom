@@ -17,7 +17,7 @@ void AppClass::InitInstance() {
   gm_.Load("/home/dan/tmp/DOOM2.WAD");
 //  gm_.Load("/home/dan/tmp/Wads/Doom1.WAD");
 
-  int level = 5; //21; // 12 - wide open space // 29 - issue with clipping mobj (BFG9000)
+  int level = 0; //21; // 12 - wide open space // 29 - issue with clipping mobj (BFG9000)
                   // 23, 24 - animated floor and wall
                   // 29 - scrolling wall
                   // 22 - lots of barrels
@@ -112,6 +112,12 @@ void AppClass::InitInstance() {
       this->keybd_.get_screenshot = true;
     }
 	); 
+
+  // Use key
+  SetKeyUpHandler(SDLK_SPACE, [this](const SDL_Event&) {
+      this->keybd_.use = true;
+    }
+	); 
 }
 
 void AppClass::ProcessScene([[maybe_unused]] int ms_elapsed) {
@@ -160,6 +166,11 @@ void AppClass::ProcessScene([[maybe_unused]] int ms_elapsed) {
   if (keybd_.number_key) {
     player_->ChangeWeapon(keybd_.number_key);
     keybd_.number_key = 0;
+  }
+
+  if (keybd_.use) {
+    player_->SetUseFlag();
+    keybd_.use = false;
   }
 
   player_->Move(delta_angle, forward_move, side_move);

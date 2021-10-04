@@ -14,11 +14,15 @@
 #include "objects/mobj_factory.h"
 #include "objects/projectile.h"
 
-//#include "flats_animator.h"
 #include "flat_wall_animator.h"
+#include "structures/special_lines_controller.h"
 
 namespace mobj {
   class MapObject;
+}
+
+namespace sobj {
+  class SpecialLinesController;
 }
 
 namespace world {
@@ -32,7 +36,8 @@ class World {
 
   void TickTime();
 
-  const wad::FastBsp* GetBsp() const { return &bsp_; };
+  const wad::FastBsp* GetBsp() const { return &bsp_; }
+  std::vector<Sector>& GetSectors() { return sectors_; }
 
   mobj::Player* GetPlayer() { return reinterpret_cast<mobj::Player*>(player_.get()); };
 
@@ -55,6 +60,10 @@ class World {
   mobj::MapObject* GetTarget(int from_x, int from_y, int from_z, rend::BamAngle direction, int distance);
 
   void DoBlastDamage(int damage, int x, int y);
+
+  void UseLine(world::Line* line, mobj::MapObject* mobj);
+  void HitLine(world::Line* line, mobj::MapObject* mobj);
+  void CrossLine(world::Line* line, mobj::MapObject* mobj);
 
  private:
   std::string wad_file_name_;
@@ -83,6 +92,9 @@ class World {
   
   FlatWallAnimator flat_animator_;
   
+  // Control doors, switches, moving floors etc...
+  std::unique_ptr<sobj::SpecialLinesController> spec_lines_controller_;
+
  private:
   void ClearLevel();
   void LoadSectors(std::ifstream& fin);
@@ -101,6 +113,7 @@ class World {
   // Checks if the mobj is reachable for a blast from {vp_x, vp_y}
   bool IsMobjBlastVisible(int vp_x, int vp_y, const mobj::MapObject* obj) const;
 
+ public:
   // Returns sorted list of objects (lines and mobjs) that are projected on the section {from_x, from_y, angle, distance}
   std::vector<IntersectedObject> CreateIntersectedObjList(int from_x, int from_y, rend::BamAngle angle, int distance) const;
   std::vector<IntersectedObject> CreateIntersectedObjList(int from_x, int from_y, int to_x, int to_y) const;

@@ -7,41 +7,45 @@
 
 namespace sobj {
 
+enum class DoorType {
+  kOpen,
+  kClose,
+  kOpenThenClose,
+  kCloseThenOpen
+};
+
 class Door : public StructureObject {
  public:
-  Door();
+  Door(world::World* w, world::Sector* s, DoorType type, int speed, bool wait_obstacle = false);
 
-  bool TickTime(world::World* w) override;
+  bool TickTime() override;
+
+  bool Trigger(mobj::MapObject*) override { return true; }
 
  private:
+  world::World* world_;
   world::Sector* sector_;
-
-  // Door can have maximum three states: opening(closing)/wait/closing(opening).
-  // Or only one, eg open and stay open.
-  enum DoorState {
-    kMove1 = 0,
-    kMove2,
-    kWait,
-  };
-
-  DoorState current_state_ = DoorState::kMove1;
+  DoorType type_;
 
   // Both moving have the same speed
   int move_speed_;
   // Initial direction. After kWait direction reverses. 1 == move up
   int move_direction_;
   
-  // kMove1 and kMove2 should stop on this heights
-  int move_stop_level_[2];
-  // Pausa length in ticks. -1 means there is no kMove2.
-  int wait_counter_;
+  // Closed door height
+  int floor_level_;
+  // Opened door height depends on neighbor sectors
+  int door_top_level_;
+  // Pausa length in ticks.
+  // NB! 0 means that first door position was reached.
+  int wait_counter_ = 42;
 
   // Some door types should wait until obstacles disappear
   // But most doors just return back.
-  // bool wait_obstacle = false;
+  bool wait_obstacle_ = false;
 
   // Move ceiling. Returns true when ceiling reached stop level
-  bool MoveCeiling();
+  //bool MoveCeiling();
 
   bool CheckObstacles(int ceiling_height);
 };

@@ -15,7 +15,7 @@ struct Keys {
   bool right = false;
   bool run = false;
   bool side_move = false;
-
+  bool use = false;
   char number_key = 0;
 
   bool get_screenshot = false;

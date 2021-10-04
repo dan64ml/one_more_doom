@@ -1,8 +1,10 @@
 #include "player.h"
 
 #include <cassert>
+#include <variant>
 
 #include "world/world.h"
+#include "utils/world_utils.h"
 
 namespace mobj {
 
@@ -28,6 +30,14 @@ void Player::SetFireFlag(bool fire) {
 }
 
 bool Player::TickTime() {
+  if (use_command_) {
+    use_command_ = false;
+    auto line = FindSpecialLine();
+    if (line) {
+      world_->UseLine(line, this);
+    }
+  }
+
   MapObject::TickTime();
   return weapon_.TickTime();
 }
@@ -96,6 +106,33 @@ void Player::ChainSaw() {
 
 void Player::FireBFG() {
   world_->SpawnProjectile(id::MT_BFG, this);
+}
+
+world::Line* Player::FindSpecialLine() {
+  auto obj_list = world_->CreateIntersectedObjList(x, y, angle, kUseDistance);
+  for (auto obj : obj_list) {
+    int idx = obj.obj.index();
+    if (idx == 0) {
+      auto line = std::get<0>(obj.obj);
+      if (line->specials) {
+        // Check the side, we should use only front side
+        if (math::LinePointPosition(line, x, y) != math::ObjPosition::kRightSide) {
+          continue;
+        }
+        // TODO: should I check height???
+        return const_cast<world::Line*>(line);
+      } else {
+        // Check for a wall or closed portal
+        if (math::GetOpenRange(line) <= 0) {
+          break;
+        }
+      }
+    } else {
+      // found a mobj
+      break;
+    }
+  }
+  return nullptr;
 }
 
 } // namespace mobj

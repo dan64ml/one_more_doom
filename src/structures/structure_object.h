@@ -31,9 +31,9 @@ struct SObjState {
 // must be destroyed. It happens when TickTime() returns false.
 class StructureObject {
  public:
-  virtual ~StructureObject();
+  virtual ~StructureObject() = default;
 
-  virtual bool TickTime(world::World* w) = 0;
+  virtual bool TickTime() = 0;
   virtual bool Trigger(mobj::MapObject*) = 0;
 };
 

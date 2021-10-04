@@ -39,6 +39,9 @@ std::pair<int, int> ShiftToCenter(int cx, int cy, int x, int y, int shift = 1);
 // Corrects opening using Line. Returns false if opening is closed
 bool CorrectOpening(world::Opening& op, const world::Line* line, double dist);
 
+// Returns height of opening for a portal. 0 for a wall.
+int GetOpenRange(const world::Line* line);
+
 } // namespace math
 
 #endif  // WORLD_UTILS_H_
