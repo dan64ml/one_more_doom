@@ -2,13 +2,15 @@
 
 #include <cassert>
 
+#include "utils/world_utils.h"
+
 namespace sobj {
 
 Door::Door(world::World* w, world::Sector* s, DoorType type, int speed, bool wait_obstacle) 
   : world_(w), sector_(s), type_(type), move_speed_(speed), wait_obstacle_(wait_obstacle) {
   floor_level_ = sector_->floor_height;
   // TODO: find real height
-  door_top_level_ = sector_->floor_height + 70;//sector_->ceiling_height;
+  door_top_level_ = math::GetLowestCeilingHeight(sector_) - 4;
 
   switch (type)
   {

@@ -42,6 +42,12 @@ bool CorrectOpening(world::Opening& op, const world::Line* line, double dist);
 // Returns height of opening for a portal. 0 for a wall.
 int GetOpenRange(const world::Line* line);
 
+// Find lowest ceiling around the sector
+int GetLowestCeilingHeight(const world::Sector* sec);
+
+// Helper. Returns opposite sector for the line (if it exists)
+world::Sector* GetOppositeSector(const world::Sector* sec, const world::Line* line);
+
 } // namespace math
 
 #endif  // WORLD_UTILS_H_

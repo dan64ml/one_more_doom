@@ -5,6 +5,7 @@
 #include <memory>
 #include <algorithm>
 #include <iostream>
+#include <cassert>
 
 #include "wad_utils.h"
 #include "wad_raw_types.h"
@@ -84,6 +85,8 @@ void World::LoadLevel(size_t level) {
   LoadSegments(fin, vertexes.get());
   LoadSubSectors(fin);
 
+  FillSectorLines();
+
   const auto bsp_lump = levels_[level].second.at("NODES");
   bsp_.LoadBsp(fin, bsp_lump.position, bsp_lump.size);
   bsp_.SetSubSectors(&sub_sectors_);
@@ -144,6 +147,8 @@ void World::LoadSectors(std::ifstream& fin) {
     sec.light_level = sectors[i].light_level;
     sec.special = sectors[i].special;
     sec.tag = sectors[i].tag;
+
+    sec.has_sobj = false;
 
     sectors_.push_back(std::move(sec));
   }
@@ -208,6 +213,7 @@ void World::LoadLines(std::ifstream& fin, RawVertex* vertexes) {
     if (line.specials) {
       std::cout << "Specials = " << line.specials << ", tag = " << line.tag << std::endl;
     }
+
     lines_.push_back(std::move(line));
   }
 }
@@ -676,6 +682,23 @@ void World::HitLine(world::Line* line, mobj::MapObject* mobj) {
 
 void World::CrossLine(world::Line* line, mobj::MapObject* mobj) {
   spec_lines_controller_->CrossLine(line, mobj);
+}
+
+void World::FillSectorLines() {
+  std::unordered_map<Sector*, int> ptr_to_idx;
+  for (size_t i = 0; i < sectors_.size(); ++i) {
+    ptr_to_idx[&sectors_[i]] = i;
+  }
+
+  for (auto& line : lines_) {
+    assert(ptr_to_idx.count(line.sides[0]->sector));
+    int sec_idx = ptr_to_idx[line.sides[0]->sector];
+    sectors_[sec_idx].lines.push_back(&line);
+    if (line.sides[1]) {
+      sec_idx = ptr_to_idx[line.sides[1]->sector];
+      sectors_[sec_idx].lines.push_back(&line);
+    }
+  }
 }
 
 } // namespace world

@@ -28,6 +28,11 @@ struct Sector {
   int light_level;
   int special;  // For damage floor, light and etc...
   int tag;
+
+  // True if the sector has active StructureObject
+  bool has_sobj;
+  // Lines forming this sector
+  std::vector<Line*> lines;
 };
 
 struct SideDef {

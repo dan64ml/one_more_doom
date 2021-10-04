@@ -197,4 +197,27 @@ int GetOpenRange(const world::Line* line) {
                   line->sides[1]->sector->ceiling_height - line->sides[1]->sector->floor_height);
 }
 
+int GetLowestCeilingHeight(const world::Sector* sec) {
+  int height = std::numeric_limits<int>::max();
+
+  for (const auto line : sec->lines) {
+    auto opp = GetOppositeSector(sec, line);
+    if (!opp) {
+      continue;
+    }
+
+    height = std::min(height, opp->ceiling_height);
+  }
+
+  return height;
+}
+
+world::Sector* GetOppositeSector(const world::Sector* sec, const world::Line* line) {
+  if (!(line->flags & world::kLDFTwoSided)) {
+    return nullptr;
+  }
+
+  return (sec == line->sides[0]->sector) ? line->sides[1]->sector : line->sides[0]->sector;
+}
+
 } // namespace math

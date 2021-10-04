@@ -104,6 +104,8 @@ class World {
   void LoadSubSectors(std::ifstream& fin);
   // Loads things from .wad and creates list of MapObjects
   void CreateMapObjectList(std::ifstream& fin);
+  // Fills Sector::lines in all sectors.
+  void FillSectorLines();
 
   void PutMobjOnMap(std::unique_ptr<mobj::MapObject> obj, bool put_on_floor);
 
