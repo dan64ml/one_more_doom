@@ -55,6 +55,15 @@ void SpecialLinesController::UseLine(world::Line* line, mobj::MapObject* mobj) {
       UseTagDoor(line, mobj);
       break;
 
+    case 99:
+    case 134:
+    case 136:
+    case 133:
+    case 135:
+    case 137:
+      UseLockedTagDoor(line, mobj);
+      break;
+
     default:
       break;
   }
@@ -199,6 +208,79 @@ void SpecialLinesController::UseTagDoor(world::Line* line, mobj::MapObject* mobj
       default:
         #ifdef D_PRINT_UNPROCESSED_LINES
         std::cout << "UseTagDoor(): unprocessed line->specials = " << line->specials << std::endl;
+        #endif
+        break;
+    }
+
+    sobjs_.push_back(std::move(door));
+  }
+
+  if (is_ok && LineTextureSwitcher::IsSwitch(line)) {
+    sobjs_.push_back(std::unique_ptr<LineTextureSwitcher>(new LineTextureSwitcher(line)));
+  }
+}
+
+void SpecialLinesController::UseLockedTagDoor(world::Line* line, mobj::MapObject* mobj) {
+  switch (line->specials)
+  {
+    case 99:
+    case 133:
+      // Blue key
+      if (!mobj->IsCardPresent(mobj::CardType::kBlueCard) &&
+          !mobj->IsCardPresent(mobj::CardType::kBlueScull)) {
+            return;
+          }
+      break;
+    
+    case 136:
+    case 137:
+      // Yellow key
+      if (!mobj->IsCardPresent(mobj::CardType::kYellowCard) &&
+          !mobj->IsCardPresent(mobj::CardType::kYellowScull)) {
+            return;
+          }
+      break;
+    
+    case 134:
+    case 135:
+      // Red key
+      if (!mobj->IsCardPresent(mobj::CardType::kRedCard) &&
+          !mobj->IsCardPresent(mobj::CardType::kRedScull)) {
+            return;
+          }
+      break;
+  }
+
+  assert(tag_sectors_.count(line->tag));
+  auto& sectors = tag_sectors_[line->tag];
+
+  bool is_ok = false;
+  for (auto sec : sectors) {
+    if (sec->has_sobj) {
+      continue;
+    }
+
+    is_ok = true;
+
+    std::unique_ptr<Door> door;
+
+    switch (line->specials)
+    {
+      case 99:
+      case 134:
+      case 136:
+        door.reset(new Door(world_, sec, DoorType::kOpen, kBlazeDoorSpeed, 0));
+        break;
+      case 133:
+      case 135:
+      case 137:
+        door.reset(new Door(world_, sec, DoorType::kOpen, kBlazeDoorSpeed, 0));
+        line->specials = 0;
+        break;
+
+      default:
+        #ifdef D_PRINT_UNPROCESSED_LINES
+        std::cout << "UseLockedTagDoor(): unprocessed line->specials = " << line->specials << std::endl;
         #endif
         break;
     }

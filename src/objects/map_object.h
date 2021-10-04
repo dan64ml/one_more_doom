@@ -94,7 +94,7 @@ struct MapObject {
   void CauseDamage(int damage);
 
   // In fact this foo makes sense only for player
-  virtual bool IsCardPresent(CardType c) const { return false; }
+  virtual bool IsCardPresent([[maybe_unused]] CardType c) const { return false; }
 
  private:
   struct Opening {

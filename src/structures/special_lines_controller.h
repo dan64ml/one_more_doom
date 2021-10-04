@@ -32,6 +32,8 @@ class SpecialLinesController {
   void UseManualDoor(world::Line* l, mobj::MapObject* mobj);
   // For doors with TAG, their control lines can have SWITCHes!
   void UseTagDoor(world::Line* l, mobj::MapObject* mobj);
+  // For LOCKED doors with TAG
+  void UseLockedTagDoor(world::Line* l, mobj::MapObject* mobj);
 
   const int kNormalDoorSpeed = 2;
   const int kBlazeDoorSpeed = 4 * kNormalDoorSpeed;
