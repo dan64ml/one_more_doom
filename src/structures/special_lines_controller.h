@@ -37,6 +37,7 @@ class SpecialLinesController {
   const int kBlazeDoorSpeed = 4 * kNormalDoorSpeed;
 
   const int kNormalDoorWaitTime = 150;
+  const int k30SecDoorWaitTime = 35 * 30;
 };
 
 } //  namespace sobj

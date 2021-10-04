@@ -1,9 +1,11 @@
 #include "special_lines_controller.h"
 
 #include <iostream>
+#include <cassert>
 
 #include "world/world.h"
 #include "door.h"
+#include "line_texture_switcher.h"
 
 #define DEBUG_CODE
 
@@ -14,7 +16,7 @@
 namespace sobj {
 
 SpecialLinesController::SpecialLinesController(world::World* w) : world_(w) {
-  for (auto sec :world_->GetSectors()) {
+  for (auto& sec : world_->GetSectors()) {
     if (sec.tag != 0) {
       tag_sectors_[sec.tag].push_back(&sec);
     }
@@ -135,8 +137,78 @@ void SpecialLinesController::UseManualDoor(world::Line* line, mobj::MapObject* m
   sobjs_.push_back(std::move(door));
 }
 
-void SpecialLinesController::UseTagDoor(world::Line* l, mobj::MapObject* mobj) {
+void SpecialLinesController::UseTagDoor(world::Line* line, mobj::MapObject* mobj) {
+  assert(tag_sectors_.count(line->tag));
+  auto& sectors = tag_sectors_[line->tag];
 
+  bool is_ok = false;
+  for (auto sec : sectors) {
+    if (sec->has_sobj) {
+      continue;
+    }
+
+    is_ok = true;
+
+    std::unique_ptr<Door> door;
+
+    switch (line->specials)
+    {
+      case 29:
+        door.reset(new Door(world_, sec, DoorType::kOpenThenClose, kNormalDoorSpeed, kNormalDoorWaitTime));
+        line->specials = 0;
+        break;
+      case 50:
+        door.reset(new Door(world_, sec, DoorType::kClose, kNormalDoorSpeed, 0));
+        line->specials = 0;
+        break;
+      case 103:
+        door.reset(new Door(world_, sec, DoorType::kOpen, kNormalDoorSpeed, 0));
+        line->specials = 0;
+        break;
+      case 111:
+        door.reset(new Door(world_, sec, DoorType::kOpenThenClose, kBlazeDoorSpeed, kNormalDoorWaitTime));
+        line->specials = 0;
+        break;
+      case 112:
+        door.reset(new Door(world_, sec, DoorType::kOpen, kBlazeDoorSpeed, 0));
+        line->specials = 0;
+        break;
+      case 113:
+        door.reset(new Door(world_, sec, DoorType::kClose, kBlazeDoorSpeed, 0));
+        line->specials = 0;
+        break;
+      case 42:
+        door.reset(new Door(world_, sec, DoorType::kClose, kNormalDoorSpeed, 0));
+        break;
+      case 61:
+        door.reset(new Door(world_, sec, DoorType::kOpen, kNormalDoorSpeed, 0));
+        break;
+      case 63:
+        door.reset(new Door(world_, sec, DoorType::kOpenThenClose, kNormalDoorSpeed, kNormalDoorWaitTime));
+        break;
+      case 114:
+        door.reset(new Door(world_, sec, DoorType::kOpenThenClose, kBlazeDoorSpeed, kNormalDoorWaitTime));
+        break;
+      case 115:
+        door.reset(new Door(world_, sec, DoorType::kOpen, kBlazeDoorSpeed, 0));
+        break;
+      case 116:
+        door.reset(new Door(world_, sec, DoorType::kClose, kBlazeDoorSpeed, 0));
+        break;
+
+      default:
+        #ifdef D_PRINT_UNPROCESSED_LINES
+        std::cout << "UseTagDoor(): unprocessed line->specials = " << line->specials << std::endl;
+        #endif
+        break;
+    }
+
+    sobjs_.push_back(std::move(door));
+  }
+
+  if (is_ok && LineTextureSwitcher::IsSwitch(line)) {
+    sobjs_.push_back(std::unique_ptr<LineTextureSwitcher>(new LineTextureSwitcher(line)));
+  }
 }
 
 void SpecialLinesController::TickTime() {
