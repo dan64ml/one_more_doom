@@ -16,7 +16,8 @@ enum class DoorType {
 
 class Door : public StructureObject {
  public:
-  Door(world::World* w, world::Sector* s, DoorType type, int speed, bool wait_obstacle = false);
+  Door(world::World* w, world::Sector* s, DoorType type, int speed, int wait_time, bool wait_obstacle = false);
+  ~Door();
 
   bool TickTime() override;
 
@@ -29,6 +30,9 @@ class Door : public StructureObject {
 
   // Both moving have the same speed
   int move_speed_;
+  // Wait time in ticks.
+  // NB! 0 means that first door position was reached.
+  int wait_counter_;
   // Initial direction. After kWait direction reverses. 1 == move up
   int move_direction_;
   
@@ -36,16 +40,10 @@ class Door : public StructureObject {
   int floor_level_;
   // Opened door height depends on neighbor sectors
   int door_top_level_;
-  // Pausa length in ticks.
-  // NB! 0 means that first door position was reached.
-  int wait_counter_ = 42;
 
   // Some door types should wait until obstacles disappear
   // But most doors just return back.
   bool wait_obstacle_ = false;
-
-  // Move ceiling. Returns true when ceiling reached stop level
-  //bool MoveCeiling();
 
   bool CheckObstacles(int ceiling_height);
 };

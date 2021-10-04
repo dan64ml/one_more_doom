@@ -1,7 +1,15 @@
 #include "special_lines_controller.h"
 
+#include <iostream>
+
 #include "world/world.h"
 #include "door.h"
+
+#define DEBUG_CODE
+
+#ifdef DEBUG_CODE
+  #define D_PRINT_UNPROCESSED_LINES
+#endif
 
 namespace sobj {
 
@@ -60,7 +68,70 @@ void SpecialLinesController::CrossLine(world::Line* l, mobj::MapObject* mobj) {
 
 void SpecialLinesController::UseManualDoor(world::Line* line, mobj::MapObject* mobj) {
   world::Sector* sec = line->sides[1]->sector;
-  auto door = std::unique_ptr<Door>(new Door(world_, sec, DoorType::kOpenThenClose, 4));
+  if (sec->has_sobj) {
+    return;
+  }
+
+  switch (line->specials) {
+    case 26:
+    case 32:
+      // Check for blue key
+      if (!mobj->IsCardPresent(mobj::CardType::kBlueCard) &&
+          !mobj->IsCardPresent(mobj::CardType::kBlueScull)) {
+            return;
+          }
+      break;
+    case 27:
+    case 34:
+      // Check for yellow key
+      if (!mobj->IsCardPresent(mobj::CardType::kYellowCard) &&
+          !mobj->IsCardPresent(mobj::CardType::kYellowScull)) {
+            return;
+          }
+      break;
+    case 28:
+    case 33:
+      // Check for red key
+      if (!mobj->IsCardPresent(mobj::CardType::kBlueCard) &&
+          !mobj->IsCardPresent(mobj::CardType::kBlueScull)) {
+            return;
+          }
+      break;
+  }
+
+  std::unique_ptr<Door> door;
+
+  switch (line->specials) {
+    case 1:
+    case 26:
+    case 27:
+    case 28:
+      door.reset(new Door(world_, sec, DoorType::kOpenThenClose, kNormalDoorSpeed, kNormalDoorWaitTime));
+      break;
+
+    case 31:
+    case 32:
+    case 33:
+    case 34:
+      door.reset(new Door(world_, sec, DoorType::kOpen, kNormalDoorSpeed, 0));
+      line->specials = 0;  // one time action
+      break;
+
+    case 117:
+      door.reset(new Door(world_, sec, DoorType::kOpenThenClose, kBlazeDoorSpeed, kNormalDoorWaitTime));
+      break;
+    case 118:
+      door.reset(new Door(world_, sec, DoorType::kOpen, kBlazeDoorSpeed, 0));
+      line->specials = 0;  // one time action
+      break;
+
+    default:
+      #ifdef D_PRINT_UNPROCESSED_LINES
+      std::cout << "UseManualDoor(): unprocessed line->specials = " << line->specials << std::endl;
+      #endif
+      return;
+  }
+
   sobjs_.push_back(std::move(door));
 }
 

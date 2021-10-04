@@ -14,8 +14,18 @@ namespace world {
   class SubSector;
 }
 
-
 namespace mobj {
+
+enum CardType {
+  kBlueCard,
+  kYellowCard,
+  kRedCard,
+  kBlueScull,
+  kYellowScull,
+  kRedScull,
+
+  kCardsNumber
+};
 
 const int kMaxRadius = 32;
 const double kGravity = 1.0;
@@ -82,6 +92,9 @@ struct MapObject {
   int GetHealth() const { return health_; }
 
   void CauseDamage(int damage);
+
+  // In fact this foo makes sense only for player
+  virtual bool IsCardPresent(CardType c) const { return false; }
 
  private:
   struct Opening {

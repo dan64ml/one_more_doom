@@ -6,11 +6,13 @@
 
 namespace sobj {
 
-Door::Door(world::World* w, world::Sector* s, DoorType type, int speed, bool wait_obstacle) 
-  : world_(w), sector_(s), type_(type), move_speed_(speed), wait_obstacle_(wait_obstacle) {
+Door::Door(world::World* w, world::Sector* s, DoorType type, int speed, int wait_time, bool wait_obstacle) 
+  : world_(w), sector_(s), type_(type), move_speed_(speed), wait_counter_(wait_time),
+    wait_obstacle_(wait_obstacle) {
   floor_level_ = sector_->floor_height;
-  // TODO: find real height
   door_top_level_ = math::GetLowestCeilingHeight(sector_) - 4;
+
+  sector_->has_sobj = true;
 
   switch (type)
   {
@@ -28,6 +30,10 @@ Door::Door(world::World* w, world::Sector* s, DoorType type, int speed, bool wai
     assert(false);
     break;
   }
+}
+
+Door::~Door() {
+  sector_->has_sobj = false;
 }
 
 bool Door::TickTime() {
@@ -101,51 +107,6 @@ bool Door::TickTime() {
     return true;
   }
 }
-
-//bool Door::TickTime(world::World* w) {
-//  if (current_state_ == kMove1) {
-//    if (MoveCeiling()) {
-//      if (wait_counter_ == -1) {
-//        return false;
-//      } else {
-//        current_state_ = kWait;
-//        return true;
-//      }
-//    } else {
-//      return true;
-//    }
-//  } else if (current_state_ == kWait) {
-//    if (wait_counter_-- == 0) {
-//      current_state_ = kMove2;
-//      move_direction_ *= -1;
-//    }
-//    return true;
-//  } else if (current_state_ == kMove2) {
-//    return !MoveCeiling();
-//  }
-//
-//  assert(false);
-//  return false;
-//}
-
-//bool Door::MoveCeiling() {
-//  int new_height = sector_->ceiling_height + move_speed_;
-//  if (move_direction_ == 1 && new_height > move_stop_level_[current_state_]) {
-//    new_height = move_stop_level_[current_state_];
-//  }
-//  if (move_direction_ == -1 && new_height < move_stop_level_[current_state_]) {
-//    new_height = move_stop_level_[current_state_];
-//  }
-//
-//  if (CheckObstacles(new_height)) {
-//    // Wait for free doorway
-//    return false;
-//  }
-//
-//  sector_->ceiling_height = new_height;
-//
-//  return (new_height == move_stop_level_[current_state_]);
-//}
 
 bool Door::CheckObstacles(int ceiling_height) {
   return false;

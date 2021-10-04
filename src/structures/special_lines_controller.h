@@ -33,6 +33,10 @@ class SpecialLinesController {
   // For doors with TAG, their control lines can have SWITCHes!
   void UseTagDoor(world::Line* l, mobj::MapObject* mobj);
 
+  const int kNormalDoorSpeed = 2;
+  const int kBlazeDoorSpeed = 4 * kNormalDoorSpeed;
+
+  const int kNormalDoorWaitTime = 150;
 };
 
 } //  namespace sobj

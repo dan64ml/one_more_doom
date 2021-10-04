@@ -10,16 +10,16 @@
 
 namespace mobj {
 
-enum CardType {
-  kBlueCard,
-  kYellowCard,
-  kRedCard,
-  kBlueScull,
-  kYellowScull,
-  kRedScull,
-
-  kCardsNumber
-};
+//enum CardType {
+//  kBlueCard,
+//  kYellowCard,
+//  kRedCard,
+//  kBlueScull,
+//  kYellowScull,
+//  kRedScull,
+//
+//  kCardsNumber
+//};
 
 // Max distance to button or door to get it used
 const int kUseDistance = 48;
@@ -41,7 +41,7 @@ class Player : public MapObject {
   const wpn::Weapon& GetWeapon() const { return weapon_; }
   
   int GetArmor() const { return armor_; }
-  bool IsCardPresent(CardType c) const { return cards_[c]; }
+  bool IsCardPresent(CardType c) const override { return cards_[c]; }
 
   std::string GetFaceSpriteName() const { return "STFST01"; }
 
