@@ -701,4 +701,8 @@ void World::FillSectorLines() {
   }
 }
 
+bool World::TryToChangeSectorHeight(int floor_h, int ceiling_h, bool cause_damage) {
+  return true;
+}
+
 } // namespace world

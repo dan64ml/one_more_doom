@@ -36,8 +36,6 @@ class Door : public StructureObject {
   // Initial direction. After kWait direction reverses. 1 == move up
   int move_direction_;
   
-  // Closed door height
-  int floor_level_;
   // Opened door height depends on neighbor sectors
   int door_top_level_;
 
@@ -45,7 +43,7 @@ class Door : public StructureObject {
   // But most doors just return back.
   bool wait_obstacle_ = false;
 
-  bool CheckObstacles(int ceiling_height);
+  bool CanChangeHeight(int ceiling_height);
 };
 
 } // sobj

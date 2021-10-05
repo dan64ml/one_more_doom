@@ -3,13 +3,13 @@
 #include <cassert>
 
 #include "utils/world_utils.h"
+#include "world/world.h"
 
 namespace sobj {
 
 Door::Door(world::World* w, world::Sector* s, DoorType type, int speed, int wait_time, bool wait_obstacle) 
   : world_(w), sector_(s), type_(type), move_speed_(speed), wait_counter_(wait_time),
     wait_obstacle_(wait_obstacle) {
-  floor_level_ = sector_->floor_height;
   door_top_level_ = math::GetLowestCeilingHeight(sector_) - 4;
 
   sector_->has_sobj = true;
@@ -84,7 +84,7 @@ bool Door::TickTime() {
       }
     }
 
-    if (!CheckObstacles(new_height)) {
+    if (CanChangeHeight(new_height)) {
       sector_->ceiling_height = new_height;
       return true;
     } else {
@@ -108,8 +108,8 @@ bool Door::TickTime() {
   }
 }
 
-bool Door::CheckObstacles(int ceiling_height) {
-  return false;
+bool Door::CanChangeHeight(int ceiling_height) {
+  return world_->TryToChangeSectorHeight(sector_->floor_height, ceiling_height, false);
 }
 
 } // namespace sobj

@@ -65,6 +65,12 @@ class World {
   void HitLine(world::Line* line, mobj::MapObject* mobj);
   void CrossLine(world::Line* line, mobj::MapObject* mobj);
 
+  // Returns true if it's possible to set new floor/ceiling heights.
+  // If there any mobj that dont't fit new height, return false.
+  // If flying mobj can be put down, it will be.
+  // If cause_damage == true and we have unfitted mobjs - they'll get damage.
+  bool TryToChangeSectorHeight(int floor_h, int ceiling_h, bool cause_damage);
+
  private:
   std::string wad_file_name_;
   // Level names and lumps
