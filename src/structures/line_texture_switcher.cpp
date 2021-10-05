@@ -2,7 +2,7 @@
 
 namespace sobj {
 
-const std::unordered_map<std::string, std::string> LineTextureSwitcher::texture_pairs_ = 
+const static std::vector<std::pair<std::string, std::string>> pair_names =
   { {"SW1BRCOM", "SW2BRCOM"},
     {"SW1BRN1", "SW2BRN1"},
     {"SW1BRN2", "SW2BRN2"},
@@ -48,6 +48,19 @@ const std::unordered_map<std::string, std::string> LineTextureSwitcher::texture_
     {"SW1MARB", "SW2MARB"},
     {"SW1SKULL", "SW2SKULL"}
   };
+
+std::unordered_map<std::string, std::string> CreateTexturePairsMap() {
+  std::unordered_map<std::string, std::string> pairs;
+
+  for (auto [sw1, sw2] : pair_names) {
+    pairs[sw1] = sw2;
+    pairs[sw2] = sw1;
+  }
+
+  return pairs;
+}
+
+const std::unordered_map<std::string, std::string> LineTextureSwitcher::texture_pairs_ = CreateTexturePairsMap();
 
 int LineTextureSwitcher::IsSwitch(const world::Line* line) {
   if (texture_pairs_.count(line->sides[0]->top_texture)) {
