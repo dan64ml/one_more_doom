@@ -5,6 +5,7 @@
 
 #include "world/world.h"
 #include "door.h"
+#include "floor.h"
 #include "line_texture_switcher.h"
 
 #define DEBUG_CODE
@@ -62,6 +63,24 @@ void SpecialLinesController::UseLine(world::Line* line, mobj::MapObject* mobj) {
     case 135:
     case 137:
       UseLockedTagDoor(line, mobj);
+      break;
+
+    case 18:
+    case 23:
+    case 71:
+    case 55:
+    case 101:
+    case 102:
+    case 131:
+    case 140:
+    case 45:
+    case 60:
+    case 64:
+    case 65:
+    case 69:
+    case 70:
+    case 132:
+      UseFloor(line, mobj);
       break;
 
     default:
@@ -151,6 +170,8 @@ void SpecialLinesController::UseTagDoor(world::Line* line, mobj::MapObject* mobj
   auto& sectors = tag_sectors_[line->tag];
 
   bool is_ok = false;
+  bool clear_special = false;
+
   for (auto sec : sectors) {
     if (sec->has_sobj) {
       continue;
@@ -164,27 +185,27 @@ void SpecialLinesController::UseTagDoor(world::Line* line, mobj::MapObject* mobj
     {
       case 29:
         door.reset(new Door(world_, sec, DoorType::kOpenThenClose, kNormalDoorSpeed, kNormalDoorWaitTime));
-        line->specials = 0;
+        clear_special = true;
         break;
       case 50:
         door.reset(new Door(world_, sec, DoorType::kClose, kNormalDoorSpeed, 0));
-        line->specials = 0;
+        clear_special = true;
         break;
       case 103:
         door.reset(new Door(world_, sec, DoorType::kOpen, kNormalDoorSpeed, 0));
-        line->specials = 0;
+        clear_special = true;
         break;
       case 111:
         door.reset(new Door(world_, sec, DoorType::kOpenThenClose, kBlazeDoorSpeed, kNormalDoorWaitTime));
-        line->specials = 0;
+        clear_special = true;
         break;
       case 112:
         door.reset(new Door(world_, sec, DoorType::kOpen, kBlazeDoorSpeed, 0));
-        line->specials = 0;
+        clear_special = true;
         break;
       case 113:
         door.reset(new Door(world_, sec, DoorType::kClose, kBlazeDoorSpeed, 0));
-        line->specials = 0;
+        clear_special = true;
         break;
       case 42:
         door.reset(new Door(world_, sec, DoorType::kClose, kNormalDoorSpeed, 0));
@@ -209,15 +230,109 @@ void SpecialLinesController::UseTagDoor(world::Line* line, mobj::MapObject* mobj
         #ifdef D_PRINT_UNPROCESSED_LINES
         std::cout << "UseTagDoor(): unprocessed line->specials = " << line->specials << std::endl;
         #endif
-        break;
+        continue;
     }
 
     sobjs_.push_back(std::move(door));
   }
 
+  if (clear_special) {
+    line->specials = 0;
+  }
   if (is_ok && LineTextureSwitcher::IsSwitch(line)) {
     sobjs_.push_back(std::unique_ptr<LineTextureSwitcher>(new LineTextureSwitcher(line)));
   }
+}
+
+void SpecialLinesController::UseFloor(world::Line* line, mobj::MapObject* mobj) {
+  assert(tag_sectors_.count(line->tag));
+  auto& sectors = tag_sectors_[line->tag];
+
+  bool is_ok = false;
+  bool clear_special = false;
+
+  for (auto sec : sectors) {
+    if (sec->has_sobj) {
+      continue;
+    }
+
+    is_ok = true;
+
+    std::unique_ptr<Floor> floor;
+
+    switch (line->specials)
+    {
+      case 18:
+        floor.reset(new Floor(world_, sec, FloorType::kRaiseFloorToNearest));
+        clear_special = true;
+        break;
+      case 23:
+        floor.reset(new Floor(world_, sec, FloorType::kLowerFloorToLowest));
+        clear_special = true;
+        break;
+      case 71:
+        floor.reset(new Floor(world_, sec, FloorType::kTurboLower));
+        clear_special = true;
+        break;
+      case 55:
+        floor.reset(new Floor(world_, sec, FloorType::kRaiseFloorCrush));
+        clear_special = true;
+        break;
+      case 101:
+        floor.reset(new Floor(world_, sec, FloorType::kRaiseFloor));
+        clear_special = true;
+        break;
+      case 102:
+        floor.reset(new Floor(world_, sec, FloorType::kLowerFloor));
+        clear_special = true;
+        break;
+      case 131:
+        floor.reset(new Floor(world_, sec, FloorType::kRaiseFloorTurbo));
+        clear_special = true;
+        break;
+      case 140:
+        floor.reset(new Floor(world_, sec, FloorType::kRaiseFloor512));
+        clear_special = true;
+        break;
+      case 45:
+        floor.reset(new Floor(world_, sec, FloorType::kLowerFloor));
+        break;
+      case 60:
+        floor.reset(new Floor(world_, sec, FloorType::kLowerFloorToLowest));
+        break;
+      case 64:
+        floor.reset(new Floor(world_, sec, FloorType::kRaiseFloor));
+        break;
+      case 65:
+        floor.reset(new Floor(world_, sec, FloorType::kRaiseFloorCrush));
+        break;
+      case 69:
+        floor.reset(new Floor(world_, sec, FloorType::kRaiseFloorToNearest));
+        break;
+      case 70:
+        floor.reset(new Floor(world_, sec, FloorType::kTurboLower));
+        break;
+      case 132:
+        floor.reset(new Floor(world_, sec, FloorType::kRaiseFloorTurbo));
+        break;
+
+      default:
+        #ifdef D_PRINT_UNPROCESSED_LINES
+        std::cout << "UseFloor(): unprocessed line->specials = " << line->specials << std::endl;
+        #endif
+        continue;
+    }
+
+    sobjs_.push_back(std::move(floor));
+  }
+
+  if (clear_special) {
+    line->specials = 0;
+  }
+  if (is_ok && LineTextureSwitcher::IsSwitch(line)) {
+    sobjs_.push_back(std::unique_ptr<LineTextureSwitcher>(new LineTextureSwitcher(line)));
+  }
+
 }
 
 void SpecialLinesController::UseLockedTagDoor(world::Line* line, mobj::MapObject* mobj) {
@@ -255,6 +370,8 @@ void SpecialLinesController::UseLockedTagDoor(world::Line* line, mobj::MapObject
   auto& sectors = tag_sectors_[line->tag];
 
   bool is_ok = false;
+  bool clean_special = false;
+
   for (auto sec : sectors) {
     if (sec->has_sobj) {
       continue;
@@ -275,19 +392,22 @@ void SpecialLinesController::UseLockedTagDoor(world::Line* line, mobj::MapObject
       case 135:
       case 137:
         door.reset(new Door(world_, sec, DoorType::kOpen, kBlazeDoorSpeed, 0));
-        line->specials = 0;
+        clean_special = true;
         break;
 
       default:
         #ifdef D_PRINT_UNPROCESSED_LINES
         std::cout << "UseLockedTagDoor(): unprocessed line->specials = " << line->specials << std::endl;
         #endif
-        break;
+        continue;
     }
 
     sobjs_.push_back(std::move(door));
   }
 
+  if (clean_special) {
+    line->specials = 0;
+  }
   if (is_ok && LineTextureSwitcher::IsSwitch(line)) {
     sobjs_.push_back(std::unique_ptr<LineTextureSwitcher>(new LineTextureSwitcher(line)));
   }

@@ -212,6 +212,54 @@ int GetLowestCeilingHeight(const world::Sector* sec) {
   return height;
 }
 
+int GetLowestFloorHeight(const world::Sector* sec) {
+  int height = std::numeric_limits<int>::max();
+
+  for (const auto line : sec->lines) {
+    auto opp = GetOppositeSector(sec, line);
+    if (!opp) {
+      continue;
+    }
+
+    height = std::min(height, opp->floor_height);
+  }
+
+  return height;
+}
+
+int GetHighestFloorHeight(const world::Sector* sec) {
+  int height = std::numeric_limits<int>::min();
+
+  for (const auto line : sec->lines) {
+    auto opp = GetOppositeSector(sec, line);
+    if (!opp) {
+      continue;
+    }
+
+    height = std::max(height, opp->floor_height);
+  }
+
+  return height;
+}
+
+int GetNextHighestFloorHeight(const world::Sector* sec, int current_height) {
+  int height = std::numeric_limits<int>::max();
+
+  for (const auto line : sec->lines) {
+    auto opp = GetOppositeSector(sec, line);
+    if (!opp) {
+      continue;
+    }
+    if (opp->floor_height <= current_height) {
+      continue;
+    }
+
+    height = std::min(height, opp->floor_height);
+  }
+
+  return (height == std::numeric_limits<int>::max()) ? current_height : height;
+}
+
 world::Sector* GetOppositeSector(const world::Sector* sec, const world::Line* line) {
   if (!(line->flags & world::kLDFTwoSided)) {
     return nullptr;

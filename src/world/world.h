@@ -67,7 +67,9 @@ class World {
 
   // Returns true if it's possible to set new floor/ceiling heights.
   // If there any mobj that dont't fit new height, return false.
-  // If flying mobj can be put down, it will be.
+  // If flying mobj must be put down to fit new height, it will be.
+  // z coordinate of standing mobj will be change too if it's necessary.
+  //
   // If cause_damage == true and we have unfitted mobjs - they'll get damage.
   bool TryToChangeSectorHeight(int floor_h, int ceiling_h, bool cause_damage);
 

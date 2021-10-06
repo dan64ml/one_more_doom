@@ -29,11 +29,13 @@ class SpecialLinesController {
   std::list<std::unique_ptr<StructureObject>> sobjs_;
 
   // For doors without TAG
-  void UseManualDoor(world::Line* l, mobj::MapObject* mobj);
+  void UseManualDoor(world::Line* line, mobj::MapObject* mobj);
   // For doors with TAG, their control lines can have SWITCHes!
-  void UseTagDoor(world::Line* l, mobj::MapObject* mobj);
+  void UseTagDoor(world::Line* line, mobj::MapObject* mobj);
   // For LOCKED doors with TAG
-  void UseLockedTagDoor(world::Line* l, mobj::MapObject* mobj);
+  void UseLockedTagDoor(world::Line* line, mobj::MapObject* mobj);
+  // Activate moving floors
+  void UseFloor(world::Line* line, [[maybe_unused]] mobj::MapObject* mobj);
 
   const int kNormalDoorSpeed = 2;
   const int kBlazeDoorSpeed = 4 * kNormalDoorSpeed;
