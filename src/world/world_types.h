@@ -33,6 +33,8 @@ struct Sector {
   bool has_sobj;
   // Lines forming this sector
   std::vector<Line*> lines;
+  // List of subsectors
+  std::vector<SubSector*> subsecs;
 };
 
 struct SideDef {

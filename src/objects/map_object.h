@@ -75,7 +75,7 @@ struct MapObject {
   int floor_z;
   int ceiling_z;
   // The lowest floor. Necessary for falling check
-  //int dropoff_z;
+  int dropoff_z;
 
   // Current subsector
   world::SubSector* ss;

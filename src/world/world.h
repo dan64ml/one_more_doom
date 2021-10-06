@@ -71,7 +71,7 @@ class World {
   // z coordinate of standing mobj will be change too if it's necessary.
   //
   // If cause_damage == true and we have unfitted mobjs - they'll get damage.
-  bool TryToChangeSectorHeight(int floor_h, int ceiling_h, bool cause_damage);
+  bool TryToChangeSectorHeight(Sector* sec, int floor_h, int ceiling_h, bool cause_damage);
 
  private:
   std::string wad_file_name_;
@@ -103,6 +103,9 @@ class World {
   // Control doors, switches, moving floors etc...
   std::unique_ptr<sobj::SpecialLinesController> spec_lines_controller_;
 
+  // Some game logic uses it...
+  long long tick_counter_ = 0;
+
  private:
   void ClearLevel();
   void LoadSectors(std::ifstream& fin);
@@ -112,7 +115,7 @@ class World {
   void LoadSubSectors(std::ifstream& fin);
   // Loads things from .wad and creates list of MapObjects
   void CreateMapObjectList(std::ifstream& fin);
-  // Fills Sector::lines in all sectors.
+  // Fills Sector::lines and Sector::subsecs in all sectors.
   void FillSectorLines();
 
   void PutMobjOnMap(std::unique_ptr<mobj::MapObject> obj, bool put_on_floor);

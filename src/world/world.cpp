@@ -104,6 +104,8 @@ void World::LoadLevel(size_t level) {
 }
 
 void World::TickTime() {
+  ++tick_counter_;
+
   player_->TickTime();
 
   flat_animator_.TickTime();
@@ -699,9 +701,78 @@ void World::FillSectorLines() {
       sectors_[sec_idx].lines.push_back(&line);
     }
   }
+
+  for (auto& ssec : sub_sectors_) {
+    assert(ptr_to_idx.count(ssec.sector));
+    int sec_idx = ptr_to_idx[ssec.sector];
+    sectors_[sec_idx].subsecs.push_back(&ssec);
+  }
 }
 
-bool World::TryToChangeSectorHeight(int floor_h, int ceiling_h, bool cause_damage) {
+bool World::TryToChangeSectorHeight(Sector* sec, int floor_h, int ceiling_h, bool cause_damage) {
+  int max_height = ceiling_h - floor_h;
+
+  bool is_obstacle = false;
+  // Look for unfitted mobj and hit them
+  for (const SubSector* ss : sec->subsecs) {
+    for (auto mobj : ss->mobjs) {
+      if (mobj->height > max_height) {
+        is_obstacle = true;
+        if (cause_damage) {
+          // There can be many actions...
+          // TODO: Put all them into CauseDamage() ???
+
+          /*if (mobj->height <= 0) {
+            // Get giblets
+            mobj->flags &= ~mobj::MF_SOLID;
+            mobj->height = 0;
+            mobj->radius = 0;
+            continue;
+          }
+
+          if (mobj->flags & mobj::MF_DROPPED) {
+            // Delete such a stuff
+            //mobj->
+            continue;
+          }
+
+          if (!(mobj->flags & mobj::MF_SHOOTABLE)) {
+            //Can't be hit
+            continue;
+          }*/
+
+          if (!(tick_counter_ & 3)) {
+            mobj->CauseDamage(10);
+          }
+        }
+      }
+    }
+  }
+
+  if (is_obstacle) {
+    return false;
+  }
+
+  // Change mobjs' z
+  for (const SubSector* ss : sec->subsecs) {
+    for (auto mobj : ss->mobjs) {
+      // floor_z and ceiling_z make opening for this mobj
+      // These vars a used during moving
+      mobj->floor_z = floor_h;
+      mobj->ceiling_z = ceiling_h;
+
+      if (mobj->z == sec->floor_height) {
+        // The mobj is on floor
+        mobj->z = floor_h;
+      } else {
+        // ? flying mobj ?
+        if (mobj->z + mobj->height > ceiling_h) {
+          mobj->z = ceiling_h - mobj->height;
+        }
+      }
+    }
+  }
+
   return true;
 }
 

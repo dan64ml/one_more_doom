@@ -65,7 +65,9 @@ Floor::Floor(world::World* w, world::Sector* s, FloorType type)
     direction_ = 1;
     speed_ = kFloorSpeed;
     target_height_ = sector_->floor_height + 24;
+    //sector_->floor_pic = line->
     // TODO!!!!!!!
+    // Require line :(((
     break;
 
   case FloorType::kRaiseToTexture:
@@ -100,7 +102,7 @@ bool Floor::TickTime() {
       new_height = target_height_;
     }
 
-    if (world_->TryToChangeSectorHeight(new_height, sector_->ceiling_height, crush_)) {
+    if (world_->TryToChangeSectorHeight(sector_, new_height, sector_->ceiling_height, crush_)) {
       sector_->floor_height = new_height;
     } else {
       return true;
@@ -119,7 +121,7 @@ bool Floor::TickTime() {
       new_height = target_height_;
     }
 
-    if (world_->TryToChangeSectorHeight(new_height, sector_->ceiling_height, crush_)) {
+    if (world_->TryToChangeSectorHeight(sector_, new_height, sector_->ceiling_height, crush_)) {
       sector_->floor_height = new_height;
     } else {
       return true;
