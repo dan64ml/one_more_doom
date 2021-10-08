@@ -73,7 +73,10 @@ class World {
   // If cause_damage == true and we have unfitted mobjs - they'll get damage.
   bool TryToChangeSectorHeight(Sector* sec, int floor_h, int ceiling_h, bool cause_damage);
 
- private:
+   // Some game logic uses it...
+  long long tick_counter_ = 0;
+
+private:
   std::string wad_file_name_;
   // Level names and lumps
   std::vector<std::pair<std::string, std::unordered_map<std::string, LumpPos>>> levels_;
@@ -102,9 +105,6 @@ class World {
   
   // Control doors, switches, moving floors etc...
   std::unique_ptr<sobj::SpecialLinesController> spec_lines_controller_;
-
-  // Some game logic uses it...
-  long long tick_counter_ = 0;
 
  private:
   void ClearLevel();

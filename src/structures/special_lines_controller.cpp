@@ -6,6 +6,7 @@
 #include "world/world.h"
 #include "door.h"
 #include "floor.h"
+#include "platform.h"
 #include "line_texture_switcher.h"
 
 #define DEBUG_CODE
@@ -81,6 +82,19 @@ void SpecialLinesController::UseLine(world::Line* line, mobj::MapObject* mobj) {
     case 70:
     case 132:
       UseFloor(line, mobj);
+      break;
+
+    case 14:
+    case 15:
+    case 20:
+    case 21:
+    case 122:
+    case 62:
+    case 66:
+    case 67:
+    case 68:
+    case 123:
+      UsePlatform(line, mobj);
       break;
 
     default:
@@ -411,6 +425,79 @@ void SpecialLinesController::UseLockedTagDoor(world::Line* line, mobj::MapObject
   if (is_ok && LineTextureSwitcher::IsSwitch(line)) {
     sobjs_.push_back(std::unique_ptr<LineTextureSwitcher>(new LineTextureSwitcher(line)));
   }
+}
+
+void SpecialLinesController::UsePlatform(world::Line* line, [[maybe_unused]] mobj::MapObject* mobj) {
+  assert(tag_sectors_.count(line->tag));
+  auto& sectors = tag_sectors_[line->tag];
+
+  bool is_ok = false;
+  bool clean_special = false;
+
+  for (auto sec : sectors) {
+    if (sec->has_sobj) {
+      continue;
+    }
+
+    is_ok = true;
+
+    std::unique_ptr<Platform> platform;
+
+    switch (line->specials)
+    {
+      case 14:
+        platform.reset(new Platform(world_, sec, line, PlatformType::kRaiseAndChange, 32));
+        clean_special = true;
+        break;
+      case 15:
+        platform.reset(new Platform(world_, sec, line, PlatformType::kRaiseAndChange, 24));
+        clean_special = true;
+        break;
+      case 20:
+        platform.reset(new Platform(world_, sec, line, PlatformType::kRaiseToNearestAndChange));
+        clean_special = true;
+        break;
+      case 21:
+        platform.reset(new Platform(world_, sec, line, PlatformType::kDownWaitUpStay));
+        clean_special = true;
+        break;
+      case 122:
+        platform.reset(new Platform(world_, sec, line, PlatformType::kBlazeDWUS));
+        clean_special = true;
+        break;
+      case 62:
+        platform.reset(new Platform(world_, sec, line, PlatformType::kDownWaitUpStay, 1));
+        break;
+      case 66:
+        platform.reset(new Platform(world_, sec, line, PlatformType::kRaiseAndChange, 24));
+        break;
+      case 67:
+        platform.reset(new Platform(world_, sec, line, PlatformType::kRaiseAndChange, 32));
+        break;
+      case 68:
+        platform.reset(new Platform(world_, sec, line, PlatformType::kRaiseToNearestAndChange));
+        break;
+      case 123:
+        platform.reset(new Platform(world_, sec, line, PlatformType::kBlazeDWUS));
+        break;
+
+      default:
+        #ifdef D_PRINT_UNPROCESSED_LINES
+        std::cout << "UsePlatform(): unprocessed line->specials = " << line->specials << std::endl;
+        #endif
+        continue;
+    }
+
+    sobjs_.push_back(std::move(platform));
+  }
+
+  if (clean_special) {
+    line->specials = 0;
+  }
+  if (is_ok && LineTextureSwitcher::IsSwitch(line)) {
+    sobjs_.push_back(std::unique_ptr<LineTextureSwitcher>(new LineTextureSwitcher(line)));
+  }
+
 }
 
 void SpecialLinesController::TickTime() {

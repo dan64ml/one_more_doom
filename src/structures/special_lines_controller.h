@@ -36,6 +36,8 @@ class SpecialLinesController {
   void UseLockedTagDoor(world::Line* line, mobj::MapObject* mobj);
   // Activate moving floors
   void UseFloor(world::Line* line, [[maybe_unused]] mobj::MapObject* mobj);
+  // Activate platforms
+  void UsePlatform(world::Line* line, [[maybe_unused]] mobj::MapObject* mobj);
 
   const int kNormalDoorSpeed = 2;
   const int kBlazeDoorSpeed = 4 * kNormalDoorSpeed;
