@@ -485,7 +485,11 @@ void World::HitLineAttack(mobj::MapObject* parent, int damage, int distance, ren
         mobj->CauseDamage(damage);
 
         auto [x, y] = math::ShiftToCenter(parent->x, parent->y, elem.x, elem.y, 2);
-        SpawnBulletBlood(x, y, mobj->z + mobj->height / 2);
+        if (mobj->flags & mobj::MF_NOBLOOD) {
+          SpawnBulletPuff(x, y, mobj->z + mobj->height / 2);
+        } else {
+          SpawnBulletBlood(x, y, mobj->z + mobj->height / 2);
+        }
 
         return;
       }
@@ -552,7 +556,11 @@ void World::HitAngleLineAttack(mobj::MapObject* parent, int damage, int distance
         mobj->CauseDamage(damage);
 
         auto [x, y] = math::ShiftToCenter(parent->x, parent->y, elem.x, elem.y, 2);
-        SpawnBulletBlood(x, y, hit_line_height);
+        if (mobj->flags & mobj::MF_NOBLOOD) {
+          SpawnBulletPuff(x, y, hit_line_height);
+        } else {
+          SpawnBulletBlood(x, y, hit_line_height);
+        }
 
         return;
       }
