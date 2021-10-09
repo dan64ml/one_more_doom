@@ -7,6 +7,7 @@
 #include "mobj_flags.h"
 #include "renderer/bam.h"
 #include "fsm.h"
+#include "info.h"
 
 namespace world {
   class World;
@@ -42,10 +43,8 @@ Need access to:
 ===========================================================================*/
 struct MapObject {
  public:
-  //MapObject(world::World* world) : world_(world) {}
   MapObject(const id::mobjinfo_t& info);
-  //MapObject() {}  // TODO!!!!!
-  //MapObject(id::mobjtype_t type) : fsm_(id::mobjinfo[type]) {}  // TODO!!!!!
+  MapObject(id::mobjtype_t type);
 
   // World coordinates of the object
   int x;
@@ -64,6 +63,8 @@ struct MapObject {
   
   // Original DOOM flags
   uint32_t flags;
+  // Original DOOM type
+  id::mobjtype_t mobj_type;
 
   // Momentums, in fact speed in strange units
   double mom_x = 0;
@@ -78,12 +79,11 @@ struct MapObject {
   int dropoff_z;
 
   // Current subsector
+  // TODO: !!!! CHANGE THE NAME !!!
   world::SubSector* ss;
 
   world::World* world_;
 
-  // For debug
-  int type;
 
   // Returns false if the object should be deleted
   virtual bool TickTime();

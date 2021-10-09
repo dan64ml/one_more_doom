@@ -10,23 +10,12 @@
 
 namespace mobj {
 
-//enum CardType {
-//  kBlueCard,
-//  kYellowCard,
-//  kRedCard,
-//  kBlueScull,
-//  kYellowScull,
-//  kRedScull,
-//
-//  kCardsNumber
-//};
-
 // Max distance to button or door to get it used
 const int kUseDistance = 48;
 
 class Player : public MapObject {
  public:
-  Player(const id::mobjinfo_t& info) : MapObject(info), weapon_(this) {}
+  Player() : MapObject(id::mobjinfo[id::MT_PLAYER]), weapon_(this) {}
   
   // Sets current button state
   void SetFireFlag(bool fire);

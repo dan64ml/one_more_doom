@@ -19,9 +19,6 @@
 
 namespace mobj {
 
-//MapObject::MapObject(world::World* world, const id::mobjinfo_t& info) : fsm_(info), world_(world) {
-//  
-//}
 MapObject::MapObject(const id::mobjinfo_t& info) : fsm_(info) {
   flags = info.flags;
   height = info.height;
@@ -30,6 +27,19 @@ MapObject::MapObject(const id::mobjinfo_t& info) : fsm_(info) {
   
   spawn_health_ = health_ = info.spawnhealth;
   pain_chance_ = info.painchance;
+}
+
+MapObject::MapObject(id::mobjtype_t type) : fsm_(id::mobjinfo[type]) {
+  assert(type < id::NUMMOBJTYPES);
+  mobj_type = type;
+
+  flags = id::mobjinfo[type].flags;
+  height = id::mobjinfo[type].height;
+  radius = id::mobjinfo[type].radius;
+  speed = id::mobjinfo[type].speed;
+  
+  spawn_health_ = health_ = id::mobjinfo[type].spawnhealth;
+  pain_chance_ = id::mobjinfo[type].painchance;
 }
 
 std::string MapObject::GetSpriteName(int vp_x, int vp_y) const {

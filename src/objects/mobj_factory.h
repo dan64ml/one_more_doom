@@ -2,7 +2,6 @@
 #define MOBJ_FACTORY_H_
 
 #include <unordered_map>
-#include <optional>
 #include <memory>
 
 #include "info.h"
@@ -18,12 +17,12 @@ class MobjFactory {
  public:
   MobjFactory() = default;
 
-  std::optional<mobj::MapObject> Create(int type);
   std::unique_ptr<mobj::MapObject> Create(const wad::WadMapThing& thing);
   std::unique_ptr<mobj::Player> CreatePlayer(const wad::WadMapThing& thing);
 
  private:
-  static std::unordered_map<int, id::mobjinfo_t> mobjs_info_;
+  // WAD file contains doomednum, but we need id::mobjtype_t to constract mobj
+  const static std::unordered_map<int, id::mobjtype_t> mobjs_types_;
 
 };
 

@@ -280,6 +280,8 @@ void World::CreateMapObjectList(std::ifstream& fin) {
 
       player_->angle = rend::DegreesToBam(items[i].angle);
       player_->world_ = this;
+
+      //sub_sectors_[ss_idx].mobjs.push_back(obj.get());
     } else {
       auto mobj = spawner_.Create(items[i]);
       if (mobj) {
@@ -329,7 +331,7 @@ void World::DoBlastDamage(int damage, int x, int y) {
       continue;
     }
     // This monsters can't be hit by blast
-    if (obj->type == id::MT_CYBORG || obj->type == id::MT_SPIDER) {
+    if (obj->mobj_type == id::MT_CYBORG || obj->mobj_type == id::MT_SPIDER) {
       continue;
     }
 
@@ -757,7 +759,7 @@ bool World::TryToChangeSectorHeight(Sector* sec, int floor_h, int ceiling_h, boo
   for (const SubSector* ss : sec->subsecs) {
     for (auto mobj : ss->mobjs) {
       // floor_z and ceiling_z make opening for this mobj
-      // These vars a used during moving
+      // These vars are used during moving
       mobj->floor_z = floor_h;
       mobj->ceiling_z = ceiling_h;
 
