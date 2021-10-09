@@ -113,6 +113,7 @@ bool Platform::TickTime() {
         new_pos = low_pos_;
       }
 
+      world_->TryToChangeSectorHeight(sector_, new_pos, sector_->ceiling_height, false);
       sector_->floor_height = new_pos;
       if (new_pos == low_pos_) {
         count_ = wait_count_;
