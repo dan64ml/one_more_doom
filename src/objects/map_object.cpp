@@ -19,16 +19,6 @@
 
 namespace mobj {
 
-MapObject::MapObject(const id::mobjinfo_t& info) : fsm_(info) {
-  flags = info.flags;
-  height = info.height;
-  radius = info.radius;
-  speed = info.speed;
-  
-  spawn_health_ = health_ = info.spawnhealth;
-  pain_chance_ = info.painchance;
-}
-
 MapObject::MapObject(id::mobjtype_t type) : fsm_(id::mobjinfo[type]) {
   assert(type < id::NUMMOBJTYPES);
   mobj_type = type;

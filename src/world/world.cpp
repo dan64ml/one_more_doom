@@ -281,7 +281,7 @@ void World::CreateMapObjectList(std::ifstream& fin) {
       player_->angle = rend::DegreesToBam(items[i].angle);
       player_->world_ = this;
 
-      //sub_sectors_[ss_idx].mobjs.push_back(obj.get());
+      sub_sectors_[ss_idx].mobjs.push_back(player_.get());
     } else {
       auto mobj = spawner_.Create(items[i]);
       if (mobj) {
@@ -644,7 +644,7 @@ mobj::MapObject* World::GetTarget(int from_x, int from_y, int from_z, rend::BamA
 }
 
 void World::SpawnBulletPuff(int x, int y, int z) {
-  std::unique_ptr<mobj::MapObject> bullet(new mobj::MapObject(id::mobjinfo[id::MT_PUFF]));
+  std::unique_ptr<mobj::MapObject> bullet(new mobj::MapObject(id::MT_PUFF));
 
   bullet->x = x;
   bullet->y = y;
@@ -655,7 +655,7 @@ void World::SpawnBulletPuff(int x, int y, int z) {
 }
 
 void World::SpawnBulletBlood(int x, int y, int z) {
-  std::unique_ptr<mobj::MapObject> bullet(new mobj::MapObject(id::mobjinfo[id::MT_BLOOD]));
+  std::unique_ptr<mobj::MapObject> bullet(new mobj::MapObject(id::MT_BLOOD));
 
   bullet->x = x;
   bullet->y = y;
@@ -666,7 +666,7 @@ void World::SpawnBulletBlood(int x, int y, int z) {
 }
 
 void World::SpawnBFGExplode(int x, int y, int z) {
-  std::unique_ptr<mobj::MapObject> bfg(new mobj::MapObject(id::mobjinfo[id::MT_EXTRABFG]));
+  std::unique_ptr<mobj::MapObject> bfg(new mobj::MapObject(id::MT_EXTRABFG));
 
   bfg->x = x;
   bfg->y = y;

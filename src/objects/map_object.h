@@ -43,7 +43,6 @@ Need access to:
 ===========================================================================*/
 struct MapObject {
  public:
-  MapObject(const id::mobjinfo_t& info);
   MapObject(id::mobjtype_t type);
 
   // World coordinates of the object

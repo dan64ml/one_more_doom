@@ -8,6 +8,7 @@
 #include <chrono>
 
 #include "status_bar_renderer.h"
+#include "objects/info.h"
 
 namespace rend {
 
@@ -389,6 +390,10 @@ void Renderer::RenderWalls() {
     // deal with MapObjects
     for (const auto* mobj : ss->mobjs) {
       MaskedObject masked;
+      if (mobj->mobj_type == id::MT_PLAYER) {
+        // Don't draw the player
+        continue;
+      }
       if (!FillMobjMaskedObject(masked, mobj)) {
         continue;
       }
