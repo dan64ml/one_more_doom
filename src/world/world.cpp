@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <iostream>
 #include <cassert>
+#include <limits>
 
 #include "wad_utils.h"
 #include "wad_raw_types.h"
@@ -716,6 +717,17 @@ void World::FillSectorLines() {
     assert(ptr_to_idx.count(ssec.sector));
     int sec_idx = ptr_to_idx[ssec.sector];
     sectors_[sec_idx].subsecs.push_back(&ssec);
+  }
+
+  // Add BBox data
+  for (auto sec : sectors_) {
+    sec.world = this;
+    sec.bbox.top = sec.bbox.right = std::numeric_limits<int>::min();
+    sec.bbox.bottom = sec.bbox.left = std::numeric_limits<int>::max();
+    for (const auto line : sec.lines) {
+      sec.bbox.AddPoint(line->x1, line->y1);
+      sec.bbox.AddPoint(line->x2, line->y2);
+    }
   }
 }
 

@@ -3,6 +3,8 @@
 
 #include "structure_object.h"
 
+#include "sobj_types.h"
+
 #include "world/world_types.h"
 
 namespace sobj {
@@ -16,12 +18,12 @@ enum class CeilingType {
   kRaiseToHighest
 };
 
-enum class MoveDirection {
-  kUp,
-  kDown,
-  kWait,
-  kSuspend  // Sobj can be suspended by using a line
-};
+//enum class MoveDirection {
+//  kUp,
+//  kDown,
+//  kWait,
+//  kSuspend  // Sobj can be suspended by using a line
+//};
 
 class Ceiling : public StructureObject {
  public:
@@ -33,15 +35,15 @@ class Ceiling : public StructureObject {
   bool Trigger(mobj::MapObject*) override { return true; }
 
  private:
-  const int kCeilingSpeed = 1;
+  const double kCeilingSpeed = 1.0;
 
   world::World* world_;
   world::Sector* sector_;
   CeilingType type_;
 
-  int speed_;
-  int high_pos_;
-  int low_pos_;
+  double speed_;
+  double high_pos_;
+  double low_pos_;
 
   bool crush_ = false;
 

@@ -5,5 +5,6 @@ add_library(structures
     platform.cpp
     special_lines_controller.cpp
     line_texture_switcher.cpp
+    sobj_utils.cpp
     )
     

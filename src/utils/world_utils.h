@@ -43,16 +43,16 @@ bool CorrectOpening(world::Opening& op, const world::Line* line, double dist);
 int GetOpenRange(const world::Line* line);
 
 // Find lowest ceiling around the sector
-int GetLowestCeilingHeight(const world::Sector* sec);
+double GetLowestCeilingHeight(const world::Sector* sec);
 // Looks for the highest floor level
-int GetHighestFloorHeight(const world::Sector* sec);
+double GetHighestFloorHeight(const world::Sector* sec);
 // Looks for the lowest floor level
-int GetLowestFloorHeight(const world::Sector* sec);
+double GetLowestFloorHeight(const world::Sector* sec);
 // Looks for the sector that has minimal floor height larger then current_height.
 // Returns current_height if it's the highest.
-int GetNextHighestFloorHeight(const world::Sector* sec, int current_height);
+double GetNextHighestFloorHeight(const world::Sector* sec, int current_height);
 //
-int GetHighestCeilingHeight(const world::Sector* sec);
+double GetHighestCeilingHeight(const world::Sector* sec);
 
 // Helper. Returns opposite sector for the line (if it exists)
 world::Sector* GetOppositeSector(const world::Sector* sec, const world::Line* line);

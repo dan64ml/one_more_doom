@@ -10,17 +10,32 @@
 
 namespace world {
 
+class World;
+
 // Just boundary box
 struct BBox {
   int left;
   int right;
   int top;
   int bottom;
+
+  void AddPoint(int x, int y) {
+    if (x < left) {
+      left = x;
+    } else if (x > right) {
+      right = x;
+    }
+    if (y < bottom) {
+      bottom = y;
+    } else if (y > top) {
+      top = y;
+    }
+  }
 };
 
 struct Sector {
-  int floor_height;
-  int ceiling_height;
+  double floor_height;
+  double ceiling_height;
   
   std::string floor_pic;
   std::string ceiling_pic;
@@ -28,6 +43,10 @@ struct Sector {
   int light_level;
   int special;  // For damage floor, light and etc...
   int tag;
+
+  World* world;
+
+  BBox bbox;
 
   // True if the sector has active StructureObject
   bool has_sobj;

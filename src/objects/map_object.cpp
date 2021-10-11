@@ -332,4 +332,13 @@ void MapObject::CauseDamage(int damage) {
   }
 }
 
+// TODO: It's a very simplified version!!!!
+void MapObject::UpdateOpening() {
+  int ss_idx = world_->bsp_.GetSubSectorIdx(x, y);
+  auto* ss = &world_->sub_sectors_[ss_idx];
+
+  floor_z = dropoff_z = ss->sector->floor_height;
+  ceiling_z = ss->sector->ceiling_height;
+}
+
 } // namespace mobj

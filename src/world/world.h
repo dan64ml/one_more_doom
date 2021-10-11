@@ -38,6 +38,7 @@ class World {
 
   const wad::FastBsp* GetBsp() const { return &bsp_; }
   std::vector<Sector>& GetSectors() { return sectors_; }
+  BlockMap& GetBlocks() { return blocks_; }
 
   mobj::Player* GetPlayer() { return reinterpret_cast<mobj::Player*>(player_.get()); };
 

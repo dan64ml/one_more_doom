@@ -91,9 +91,14 @@ struct MapObject {
   int GetHealth() const { return health_; }
 
   void CauseDamage(int damage);
+  // Structure objects influence in a bit different way. Ref to ChangeSectorHeight().
+  void DamageBySobj(int damage);
 
   // In fact this foo makes sense only for player
   virtual bool IsCardPresent([[maybe_unused]] CardType c) const { return false; }
+
+  // Checks current position and updates floor_z, ceiling_z and dropoff_z;
+  void UpdateOpening();
 
  private:
   struct Opening {
