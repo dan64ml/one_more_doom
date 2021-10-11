@@ -2,7 +2,7 @@
 #define FLOOR_H_
 
 #include "structure_object.h"
-
+#include "sobj_types.h"
 #include "world/world_types.h"
 
 namespace sobj {
@@ -19,12 +19,14 @@ enum class FloorType {
   kRaiseFloor512,
   kRaiseFloor24AndChange,
   kRaiseToTexture,
-  kLowerAndChange
+  kLowerAndChange,
+
+  kDonutRaise // ???
 };
 
 class Floor : public StructureObject {
  public:
-  Floor(world::World* w, world::Sector* s, FloorType type);
+  Floor(world::World* w, world::Sector* s, world::Line* l, FloorType type);
   ~Floor();
 
   bool TickTime() override;
@@ -32,17 +34,19 @@ class Floor : public StructureObject {
   bool Trigger(mobj::MapObject*) override { return true; }
 
  private:
-  const int kFloorSpeed = 1;
-  const int kTurboFloorSpeed = 4 * kFloorSpeed;
+  const double kFloorSpeed = 1.0;
 
   world::World* world_;
   world::Sector* sector_;
   FloorType type_;
 
-  int speed_ = kFloorSpeed;
-  int target_height_;
-  int direction_;
+  double speed_ = kFloorSpeed;
+  double target_height_;
+  MoveDirection direction_;
   bool crush_ = false;  // most floors are harmless
+
+  int new_special_;
+  std::string texture_;
 };
 
 } // namespace sobj

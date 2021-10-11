@@ -293,57 +293,57 @@ void SpecialLinesController::UseFloor(world::Line* line, mobj::MapObject* mobj) 
     switch (line->specials)
     {
       case 18:
-        floor.reset(new Floor(world_, sec, FloorType::kRaiseFloorToNearest));
+        floor.reset(new Floor(world_, sec, line, FloorType::kRaiseFloorToNearest));
         clear_special = true;
         break;
       case 23:
-        floor.reset(new Floor(world_, sec, FloorType::kLowerFloorToLowest));
+        floor.reset(new Floor(world_, sec, line, FloorType::kLowerFloorToLowest));
         clear_special = true;
         break;
       case 71:
-        floor.reset(new Floor(world_, sec, FloorType::kTurboLower));
+        floor.reset(new Floor(world_, sec, line, FloorType::kTurboLower));
         clear_special = true;
         break;
       case 55:
-        floor.reset(new Floor(world_, sec, FloorType::kRaiseFloorCrush));
+        floor.reset(new Floor(world_, sec, line, FloorType::kRaiseFloorCrush));
         clear_special = true;
         break;
       case 101:
-        floor.reset(new Floor(world_, sec, FloorType::kRaiseFloor));
+        floor.reset(new Floor(world_, sec, line, FloorType::kRaiseFloor));
         clear_special = true;
         break;
       case 102:
-        floor.reset(new Floor(world_, sec, FloorType::kLowerFloor));
+        floor.reset(new Floor(world_, sec, line, FloorType::kLowerFloor));
         clear_special = true;
         break;
       case 131:
-        floor.reset(new Floor(world_, sec, FloorType::kRaiseFloorTurbo));
+        floor.reset(new Floor(world_, sec, line, FloorType::kRaiseFloorTurbo));
         clear_special = true;
         break;
       case 140:
-        floor.reset(new Floor(world_, sec, FloorType::kRaiseFloor512));
+        floor.reset(new Floor(world_, sec, line, FloorType::kRaiseFloor512));
         clear_special = true;
         break;
       case 45:
-        floor.reset(new Floor(world_, sec, FloorType::kLowerFloor));
+        floor.reset(new Floor(world_, sec, line, FloorType::kLowerFloor));
         break;
       case 60:
-        floor.reset(new Floor(world_, sec, FloorType::kLowerFloorToLowest));
+        floor.reset(new Floor(world_, sec, line, FloorType::kLowerFloorToLowest));
         break;
       case 64:
-        floor.reset(new Floor(world_, sec, FloorType::kRaiseFloor));
+        floor.reset(new Floor(world_, sec, line, FloorType::kRaiseFloor));
         break;
       case 65:
-        floor.reset(new Floor(world_, sec, FloorType::kRaiseFloorCrush));
+        floor.reset(new Floor(world_, sec, line, FloorType::kRaiseFloorCrush));
         break;
       case 69:
-        floor.reset(new Floor(world_, sec, FloorType::kRaiseFloorToNearest));
+        floor.reset(new Floor(world_, sec, line, FloorType::kRaiseFloorToNearest));
         break;
       case 70:
-        floor.reset(new Floor(world_, sec, FloorType::kTurboLower));
+        floor.reset(new Floor(world_, sec, line, FloorType::kTurboLower));
         break;
       case 132:
-        floor.reset(new Floor(world_, sec, FloorType::kRaiseFloorTurbo));
+        floor.reset(new Floor(world_, sec, line, FloorType::kRaiseFloorTurbo));
         break;
 
       default:

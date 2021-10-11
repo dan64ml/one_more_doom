@@ -18,13 +18,6 @@ enum class CeilingType {
   kRaiseToHighest
 };
 
-//enum class MoveDirection {
-//  kUp,
-//  kDown,
-//  kWait,
-//  kSuspend  // Sobj can be suspended by using a line
-//};
-
 class Ceiling : public StructureObject {
  public:
   Ceiling(world::World* w, world::Sector* s, world::Line* l, CeilingType type);

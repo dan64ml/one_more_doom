@@ -198,7 +198,7 @@ int GetOpenRange(const world::Line* line) {
 }
 
 double GetLowestCeilingHeight(const world::Sector* sec) {
-  double height = std::numeric_limits<double>::max();
+  double height = std::numeric_limits<int>::max();
 
   for (const auto line : sec->lines) {
     auto opp = GetOppositeSector(sec, line);
@@ -213,7 +213,7 @@ double GetLowestCeilingHeight(const world::Sector* sec) {
 }
 
 double GetLowestFloorHeight(const world::Sector* sec) {
-  double height = std::numeric_limits<double>::max();
+  double height = std::numeric_limits<int>::max();
 
   for (const auto line : sec->lines) {
     auto opp = GetOppositeSector(sec, line);
@@ -228,7 +228,7 @@ double GetLowestFloorHeight(const world::Sector* sec) {
 }
 
 double GetHighestFloorHeight(const world::Sector* sec) {
-  double height = std::numeric_limits<double>::min();
+  double height = std::numeric_limits<int>::min();
 
   for (const auto line : sec->lines) {
     auto opp = GetOppositeSector(sec, line);
@@ -243,7 +243,7 @@ double GetHighestFloorHeight(const world::Sector* sec) {
 }
 
 double GetNextHighestFloorHeight(const world::Sector* sec, int current_height) {
-  double height = std::numeric_limits<double>::max();
+  double height = std::numeric_limits<int>::max();
 
   for (const auto line : sec->lines) {
     auto opp = GetOppositeSector(sec, line);
