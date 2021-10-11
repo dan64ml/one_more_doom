@@ -28,6 +28,7 @@ SpecialLinesController::SpecialLinesController(world::World* w) : world_(w) {
 void SpecialLinesController::UseLine(world::Line* line, mobj::MapObject* mobj) {
   switch (line->specials)
   {
+    // Use line action
     case 1:
     case 26:
     case 27:
@@ -200,46 +201,46 @@ void SpecialLinesController::UseTagDoor(world::Line* line, mobj::MapObject* mobj
     switch (line->specials)
     {
       case 29:
-        door.reset(new Door(world_, sec, DoorType::kOpenThenClose, kNormalDoorSpeed, kNormalDoorWaitTime));
+        door.reset(new Door(world_, sec, line, DoorType::kNormal));
         clear_special = true;
         break;
       case 50:
-        door.reset(new Door(world_, sec, DoorType::kClose, kNormalDoorSpeed, 0));
+        door.reset(new Door(world_, sec, line, DoorType::kClose));
         clear_special = true;
         break;
       case 103:
-        door.reset(new Door(world_, sec, DoorType::kOpen, kNormalDoorSpeed, 0));
+        door.reset(new Door(world_, sec, line, DoorType::kOpen));
         clear_special = true;
         break;
       case 111:
-        door.reset(new Door(world_, sec, DoorType::kOpenThenClose, kBlazeDoorSpeed, kNormalDoorWaitTime));
+        door.reset(new Door(world_, sec, line, DoorType::kBlazeRaise));
         clear_special = true;
         break;
       case 112:
-        door.reset(new Door(world_, sec, DoorType::kOpen, kBlazeDoorSpeed, 0));
+        door.reset(new Door(world_, sec, line, DoorType::kBlazeOpen));
         clear_special = true;
         break;
       case 113:
-        door.reset(new Door(world_, sec, DoorType::kClose, kBlazeDoorSpeed, 0));
+        door.reset(new Door(world_, sec, line, DoorType::kBlazeClose));
         clear_special = true;
         break;
       case 42:
-        door.reset(new Door(world_, sec, DoorType::kClose, kNormalDoorSpeed, 0));
+        door.reset(new Door(world_, sec, line, DoorType::kClose));
         break;
       case 61:
-        door.reset(new Door(world_, sec, DoorType::kOpen, kNormalDoorSpeed, 0));
+        door.reset(new Door(world_, sec, line, DoorType::kOpen));
         break;
       case 63:
-        door.reset(new Door(world_, sec, DoorType::kOpenThenClose, kNormalDoorSpeed, kNormalDoorWaitTime));
+        door.reset(new Door(world_, sec, line, DoorType::kNormal));
         break;
       case 114:
-        door.reset(new Door(world_, sec, DoorType::kOpenThenClose, kBlazeDoorSpeed, kNormalDoorWaitTime));
+        door.reset(new Door(world_, sec, line, DoorType::kBlazeRaise));
         break;
       case 115:
-        door.reset(new Door(world_, sec, DoorType::kOpen, kBlazeDoorSpeed, 0));
+        door.reset(new Door(world_, sec, line, DoorType::kBlazeOpen));
         break;
       case 116:
-        door.reset(new Door(world_, sec, DoorType::kClose, kBlazeDoorSpeed, 0));
+        door.reset(new Door(world_, sec, line, DoorType::kBlazeClose));
         break;
 
       default:
