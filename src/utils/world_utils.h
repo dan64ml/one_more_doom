@@ -51,6 +51,8 @@ int GetLowestFloorHeight(const world::Sector* sec);
 // Looks for the sector that has minimal floor height larger then current_height.
 // Returns current_height if it's the highest.
 int GetNextHighestFloorHeight(const world::Sector* sec, int current_height);
+//
+int GetHighestCeilingHeight(const world::Sector* sec);
 
 // Helper. Returns opposite sector for the line (if it exists)
 world::Sector* GetOppositeSector(const world::Sector* sec, const world::Line* line);

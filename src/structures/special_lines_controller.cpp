@@ -108,6 +108,7 @@ void SpecialLinesController::HitLine(world::Line* l, mobj::MapObject* mobj) {
 
 void SpecialLinesController::CrossLine(world::Line* l, mobj::MapObject* mobj) {
   // TODO: this foo uses FloorType::kLowerAndChange, FloorType::kRaiseFloor24AndChange, FloorType::kRaiseToTexture
+
 }
 
 void SpecialLinesController::UseManualDoor(world::Line* line, mobj::MapObject* mobj) {
