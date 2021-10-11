@@ -551,6 +551,10 @@ void World::HitAngleLineAttack(mobj::MapObject* parent, int damage, int distance
       // MapObject
       auto mobj = std::get<1>(elem.obj);
       std::cout << "Hit mobj (" << mobj->x << ", " << mobj->y << ")" << std::endl;
+      if (mobj == parent) {
+        // Don't hit yourself
+        continue;
+      }
 
       int hit_line_height = view_line_z + elem.distance * height_coef;
 
