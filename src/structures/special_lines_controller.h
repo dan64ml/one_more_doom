@@ -39,11 +39,11 @@ class SpecialLinesController {
   // Activate platforms
   void UsePlatform(world::Line* line, [[maybe_unused]] mobj::MapObject* mobj);
 
-  const int kNormalDoorSpeed = 2;
-  const int kBlazeDoorSpeed = 4 * kNormalDoorSpeed;
+  //const int kNormalDoorSpeed = 2;
+  //const int kBlazeDoorSpeed = 4 * kNormalDoorSpeed;
 
-  const int kNormalDoorWaitTime = 150;
-  const int k30SecDoorWaitTime = 35 * 30;
+//  const int kNormalDoorWaitTime = 150;
+//  const int k30SecDoorWaitTime = 35 * 30;
 };
 
 } //  namespace sobj

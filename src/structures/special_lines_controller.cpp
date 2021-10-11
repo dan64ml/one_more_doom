@@ -42,6 +42,7 @@ void SpecialLinesController::UseLine(world::Line* line, mobj::MapObject* mobj) {
       UseManualDoor(line, mobj);
       break;
 
+    // Use line action
     case 29:
     case 50:
     case 103:

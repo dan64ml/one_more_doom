@@ -2,33 +2,54 @@
 
 #include <cassert>
 
+#include "sobj_utils.h"
+
 #include "utils/world_utils.h"
 #include "world/world.h"
 
 namespace sobj {
 
-Door::Door(world::World* w, world::Sector* s, DoorType type, int speed, int wait_time, bool wait_obstacle) 
-  : world_(w), sector_(s), type_(type), move_speed_(speed), wait_counter_(wait_time),
-    wait_obstacle_(wait_obstacle) {
-  door_top_level_ = math::GetLowestCeilingHeight(sector_) - 4;
+Door::Door(world::World* w, world::Sector* s, world::Line* l, DoorType type) 
+  : world_(w), sector_(s), line_(l), type_(type) {
+  wait_time_ = kDoorWaitTime;
+  speed_ = kDoorSpeed;
 
   sector_->has_sobj = true;
 
-  switch (type)
+  switch (type_)
   {
-  case DoorType::kClose:
-  case DoorType::kCloseThenOpen:
-    move_direction_ = -1;
-    break;
-  
-  case DoorType::kOpen:
-  case DoorType::kOpenThenClose:
-    move_direction_ = 1;
-    break;
+    case DoorType::kBlazeClose:
+      top_pos_ = math::GetLowestCeilingHeight(sector_) - 4.0;
+      direction_ = MoveDirection::kDown;
+      speed_ = 4 * kDoorSpeed;
+      break;
 
-  default:
-    assert(false);
-    break;
+    case DoorType::kClose:
+      top_pos_ = math::GetLowestCeilingHeight(sector_) - 4.0;
+      direction_ = MoveDirection::kDown;
+      break;
+
+    case DoorType::kClose30ThenOpen:
+      top_pos_ = sector_->ceiling_height;
+      direction_ = MoveDirection::kDown;
+      break;
+
+    case DoorType::kBlazeRaise:
+    case DoorType::kBlazeOpen:
+      direction_ = MoveDirection::kUp;
+      top_pos_ = math::GetLowestCeilingHeight(sector_) - 4.0;
+      speed_ = 4 * kDoorSpeed;
+      break;
+
+    case DoorType::kNormal:
+    case DoorType::kOpen:
+      direction_ = MoveDirection::kUp;
+      top_pos_ = math::GetLowestCeilingHeight(sector_) - 4.0;
+      break;
+
+    default:
+      assert(false);
+      break;
   }
 }
 
@@ -37,75 +58,109 @@ Door::~Door() {
 }
 
 bool Door::TickTime() {
-  if (move_direction_ == 1) {
-    // Move up
-    int new_height = sector_->ceiling_height + move_speed_;
-    if (new_height > door_top_level_) {
-      sector_->ceiling_height = door_top_level_;
-      switch (type_)
-      {
-      case DoorType::kClose:
-        move_direction_ = -1;
-        return true;
-      case DoorType::kOpen:
-        return false;
-      case DoorType::kCloseThenOpen:
-        if (wait_counter_) {
-          move_direction_ = -1;
-          return true;
-        }
-        return false;
-      case DoorType::kOpenThenClose:
-        move_direction_ = 0;
-        return true;
-      }
-    } else {
-      sector_->ceiling_height = new_height;
-      return true;
-    }
-  } else if (move_direction_ == -1) {
-    // Move down
-    int new_height = sector_->ceiling_height - move_speed_;
-    if (new_height < sector_->floor_height) {
-      // Reached the floor
-      sector_->ceiling_height = sector_->floor_height;
-      switch (type_)
-      {
-      case DoorType::kClose:
-        return false;
-      case DoorType::kOpen:
-        assert(false);
-        return true;
-      case DoorType::kCloseThenOpen:
-        move_direction_ = 0;
-        return true;
-      case DoorType::kOpenThenClose:
-        return false;
-      }
-    }
+  MoveResult res;
 
-    if (CanChangeHeight(new_height)) {
-      sector_->ceiling_height = new_height;
-      return true;
-    } else {
-      if (!wait_obstacle_) {
-        move_direction_ *= -1;;
+  switch (direction_ )
+  {
+    case MoveDirection::kWait:
+      if (!(--wait_counter_)) {
+        switch (type_)
+        {
+          case DoorType::kBlazeRaise:
+            direction_ = MoveDirection::kDown;
+            break;
+          case DoorType::kNormal:
+            direction_ = MoveDirection::kDown;
+            break;
+          case DoorType::kClose30ThenOpen:
+            direction_ = MoveDirection::kUp;
+            break;
+          
+          default:
+            break;
+        }
       }
-      return true;
-    }
-  } else {
-    // Wait state
-    if (!--wait_counter_) {
-      if (type_ == DoorType::kOpenThenClose) {
-        move_direction_ = -1;
-      } else if (type_ == DoorType::kCloseThenOpen) {
-        move_direction_ = 1;
-      } else {
-        assert(false);
+      break;
+    
+    case MoveDirection::kInitialWait:
+      if (!(--wait_counter_)) {
+        switch (type_)
+        {
+          case DoorType::kRaiseIn5Mins:
+            direction_ = MoveDirection::kUp;
+            type_ = DoorType::kNormal;
+            break;
+          
+          default:
+            break;
+        }
       }
-    }
-    return true;
+      break;
+
+    case MoveDirection::kDown:
+      res = MoveCeiling(sector_, speed_, sector_->floor_height, false, direction_);
+      if (res == MoveResult::kGotDest) {
+        switch (type_)
+        {
+          case DoorType::kBlazeRaise:
+          case DoorType::kBlazeOpen:
+            return false;
+          
+          case DoorType::kNormal:
+          case DoorType::kClose:
+            return false;;
+  
+          case DoorType::kClose30ThenOpen:
+            direction_ = MoveDirection::kWait;
+            wait_counter_ = 35 * 30;  // Original behavier
+            break;
+
+          default:
+            break;
+        }
+      } else if (res == MoveResult::kCrushed) {
+        switch (type_)
+        {
+          case DoorType::kBlazeClose:
+          case DoorType::kClose:
+            // Do not change direction
+            break;
+
+          default:
+            direction_ = MoveDirection::kUp;
+            break;
+        }
+
+      }
+      break;
+
+    case MoveDirection::kUp:
+      res = MoveCeiling(sector_, speed_, top_pos_, false, direction_);
+      if (res == MoveResult::kGotDest) {
+        switch (type_)
+        {
+          case DoorType::kBlazeRaise:
+          case DoorType::kNormal:
+            direction_ = MoveDirection::kWait;
+            wait_counter_ = wait_time_;
+            break;
+          
+          case DoorType::kClose30ThenOpen:
+          case DoorType::kBlazeOpen:
+          case DoorType::kOpen:
+            return false;
+
+          default:
+            break;
+        }
+      }
+      break;
+
+    default:
+      break;
   }
+
+  return true;
 }
 
 bool Door::CanChangeHeight(int ceiling_height) {

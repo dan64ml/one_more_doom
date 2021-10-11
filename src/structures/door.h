@@ -3,20 +3,26 @@
 
 #include "structure_object.h"
 
+#include "sobj_types.h"
+
 #include "world/world_types.h"
 
 namespace sobj {
 
 enum class DoorType {
-  kOpen,
+  kNormal,
+  kClose30ThenOpen,
   kClose,
-  kOpenThenClose,
-  kCloseThenOpen
+  kOpen,
+  kRaiseIn5Mins,
+  kBlazeRaise,
+  kBlazeOpen,
+  kBlazeClose
 };
 
 class Door : public StructureObject {
  public:
-  Door(world::World* w, world::Sector* s, DoorType type, int speed, int wait_time, bool wait_obstacle = false);
+  Door(world::World* w, world::Sector* s, world::Line* l, DoorType type);
   ~Door();
 
   bool TickTime() override;
@@ -24,25 +30,24 @@ class Door : public StructureObject {
   bool Trigger(mobj::MapObject*) override { return true; }
 
  private:
+  const double kDoorSpeed = 2.0;
+  const int kDoorWaitTime = 150;
+
   world::World* world_;
   world::Sector* sector_;
+  world::Line* line_;
   DoorType type_;
 
-  // Both moving have the same speed
-  int move_speed_;
-  // Wait time in ticks.
-  // NB! 0 means that first door position was reached.
-  int wait_counter_;
-  // Initial direction. After kWait direction reverses. 1 == move up
-  int move_direction_;
-  
+  double speed_;
   // Opened door height depends on neighbor sectors
-  int door_top_level_;
+  double top_pos_;
+  MoveDirection direction_;
 
-  // Some door types should wait until obstacles disappear
-  // But most doors just return back.
-  bool wait_obstacle_ = false;
-
+  // Wait time in ticks.
+  int wait_time_;
+  // Counter
+  int wait_counter_;
+  
   bool CanChangeHeight(int ceiling_height);
 };
 
