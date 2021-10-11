@@ -46,6 +46,10 @@ std::string MapObject::GetSpriteName(int vp_x, int vp_y) const {
 }
 
 bool MapObject::TickTime() {
+  if (delete_me_) {
+    return false;
+  }
+
   // TODO: should I use return value??? E.g. for deleting the mobj?
   fsm_.Tick(this);
   
@@ -332,13 +336,81 @@ void MapObject::CauseDamage(int damage) {
   }
 }
 
-// TODO: It's a very simplified version!!!!
+// TODO: there is duplicate code with CheckPosition()
 void MapObject::UpdateOpening() {
+  Opening op;
   int ss_idx = world_->bsp_.GetSubSectorIdx(x, y);
   auto* ss = &world_->sub_sectors_[ss_idx];
 
-  floor_z = dropoff_z = ss->sector->floor_height;
-  ceiling_z = ss->sector->ceiling_height;
+  op.floor = op.dropoff = ss->sector->floor_height;
+  op.ceiling = ss->sector->ceiling_height;
+  
+  // Possible area where collision of mobj and line can happen
+  world::BBox bbox;
+  bbox.left = x - radius;
+  bbox.right = x + radius;
+  bbox.top = y + radius;
+  bbox.bottom = y - radius;
+
+  for (auto line : world_->blocks_.GetLines(bbox)) {
+    #ifdef D_PRINT_LINES
+      std::cout << "Checking line (" << line->x1 << ", " << line->y1 << ") -> ("
+                << line->x2 << ", " << line->y2 << "): ";
+    #endif
+    // Check bboxes
+    if (line->bbox.left > bbox.right || bbox.left > line->bbox.right ||
+        line->bbox.top < bbox.bottom || line->bbox.bottom > bbox.top) {
+      #ifdef D_PRINT_LINES
+        std::cout << "don't cross" << std::endl;
+      #endif
+      continue;
+    }
+
+    if (math::LineBBoxPosition(line, &bbox) != math::kCross) {
+      // Didn't cross
+      #ifdef D_PRINT_LINES
+        std::cout << "don't cross" << std::endl;
+      #endif
+      continue;
+    }
+    #ifdef D_PRINT_LINES
+      std::cout << "cross" << std::endl;
+    #endif
+
+    if (line->sides[1] == nullptr) {
+      break;
+    }
+
+    // Every line can change current opening. We are looking for the smallest
+    UpdateOpening(op, line);
+  }
+
+  ceiling_z = op.ceiling;
+  floor_z = op.floor;
+  dropoff_z = op.dropoff;
+}
+
+void MapObject::DamageBySobj(int damage) {
+  if (health_ <= 0) {
+    // Get giblets
+    fsm_.ToGibsState(this);
+    flags &= ~mobj::MF_SOLID;
+    height = 0;
+    radius = 0;
+    return;
+  }
+
+  if (flags & mobj::MF_DROPPED) {
+    // Should disapear
+    delete_me_ = true;
+  }
+
+  if (!(flags & mobj::MF_SHOOTABLE)) {
+    // Can't interact
+    return;
+  }
+
+  CauseDamage(damage);
 }
 
 } // namespace mobj

@@ -149,6 +149,9 @@ struct MapObject {
   // Change current subsector
   bool ChangeSubSector(world::SubSector* new_ss);
 
+  // Flag to delete the mobj
+  bool delete_me_ = false;
+
   const double kMaxMove = 30;
   const int kMaxStepSize = 24;
 

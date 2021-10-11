@@ -118,7 +118,12 @@ MoveResult MoveFloor(world::Sector* sec, double speed, double dest, bool crush, 
 }
 
 bool ChangeSectorHeight(world::Sector* sec, bool crush) {
-  auto mobj_list = sec->world->GetBlocks().GetMapObjects(sec->bbox);
+  world::BBox bbox {sec->bbox};
+  bbox.top += mobj::kMaxRadius;
+  bbox.right += mobj::kMaxRadius;
+  bbox.left -= mobj::kMaxRadius;
+  bbox.bottom -= mobj::kMaxRadius;
+  auto mobj_list = sec->world->GetBlocks().GetMapObjects(bbox);
 
   bool result = false;
   for (auto mobj : mobj_list) {

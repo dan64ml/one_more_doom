@@ -57,6 +57,10 @@ void FSM::ToPainState(MapObject* obj) {
   SetState(pain_state, obj);
 }
 
+void FSM::ToGibsState(MapObject* obj) {
+  SetState(id::S_GIBS, obj);
+}
+
 void FSM::CallStateFunction([[maybe_unused]] id::FuncId foo_id, [[maybe_unused]] MapObject* obj) {
   obj->CallStateFunction(foo_id);
 }

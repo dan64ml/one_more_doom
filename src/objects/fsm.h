@@ -23,6 +23,8 @@ class FSM : public BaseFSM<MapObject> {
   void ToXDeathState(MapObject* obj);
   void ToPainState(MapObject* obj);
 
+  void ToGibsState(MapObject* obj);
+
  protected:
   virtual void CallStateFunction([[maybe_unused]] id::FuncId foo_id, [[maybe_unused]] MapObject* obj) override;
 

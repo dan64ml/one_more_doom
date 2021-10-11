@@ -283,6 +283,7 @@ void World::CreateMapObjectList(std::ifstream& fin) {
       player_->world_ = this;
 
       sub_sectors_[ss_idx].mobjs.push_back(player_.get());
+      blocks_.AddMapObject(player_.get());
     } else {
       auto mobj = spawner_.Create(items[i]);
       if (mobj) {
@@ -720,7 +721,7 @@ void World::FillSectorLines() {
   }
 
   // Add BBox data
-  for (auto sec : sectors_) {
+  for (auto& sec : sectors_) {
     sec.world = this;
     sec.bbox.top = sec.bbox.right = std::numeric_limits<int>::min();
     sec.bbox.bottom = sec.bbox.left = std::numeric_limits<int>::max();

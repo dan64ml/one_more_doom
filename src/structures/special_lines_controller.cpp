@@ -153,22 +153,22 @@ void SpecialLinesController::UseManualDoor(world::Line* line, mobj::MapObject* m
     case 26:
     case 27:
     case 28:
-      door.reset(new Door(world_, sec, DoorType::kOpenThenClose, kNormalDoorSpeed, kNormalDoorWaitTime));
+      door.reset(new Door(world_, sec, line, DoorType::kNormal));
       break;
 
     case 31:
     case 32:
     case 33:
     case 34:
-      door.reset(new Door(world_, sec, DoorType::kOpen, kNormalDoorSpeed, 0));
+      door.reset(new Door(world_, sec, line, DoorType::kOpen));
       line->specials = 0;  // one time action
       break;
 
     case 117:
-      door.reset(new Door(world_, sec, DoorType::kOpenThenClose, kBlazeDoorSpeed, kNormalDoorWaitTime));
+      door.reset(new Door(world_, sec, line, DoorType::kBlazeRaise));
       break;
     case 118:
-      door.reset(new Door(world_, sec, DoorType::kOpen, kBlazeDoorSpeed, 0));
+      door.reset(new Door(world_, sec, line, DoorType::kBlazeOpen));
       line->specials = 0;  // one time action
       break;
 
@@ -200,6 +200,7 @@ void SpecialLinesController::UseTagDoor(world::Line* line, mobj::MapObject* mobj
 
     switch (line->specials)
     {
+      // Use line action
       case 29:
         door.reset(new Door(world_, sec, line, DoorType::kNormal));
         clear_special = true;
@@ -241,6 +242,18 @@ void SpecialLinesController::UseTagDoor(world::Line* line, mobj::MapObject* mobj
         break;
       case 116:
         door.reset(new Door(world_, sec, line, DoorType::kBlazeClose));
+        break;
+      // Use line tag closed door
+      case 99:
+      case 134:
+      case 136:
+        door.reset(new Door(world_, sec, line, DoorType::kBlazeOpen));
+        break;
+      case 133:
+      case 135:
+      case 137:
+        door.reset(new Door(world_, sec, line, DoorType::kBlazeOpen));
+        clear_special = true;
         break;
 
       default:
@@ -383,51 +396,7 @@ void SpecialLinesController::UseLockedTagDoor(world::Line* line, mobj::MapObject
       break;
   }
 
-  assert(tag_sectors_.count(line->tag));
-  auto& sectors = tag_sectors_[line->tag];
-
-  bool is_ok = false;
-  bool clean_special = false;
-
-  for (auto sec : sectors) {
-    if (sec->has_sobj) {
-      continue;
-    }
-
-    is_ok = true;
-
-    std::unique_ptr<Door> door;
-
-    switch (line->specials)
-    {
-      case 99:
-      case 134:
-      case 136:
-        door.reset(new Door(world_, sec, DoorType::kOpen, kBlazeDoorSpeed, 0));
-        break;
-      case 133:
-      case 135:
-      case 137:
-        door.reset(new Door(world_, sec, DoorType::kOpen, kBlazeDoorSpeed, 0));
-        clean_special = true;
-        break;
-
-      default:
-        #ifdef D_PRINT_UNPROCESSED_LINES
-        std::cout << "UseLockedTagDoor(): unprocessed line->specials = " << line->specials << std::endl;
-        #endif
-        continue;
-    }
-
-    sobjs_.push_back(std::move(door));
-  }
-
-  if (clean_special) {
-    line->specials = 0;
-  }
-  if (is_ok && LineTextureSwitcher::IsSwitch(line)) {
-    sobjs_.push_back(std::unique_ptr<LineTextureSwitcher>(new LineTextureSwitcher(line)));
-  }
+  UseTagDoor(line, mobj);
 }
 
 void SpecialLinesController::UsePlatform(world::Line* line, [[maybe_unused]] mobj::MapObject* mobj) {
