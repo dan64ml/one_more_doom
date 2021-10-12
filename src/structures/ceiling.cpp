@@ -57,7 +57,7 @@ bool Ceiling::TickTime() {
 
   switch (direction_)
   {
-  case MoveDirection::kSuspend:
+  case MoveDirection::kInStasis:
     break;
 
   case MoveDirection::kUp:

@@ -2,6 +2,7 @@
 #define PLATFORM_H_
 
 #include "structure_object.h"
+#include "sobj_types.h"
 #include "world/world_types.h"
 
 namespace sobj {
@@ -23,29 +24,28 @@ class Platform : public StructureObject {
 
   bool Trigger(mobj::MapObject*) override { return true; }
 
+  void ActivateInStasis(int tag) override;
+  void StopObject(int tag) override;
+  
  private:
-  enum class PlatformState {
-    kUp,
-    kDown,
-    kWait,
-    kSuspend  // Platform can be suspended by using a line
-  };
-
-  const int kPlatformSpeed = 1;
+  const double kPlatformSpeed = 1.0;
   const int kPlatformWait = 3;
 
   world::World* world_;
   world::Sector* sector_;
   PlatformType type_;
 
-  PlatformState state_;
+  MoveDirection state_;
+  MoveDirection old_state_;
 
-  int speed_;
-  int high_pos_;
-  int low_pos_;
-  int wait_count_;
-
+  double speed_;
+  double high_pos_;
+  double low_pos_;
+  
+  int wait_;
   int count_;
+
+  bool crush_ = false;
 };
 
 } // namespace sobj

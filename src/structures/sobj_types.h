@@ -7,7 +7,7 @@ enum class MoveDirection {
   kUp,
   kDown,
   kWait,
-  kSuspend,  // Sobj can be suspended by using a line
+  kInStasis,  // Sobj can be suspended by using a line
   kInitialWait  // Very special state for kRaiseIn5Mins door type
 };
 

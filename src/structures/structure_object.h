@@ -35,6 +35,17 @@ class StructureObject {
 
   virtual bool TickTime() = 0;
   virtual bool Trigger(mobj::MapObject*) = 0;
+
+  virtual int GetTag() const { return tag_; }
+  // Platforms and ceiling can be stoped by external action and then restart again
+  virtual void StopObject([[maybe_unused]] int tag) {}
+  virtual void ActivateInStasis([[maybe_unused]] int tag) {}
+
+ protected:
+  const double kEps = 0.0001;
+
+  int tag_ = 0;
+
 };
 
 } // sobj

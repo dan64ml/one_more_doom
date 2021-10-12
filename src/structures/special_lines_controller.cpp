@@ -406,6 +406,13 @@ void SpecialLinesController::UsePlatform(world::Line* line, [[maybe_unused]] mob
   bool is_ok = false;
   bool clean_special = false;
 
+  if (line->specials == 53 || line->specials == 87) {
+    // PlatformType::kPerpetualRaise
+    for (auto& plat : sobjs_) {
+      plat->ActivateInStasis(line->tag);
+    }
+  }
+
   for (auto sec : sectors) {
     if (sec->has_sobj) {
       continue;
