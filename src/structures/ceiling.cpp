@@ -9,6 +9,8 @@ namespace sobj {
 
 Ceiling::Ceiling(world::World* w, world::Sector* s, world::Line* l, CeilingType type) 
   : world_(w), sector_(s), type_(type) {
+  tag_ = l->tag;
+  
   switch (type_)
   {
     case CeilingType::kFastCrushAndRaise:
@@ -57,71 +59,88 @@ bool Ceiling::TickTime() {
 
   switch (direction_)
   {
-  case MoveDirection::kInStasis:
-    break;
+    case MoveDirection::kInStasis:
+      break;
 
-  case MoveDirection::kUp:
-    res = MoveCeiling(sector_, speed_, high_pos_, false, direction_);
-    if (res == MoveResult::kGotDest) {
-      switch (type_)
-      {
-        case CeilingType::kRaiseToHighest:
-          return false;
-        
-        case CeilingType::kSilentCrushAndRaise:
-        case CeilingType::kFastCrushAndRaise:
-        case CeilingType::kCrushAndRaise:
-          direction_ = MoveDirection::kDown;
-          break;
-        
-        default:
-          break;
-      }
-    }
-    break;
-
-  case MoveDirection::kDown:
-    res = MoveCeiling(sector_, speed_, low_pos_, crush_, direction_);
-    if (res == MoveResult::kGotDest) {
-      switch (type_)
-      {
-        case CeilingType::kSilentCrushAndRaise:
-        case CeilingType::kCrushAndRaise:
-          speed_ = kCeilingSpeed;
-          [[fallthrough]];
-        case CeilingType::kFastCrushAndRaise:
-          direction_ = MoveDirection::kUp;
-          return true;
-
-        case CeilingType::kLowerAndCrush:
-        case CeilingType::kLowerToFloor:
-          return false;
-        
-        default:
-          break;
-      }
-    } else {
-      if (res == MoveResult::kCrushed) {
+    case MoveDirection::kUp:
+      res = MoveCeiling(sector_, speed_, high_pos_, false, direction_);
+      if (res == MoveResult::kGotDest) {
         switch (type_)
         {
+          case CeilingType::kRaiseToHighest:
+            return false;
+          
           case CeilingType::kSilentCrushAndRaise:
+          case CeilingType::kFastCrushAndRaise:
           case CeilingType::kCrushAndRaise:
-          case CeilingType::kLowerAndCrush:
-            speed_ = kCeilingSpeed / 8;
+            direction_ = MoveDirection::kDown;
             break;
           
           default:
             break;
         }
       }
-    }
-    break;
+      break;
+
+    case MoveDirection::kDown:
+      res = MoveCeiling(sector_, speed_, low_pos_, crush_, direction_);
+      if (res == MoveResult::kGotDest) {
+        switch (type_)
+        {
+          case CeilingType::kSilentCrushAndRaise:
+          case CeilingType::kCrushAndRaise:
+            speed_ = kCeilingSpeed;
+            [[fallthrough]];
+          case CeilingType::kFastCrushAndRaise:
+            direction_ = MoveDirection::kUp;
+            return true;
   
-  default:
-    break;
+          case CeilingType::kLowerAndCrush:
+          case CeilingType::kLowerToFloor:
+            return false;
+          
+          default:
+            break;
+        }
+      } else {
+        if (res == MoveResult::kCrushed) {
+          switch (type_)
+          {
+            case CeilingType::kSilentCrushAndRaise:
+            case CeilingType::kCrushAndRaise:
+            case CeilingType::kLowerAndCrush:
+              speed_ = kCeilingSpeed / 8;
+              break;
+            
+            default:
+              break;
+          }
+        }
+      }
+      break;
+  
+    default:
+      break;
   }
 
   return true;
+}
+
+void Ceiling::StopObject(int tag) {
+  if (tag_ != tag || direction_ == MoveDirection::kInStasis) {
+    return;
+  }
+
+  old_direction_ = direction_;
+  direction_ = MoveDirection::kInStasis;
+}
+
+void Ceiling::ActivateInStasis(int tag) {
+  if (tag_ != tag || direction_ != MoveDirection::kInStasis) {
+    return;
+  }
+
+  direction_ = old_direction_;
 }
 
 } // namespace sobj

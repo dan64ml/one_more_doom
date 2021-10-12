@@ -10,12 +10,12 @@
 namespace sobj {
 
 enum class CeilingType {
-  kFastCrushAndRaise,
-  kSilentCrushAndRaise,
-  kCrushAndRaise,
-  kLowerAndCrush,
   kLowerToFloor,
-  kRaiseToHighest
+  kRaiseToHighest,
+  kLowerAndCrush,
+  kCrushAndRaise,
+  kFastCrushAndRaise,
+  kSilentCrushAndRaise
 };
 
 class Ceiling : public StructureObject {
@@ -27,7 +27,10 @@ class Ceiling : public StructureObject {
 
   bool Trigger(mobj::MapObject*) override { return true; }
 
- private:
+  void StopObject(int tag) override;
+  void ActivateInStasis(int tag) override;
+
+private:
   const double kCeilingSpeed = 1.0;
 
   world::World* world_;
@@ -41,6 +44,7 @@ class Ceiling : public StructureObject {
   bool crush_ = false;
 
   MoveDirection direction_;
+  MoveDirection old_direction_;
 
 };
 
