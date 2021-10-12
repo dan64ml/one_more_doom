@@ -122,7 +122,7 @@ struct MapObject {
   
   // Applied to each crossed line until return false.
   // False means it's impossible to cross the line.
-  virtual bool ProcessLine(const world::Line* line);
+  virtual bool ProcessLine(world::Line* line);
   // It looks like a candidate to be virtual...
   virtual void ZMove();
 

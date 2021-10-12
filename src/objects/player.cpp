@@ -140,4 +140,16 @@ world::Line* Player::FindSpecialLine() {
   return nullptr;
 }
 
+bool Player::ProcessLine(world::Line* line) {
+  if (line->sides[1] == nullptr) {
+    return false;
+  }
+
+  if (line->specials) {
+    world_->CrossLine(line, this);
+  }
+
+  return true;
+}
+
 } // namespace mobj

@@ -47,6 +47,8 @@ class Player : public MapObject {
  private:
   virtual bool RunIntoAction() override;
 
+  bool ProcessLine(world::Line* line) override;
+
   world::Line* FindSpecialLine();
 
  private:

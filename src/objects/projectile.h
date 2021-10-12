@@ -20,7 +20,7 @@ class Projectile : public MapObject {
   void ZMove() override;
   bool RunIntoAction() override;
   bool InfluenceObject(MapObject*) override;
-  bool ProcessLine(const world::Line* line) override;
+  bool ProcessLine(world::Line* line) override;
 
   void CallStateFunction(id::FuncId foo_id) override;
 

@@ -13,13 +13,13 @@
 namespace world {
 
 using MobjRange = std::unordered_set<mobj::MapObject*>;
-using LineRange = std::unordered_set<const world::Line*>;
+using LineRange = std::unordered_set<world::Line*>;
 
 class BlockMap {
  public:
   BlockMap() = default;
 
-  void Load(std::ifstream& fin, int offset, int size, const std::vector<Line>& lines);
+  void Load(std::ifstream& fin, int offset, int size, std::vector<Line>& lines);
 
   // Add new mobj in appropriate block
   void AddMapObject(mobj::MapObject* mobj);
@@ -37,7 +37,7 @@ class BlockMap {
   // Contains lines and items that can be affected by other objects
   // E.g. player CAN be, but missile can't
   struct BlockMapEntry {
-    std::vector<const Line*> lines;
+    std::vector<Line*> lines;
     std::list<mobj::MapObject*> mobjs;
   };
 

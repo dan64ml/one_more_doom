@@ -140,7 +140,7 @@ void MapObject::SlowDown() {
 }
 
 // By default - find walls and ignore portals
-bool MapObject::ProcessLine(const world::Line* line) {
+bool MapObject::ProcessLine(world::Line* line) {
   if (line->sides[1] == nullptr) {
     return false;
   }
@@ -148,7 +148,7 @@ bool MapObject::ProcessLine(const world::Line* line) {
   return true;
 }
 
-// There is two steps check: CheckPosition() checks obstacles and returns
+// There are two steps check: CheckPosition() checks obstacles and returns
 // true if the position is clear. Also it updates lowest ceiling and 
 // highest floor. It's necessary for second step - heights check.
 // If both steps are OK, the foo changes current position of the mobs.

@@ -7,7 +7,7 @@
 
 namespace world {
 
-void BlockMap::Load(std::ifstream& fin, int offset, int size, const std::vector<Line>& lines) {
+void BlockMap::Load(std::ifstream& fin, int offset, int size, std::vector<Line>& lines) {
   std::unique_ptr<int16_t[]> buf(new int16_t[size / 2]);
   fin.seekg(offset);
   fin.read(reinterpret_cast<char*>(buf.get()), size);

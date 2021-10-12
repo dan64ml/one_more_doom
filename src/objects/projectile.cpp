@@ -82,7 +82,7 @@ bool Projectile::InfluenceObject(MapObject* obj) {
   return false;
 }
 
-bool Projectile::ProcessLine(const world::Line* line) {
+bool Projectile::ProcessLine(world::Line* line) {
   if (line->sides[1] == nullptr) {
     if (line->sides[0]->sector->ceiling_height < z &&
         line->sides[0]->sector->ceiling_pic == "F_SKY1") {
