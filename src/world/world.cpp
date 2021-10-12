@@ -599,6 +599,10 @@ rend::BamAngle World::GetTargetAngle(int from_x, int from_y, int from_z, rend::B
     } else if (idx == 1) {
       // MapObject
       auto mobj = std::get<1>(elem.obj);
+      if (mobj->mobj_type == id::MT_PLAYER) {
+        // Ignore yourself
+        continue;
+      }
       //std::cout << "Hit mobj (" << mobj->x << ", " << mobj->y << ")" << std::endl;
 
       int high_z = op.view_line_z + elem.distance * op.coef_high_opening;
@@ -643,6 +647,10 @@ mobj::MapObject* World::GetTarget(int from_x, int from_y, int from_z, rend::BamA
     } else if (idx == 1) {
       // MapObject
       auto mobj = std::get<1>(elem.obj);
+      if (mobj->mobj_type == id::MT_PLAYER) {
+        // Ignore yourself
+        continue;
+      }
 
       int high_z = op.view_line_z + elem.distance * op.coef_high_opening;
       int low_z = op.view_line_z - elem.distance * op.coef_low_opening;

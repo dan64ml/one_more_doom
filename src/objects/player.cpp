@@ -129,6 +129,11 @@ world::Line* Player::FindSpecialLine() {
       }
     } else {
       // found a mobj
+      auto mobj = std::get<1>(obj.obj);
+      if (mobj == this) {
+        // Ignore yourself
+        continue;
+      }
       break;
     }
   }

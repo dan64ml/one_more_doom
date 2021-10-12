@@ -19,7 +19,9 @@ class SpecialLinesController {
 
   // Main foo for "using" line (use button)
   void UseLine(world::Line* l, mobj::MapObject* mobj);
+  // For crossing line
   void HitLine(world::Line* l, mobj::MapObject* mobj);
+  // For "hitting" line (can be also shooted by some weapon)
   void CrossLine(world::Line* l, mobj::MapObject* mobj);
 
  private:

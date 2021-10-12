@@ -56,6 +56,10 @@ bool Projectile::RunIntoAction() {
 }
 
 bool Projectile::InfluenceObject(MapObject* obj) {
+  if (obj->mobj_type == id::MT_PLAYER) {
+    // Hack to prevent crushing into the player. Bad for multiplayer...
+    return true;
+  }
   // check z position
   if (obj->z > (z + height)) {
     return true;
