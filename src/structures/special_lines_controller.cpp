@@ -6,6 +6,7 @@
 #include "world/world.h"
 #include "door.h"
 #include "floor.h"
+#include "ceiling.h"
 #include "platform.h"
 #include "line_texture_switcher.h"
 
@@ -26,9 +27,27 @@ SpecialLinesController::SpecialLinesController(world::World* w) : world_(w) {
 }
 
 void SpecialLinesController::UseLine(world::Line* line, mobj::MapObject* mobj) {
+  if (mobj->mobj_type != id::MT_PLAYER) {
+    if (line->flags & world::kLDFSecret) {
+      // Only player can open secrets
+      return;
+    }
+
+    switch (line->specials)
+    {
+      case 1:
+      case 32:
+      case 33:
+      case 34:
+        break;
+      
+      default:
+        return;
+    }
+  }
+
   switch (line->specials)
   {
-    // Use line action
     case 1:
     case 26:
     case 27:
@@ -43,7 +62,6 @@ void SpecialLinesController::UseLine(world::Line* line, mobj::MapObject* mobj) {
       UseManualDoor(line, mobj);
       break;
 
-    // Use line action
     case 29:
     case 50:
     case 103:
@@ -99,7 +117,38 @@ void SpecialLinesController::UseLine(world::Line* line, mobj::MapObject* mobj) {
       UsePlatform(line, mobj);
       break;
 
+    case 41:
+    case 49:
+    case 43:
+      UseCeiling(line, mobj);
+      break;
+
+    case 138:
+    case 139:
+      // TODO: Light control
+      break;
+
+    case 7:
+    case 127:
+      // TODO: BuildStairs
+      break;
+
+    case 9:
+      // TODO: Donut ???
+      break;
+
+    case 11:
+      // TODO: Exit level
+      break;
+
+    case 51:
+      // Secret exit
+      break;
+
     default:
+        #ifdef D_PRINT_UNPROCESSED_LINES
+        std::cout << "UseLine(): undispatched line->specials = " << line->specials << std::endl;
+        #endif
       break;
   }
 }
@@ -406,11 +455,8 @@ void SpecialLinesController::UsePlatform(world::Line* line, [[maybe_unused]] mob
   bool is_ok = false;
   bool clean_special = false;
 
-  if (line->specials == 53 || line->specials == 87) {
-    // PlatformType::kPerpetualRaise
-    for (auto& plat : sobjs_) {
-      plat->ActivateInStasis(line->tag);
-    }
+  for (auto& plat : sobjs_) {
+    plat->ActivateInStasis(line->tag);
   }
 
   for (auto sec : sectors) {
@@ -476,7 +522,59 @@ void SpecialLinesController::UsePlatform(world::Line* line, [[maybe_unused]] mob
   if (is_ok && LineTextureSwitcher::IsSwitch(line)) {
     sobjs_.push_back(std::unique_ptr<LineTextureSwitcher>(new LineTextureSwitcher(line)));
   }
+}
 
+void SpecialLinesController::UseCeiling(world::Line* line, [[maybe_unused]] mobj::MapObject* mobj) {
+  assert(tag_sectors_.count(line->tag));
+  auto& sectors = tag_sectors_[line->tag];
+
+  bool is_ok = false;
+  bool clean_special = false;
+
+  for (auto& ceiling : sobjs_) {
+    // Reactivate some ceilings
+    ceiling->ActivateInStasis(line->tag);
+  }
+
+  for (auto sec : sectors) {
+    if (sec->has_sobj) {
+      continue;
+    }
+
+    is_ok = true;
+
+    std::unique_ptr<Ceiling> ceil;
+
+    switch (line->specials)
+    {
+      case 41:
+        ceil.reset(new Ceiling(world_, sec, line, CeilingType::kLowerToFloor));
+        clean_special = true;
+        break;
+      case 49:
+        ceil.reset(new Ceiling(world_, sec, line, CeilingType::kCrushAndRaise));
+        clean_special = true;
+        break;
+      case 43:
+        ceil.reset(new Ceiling(world_, sec, line, CeilingType::kLowerToFloor));
+        break;
+
+      default:
+        #ifdef D_PRINT_UNPROCESSED_LINES
+        std::cout << "UseCeiling(): unprocessed line->specials = " << line->specials << std::endl;
+        #endif
+        continue;
+    }
+
+    sobjs_.push_back(std::move(ceil));
+  }
+
+  if (clean_special) {
+    line->specials = 0;
+  }
+  if (is_ok && LineTextureSwitcher::IsSwitch(line)) {
+    sobjs_.push_back(std::unique_ptr<LineTextureSwitcher>(new LineTextureSwitcher(line)));
+  }
 }
 
 void SpecialLinesController::TickTime() {

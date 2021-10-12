@@ -148,6 +148,11 @@ void Platform::ActivateInStasis(int tag) {
     return;
   }
 
+  // The only reactivatable type
+  if (type_ != PlatformType::kPerpetualRaise) {
+    return;
+  }
+
   state_ = old_state_;
 }
 

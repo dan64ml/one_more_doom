@@ -140,6 +140,13 @@ void Ceiling::ActivateInStasis(int tag) {
     return;
   }
 
+  // Only these types can be reactivated
+  if (type_ != CeilingType::kFastCrushAndRaise ||
+      type_ != CeilingType::kSilentCrushAndRaise ||
+      type_ != CeilingType::kCrushAndRaise) {
+    return;
+  }
+
   direction_ = old_direction_;
 }
 

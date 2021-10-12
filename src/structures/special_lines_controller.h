@@ -17,6 +17,7 @@ class SpecialLinesController {
 
   void TickTime();
 
+  // Main foo for "using" line (use button)
   void UseLine(world::Line* l, mobj::MapObject* mobj);
   void HitLine(world::Line* l, mobj::MapObject* mobj);
   void CrossLine(world::Line* l, mobj::MapObject* mobj);
@@ -38,12 +39,8 @@ class SpecialLinesController {
   void UseFloor(world::Line* line, [[maybe_unused]] mobj::MapObject* mobj);
   // Activate platforms
   void UsePlatform(world::Line* line, [[maybe_unused]] mobj::MapObject* mobj);
-
-  //const int kNormalDoorSpeed = 2;
-  //const int kBlazeDoorSpeed = 4 * kNormalDoorSpeed;
-
-//  const int kNormalDoorWaitTime = 150;
-//  const int k30SecDoorWaitTime = 35 * 30;
+  // Activate ceiling
+  void UseCeiling(world::Line* line, [[maybe_unused]] mobj::MapObject* mobj);
 };
 
 } //  namespace sobj
