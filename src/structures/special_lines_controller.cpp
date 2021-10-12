@@ -153,8 +153,28 @@ void SpecialLinesController::UseLine(world::Line* line, mobj::MapObject* mobj) {
   }
 }
 
-void SpecialLinesController::HitLine(world::Line* l, mobj::MapObject* mobj) {
+void SpecialLinesController::HitLine(world::Line* line, mobj::MapObject* mobj) {
+  if (mobj->mobj_type != id::MT_PLAYER && line->specials != 46) {
+    return;
+  }
 
+  switch (line->specials)
+  {
+    case 24:
+      UseFloor(line, mobj);
+      break;
+
+    case 46:
+      UseTagDoor(line, mobj);
+      break;
+    
+    case 47:
+      UsePlatform(line, mobj);
+      break;
+
+    default:
+      break;
+  }
 }
 
 void SpecialLinesController::CrossLine(world::Line* line, mobj::MapObject* mobj) {
@@ -383,7 +403,7 @@ void SpecialLinesController::UseManualDoor(world::Line* line, mobj::MapObject* m
   sobjs_.push_back(std::move(door));
 }
 
-void SpecialLinesController::UseTagDoor(world::Line* line, mobj::MapObject* mobj) {
+void SpecialLinesController::UseTagDoor(world::Line* line, [[maybe_unused]] mobj::MapObject* mobj) {
   assert(tag_sectors_.count(line->tag));
   auto& sectors = tag_sectors_[line->tag];
 
@@ -530,6 +550,10 @@ void SpecialLinesController::UseTagDoor(world::Line* line, mobj::MapObject* mobj
         is_ok = false;
         break;
 
+      // Hit line action
+      case 46:
+        door.reset(new Door(world_, sec, line, DoorType::kOpen));
+        break;
 
       default:
         #ifdef D_PRINT_UNPROCESSED_LINES
@@ -549,7 +573,7 @@ void SpecialLinesController::UseTagDoor(world::Line* line, mobj::MapObject* mobj
   }
 }
 
-void SpecialLinesController::UseFloor(world::Line* line, mobj::MapObject* mobj) {
+void SpecialLinesController::UseFloor(world::Line* line, [[maybe_unused]] mobj::MapObject* mobj) {
   assert(tag_sectors_.count(line->tag));
   auto& sectors = tag_sectors_[line->tag];
 
@@ -734,6 +758,11 @@ void SpecialLinesController::UseFloor(world::Line* line, mobj::MapObject* mobj) 
         is_ok = false;
         break;
 
+      // Hit line action
+      case 24:
+        floor.reset(new Floor(world_, sec, line, FloorType::kRaiseFloor));
+        clear_special = true;
+        break;
 
       default:
         #ifdef D_PRINT_UNPROCESSED_LINES
@@ -887,6 +916,12 @@ void SpecialLinesController::UsePlatform(world::Line* line, [[maybe_unused]] mob
         platform.reset(new Platform(world_, sec, line, PlatformType::kBlazeDWUS));
         clean_special = false;
         is_ok = false;
+        break;
+
+      // Hit line action
+      case 47:
+        platform.reset(new Platform(world_, sec, line, PlatformType::kRaiseToNearestAndChange));
+        clean_special = true;
         break;
 
       default:
