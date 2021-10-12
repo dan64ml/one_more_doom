@@ -260,6 +260,21 @@ double GetNextHighestFloorHeight(const world::Sector* sec, int current_height) {
   return (height == std::numeric_limits<int>::max()) ? current_height : height;
 }
 
+double GetHighestCeilingHeight(const world::Sector* sec) {
+  double height = std::numeric_limits<int>::min();
+
+  for (auto line : sec->lines) {
+    auto opp = GetOppositeSector(sec, line);
+    if (!opp) {
+      continue;
+    }
+
+    height = std::max(height, opp->ceiling_height);
+  }
+
+  return height;
+}
+
 world::Sector* GetOppositeSector(const world::Sector* sec, const world::Line* line) {
   if (!(line->flags & world::kLDFTwoSided)) {
     return nullptr;

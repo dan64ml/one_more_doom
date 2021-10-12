@@ -157,9 +157,161 @@ void SpecialLinesController::HitLine(world::Line* l, mobj::MapObject* mobj) {
 
 }
 
-void SpecialLinesController::CrossLine(world::Line* l, mobj::MapObject* mobj) {
-  // TODO: this foo uses FloorType::kLowerAndChange, FloorType::kRaiseFloor24AndChange, FloorType::kRaiseToTexture
+void SpecialLinesController::CrossLine(world::Line* line, mobj::MapObject* mobj) {
+  if (mobj->mobj_type != id::MT_PLAYER) {
+    switch (mobj->mobj_type)
+    {
+      // Can't interact with such lines
+      case id::MT_ROCKET:
+      case id::MT_PLASMA:
+      case id::MT_BFG:
+      case id::MT_TROOPSHOT:
+      case id::MT_HEADSHOT:
+      case id::MT_BRUISERSHOT:
+        return;
+      
+      default:
+        break;
+    }
 
+    switch (line->specials)
+    {
+      case 39:
+      case 97:
+      case 125:
+      case 126:
+      case 4:
+      case 10:
+      case 88:
+        break;
+      
+      default:
+        return;
+    }
+  }
+
+  switch (line->specials)
+  {
+    case 2:
+    case 3:
+    case 4:
+    case 16:
+    case 108:
+    case 109:
+    case 110:
+    case 75:
+    case 76:
+    case 86:
+    case 90:
+    case 105:
+    case 106:
+    case 107:
+      UseTagDoor(line, mobj);
+      break;
+    
+    case 5:
+    case 19:
+    case 30:
+    case 36:
+    case 37:
+    case 38:
+    case 56:
+    case 58:
+    case 59:
+    case 119:
+    case 130:
+    case 82:
+    case 83:
+    case 84:
+    case 91:
+    case 92:
+    case 93:
+    case 94:
+    case 96:
+    case 98:
+    case 128:
+    case 129:
+      UseFloor(line, mobj);
+      break;
+
+    case 6:
+    case 25:
+    case 44:
+    case 141:
+    case 72:
+    case 73:
+    case 77:
+      UseCeiling(line, mobj);
+      break;
+
+    case 10:
+    case 22:
+    case 53:
+    case 121:
+    case 87:
+    case 88:
+    case 95:
+    case 120:
+      UsePlatform(line, mobj);
+      break;
+
+    case 8:
+    case 100:
+      // TODO: Build stairs
+      break;
+
+    case 12:
+    case 13:
+    case 35:
+    case 79:
+    case 80:
+    case 81:
+      // TODO: Light turn on
+      break;
+
+    case 17:
+      // TODO: Start light strobing
+      break;
+    
+    case 39:
+    case 125:
+    case 97:
+    case 126:
+      // TODO: Teleport
+      break;
+
+    case 52:
+      // TODO: Exit
+      break;
+    
+    case 124:
+      // TODO: Secret exit
+      break;
+    
+    case 104:
+      // TODO: Turn lights off in sector(tag)
+      break;
+
+    case 54:
+    case 89:
+      StopPlatform(line);
+      break;
+
+    case 57:
+    case 74:
+      // TODO: Ceiling crush stop
+      break;
+
+    case 40:
+      // TODO: Move ceiling and floor
+      break;
+
+    default:
+        #ifdef D_PRINT_UNPROCESSED_LINES
+        std::cout << "CrossLine(): undispatched line->specials = " << line->specials << std::endl;
+        #endif
+      break;
+  }
 }
 
 void SpecialLinesController::UseManualDoor(world::Line* line, mobj::MapObject* mobj) {
@@ -292,6 +444,7 @@ void SpecialLinesController::UseTagDoor(world::Line* line, mobj::MapObject* mobj
       case 116:
         door.reset(new Door(world_, sec, line, DoorType::kBlazeClose));
         break;
+      
       // Use line tag closed door
       case 99:
       case 134:
@@ -304,6 +457,79 @@ void SpecialLinesController::UseTagDoor(world::Line* line, mobj::MapObject* mobj
         door.reset(new Door(world_, sec, line, DoorType::kBlazeOpen));
         clear_special = true;
         break;
+
+      // Cross line action
+      case 2:
+        door.reset(new Door(world_, sec, line, DoorType::kOpen));
+        clear_special = true;
+        is_ok = false; // Nothing to switch
+        break;
+      case 3:
+        door.reset(new Door(world_, sec, line, DoorType::kClose));
+        clear_special = true;
+        is_ok = false;
+        break;
+      case 4:
+        door.reset(new Door(world_, sec, line, DoorType::kNormal));
+        clear_special = true;
+        is_ok = false;
+        break;
+      case 16:
+        door.reset(new Door(world_, sec, line, DoorType::kClose30ThenOpen));
+        clear_special = true;
+        is_ok = false;
+        break;
+      case 108:
+        door.reset(new Door(world_, sec, line, DoorType::kBlazeRaise));
+        clear_special = true;
+        is_ok = false;
+        break;
+      case 109:
+        door.reset(new Door(world_, sec, line, DoorType::kBlazeOpen));
+        clear_special = true;
+        is_ok = false;
+        break;
+      case 110:
+        door.reset(new Door(world_, sec, line, DoorType::kBlazeClose));
+        clear_special = true;
+        is_ok = false;
+        break;
+      case 75:
+        door.reset(new Door(world_, sec, line, DoorType::kClose));
+        clear_special = false;
+        is_ok = false;
+        break;
+      case 86:
+        door.reset(new Door(world_, sec, line, DoorType::kOpen));
+        clear_special = false;
+        is_ok = false;
+        break;
+      case 90:
+        door.reset(new Door(world_, sec, line, DoorType::kNormal));
+        clear_special = false;
+        is_ok = false;
+        break;
+      case 105:
+        door.reset(new Door(world_, sec, line, DoorType::kBlazeRaise));
+        clear_special = false;
+        is_ok = false;
+        break;
+      case 106:
+        door.reset(new Door(world_, sec, line, DoorType::kBlazeOpen));
+        clear_special = false;
+        is_ok = false;
+        break;
+      case 107:
+        door.reset(new Door(world_, sec, line, DoorType::kBlazeClose));
+        clear_special = false;
+        is_ok = false;
+        break;
+      case 76:
+        door.reset(new Door(world_, sec, line, DoorType::kClose30ThenOpen));
+        clear_special = false;
+        is_ok = false;
+        break;
+
 
       default:
         #ifdef D_PRINT_UNPROCESSED_LINES
@@ -341,6 +567,7 @@ void SpecialLinesController::UseFloor(world::Line* line, mobj::MapObject* mobj) 
 
     switch (line->specials)
     {
+      // Use line action
       case 18:
         floor.reset(new Floor(world_, sec, line, FloorType::kRaiseFloorToNearest));
         clear_special = true;
@@ -394,6 +621,119 @@ void SpecialLinesController::UseFloor(world::Line* line, mobj::MapObject* mobj) 
       case 132:
         floor.reset(new Floor(world_, sec, line, FloorType::kRaiseFloorTurbo));
         break;
+
+      // Cross line action
+      case 5:
+        floor.reset(new Floor(world_, sec, line, FloorType::kRaiseFloor));
+        clear_special = true;
+        is_ok = false;
+        break;
+      case 19:
+        floor.reset(new Floor(world_, sec, line, FloorType::kLowerFloor));
+        clear_special = true;
+        is_ok = false;
+        break;
+      case 30:
+        floor.reset(new Floor(world_, sec, line, FloorType::kRaiseToTexture));
+        clear_special = true;
+        is_ok = false;
+        break;
+      case 36:
+        floor.reset(new Floor(world_, sec, line, FloorType::kTurboLower));
+        clear_special = true;
+        is_ok = false;
+        break;
+      case 37:
+        floor.reset(new Floor(world_, sec, line, FloorType::kLowerAndChange));
+        clear_special = true;
+        is_ok = false;
+        break;
+      case 38:
+        floor.reset(new Floor(world_, sec, line, FloorType::kLowerFloorToLowest));
+        clear_special = true;
+        is_ok = false;
+        break;
+      case 56:
+        floor.reset(new Floor(world_, sec, line, FloorType::kRaiseFloorCrush));
+        clear_special = true;
+        is_ok = false;
+        break;
+      case 58:
+        floor.reset(new Floor(world_, sec, line, FloorType::kRaiseFloor24));
+        clear_special = true;
+        is_ok = false;
+        break;
+      case 59:
+        floor.reset(new Floor(world_, sec, line, FloorType::kRaiseFloor24AndChange));
+        clear_special = true;
+        is_ok = false;
+        break;
+      case 119:
+        floor.reset(new Floor(world_, sec, line, FloorType::kRaiseFloorToNearest));
+        clear_special = true;
+        is_ok = false;
+        break;
+      case 130:
+        floor.reset(new Floor(world_, sec, line, FloorType::kRaiseFloorTurbo));
+        clear_special = true;
+        is_ok = false;
+        break;
+      case 82:
+        floor.reset(new Floor(world_, sec, line, FloorType::kLowerFloorToLowest));
+        clear_special = false;
+        is_ok = false;
+        break;
+      case 83:
+        floor.reset(new Floor(world_, sec, line, FloorType::kLowerFloor));
+        clear_special = false;
+        is_ok = false;
+        break;
+      case 84:
+        floor.reset(new Floor(world_, sec, line, FloorType::kLowerAndChange));
+        clear_special = false;
+        is_ok = false;
+        break;
+      case 91:
+        floor.reset(new Floor(world_, sec, line, FloorType::kRaiseFloor));
+        clear_special = false;
+        is_ok = false;
+        break;
+      case 92:
+        floor.reset(new Floor(world_, sec, line, FloorType::kRaiseFloor24));
+        clear_special = false;
+        is_ok = false;
+        break;
+      case 93:
+        floor.reset(new Floor(world_, sec, line, FloorType::kRaiseFloor24AndChange));
+        clear_special = false;
+        is_ok = false;
+        break;
+      case 94:
+        floor.reset(new Floor(world_, sec, line, FloorType::kRaiseFloorCrush));
+        clear_special = false;
+        is_ok = false;
+        break;
+      case 96:
+        floor.reset(new Floor(world_, sec, line, FloorType::kRaiseToTexture));
+        clear_special = false;
+        is_ok = false;
+        break;
+      case 98:
+        floor.reset(new Floor(world_, sec, line, FloorType::kTurboLower));
+        clear_special = false;
+        is_ok = false;
+        break;
+      case 128:
+        floor.reset(new Floor(world_, sec, line, FloorType::kRaiseFloorToNearest));
+        clear_special = false;
+        is_ok = false;
+        break;
+      case 129:
+        floor.reset(new Floor(world_, sec, line, FloorType::kRaiseFloorTurbo));
+        clear_special = false;
+        is_ok = false;
+        break;
+
 
       default:
         #ifdef D_PRINT_UNPROCESSED_LINES
@@ -470,6 +810,7 @@ void SpecialLinesController::UsePlatform(world::Line* line, [[maybe_unused]] mob
 
     switch (line->specials)
     {
+      // Use line action
       case 14:
         platform.reset(new Platform(world_, sec, line, PlatformType::kRaiseAndChange, 32));
         clean_special = true;
@@ -504,6 +845,48 @@ void SpecialLinesController::UsePlatform(world::Line* line, [[maybe_unused]] mob
         break;
       case 123:
         platform.reset(new Platform(world_, sec, line, PlatformType::kBlazeDWUS));
+        break;
+
+      // Cross line action
+      case 10:
+        platform.reset(new Platform(world_, sec, line, PlatformType::kDownWaitUpStay));
+        clean_special = true;
+        is_ok = false;
+        break;
+      case 22:
+        platform.reset(new Platform(world_, sec, line, PlatformType::kRaiseToNearestAndChange));
+        clean_special = true;
+        is_ok = false;
+        break;
+      case 53:
+        platform.reset(new Platform(world_, sec, line, PlatformType::kPerpetualRaise));
+        clean_special = true;
+        is_ok = false;
+        break;
+      case 121:
+        platform.reset(new Platform(world_, sec, line, PlatformType::kBlazeDWUS));
+        clean_special = true;
+        is_ok = false;
+        break;
+      case 87:
+        platform.reset(new Platform(world_, sec, line, PlatformType::kPerpetualRaise));
+        clean_special = false;
+        is_ok = false;
+        break;
+      case 88:
+        platform.reset(new Platform(world_, sec, line, PlatformType::kDownWaitUpStay));
+        clean_special = false;
+        is_ok = false;
+        break;
+      case 95:
+        platform.reset(new Platform(world_, sec, line, PlatformType::kRaiseToNearestAndChange));
+        clean_special = false;
+        is_ok = false;
+        break;
+      case 120:
+        platform.reset(new Platform(world_, sec, line, PlatformType::kBlazeDWUS));
+        clean_special = false;
+        is_ok = false;
         break;
 
       default:
@@ -547,6 +930,7 @@ void SpecialLinesController::UseCeiling(world::Line* line, [[maybe_unused]] mobj
 
     switch (line->specials)
     {
+      // Use line action
       case 41:
         ceil.reset(new Ceiling(world_, sec, line, CeilingType::kLowerToFloor));
         clean_special = true;
@@ -558,6 +942,49 @@ void SpecialLinesController::UseCeiling(world::Line* line, [[maybe_unused]] mobj
       case 43:
         ceil.reset(new Ceiling(world_, sec, line, CeilingType::kLowerToFloor));
         break;
+
+      // Cross line action
+      case 6:
+        ceil.reset(new Ceiling(world_, sec, line, CeilingType::kFastCrushAndRaise));
+        clean_special = true;
+        is_ok = false;
+        break;
+      case 25:
+        ceil.reset(new Ceiling(world_, sec, line, CeilingType::kCrushAndRaise));
+        clean_special = true;
+        is_ok = false;
+        break;
+      case 44:
+        ceil.reset(new Ceiling(world_, sec, line, CeilingType::kLowerAndCrush));
+        clean_special = true;
+        is_ok = false;
+        break;
+      case 141:
+        ceil.reset(new Ceiling(world_, sec, line, CeilingType::kSilentCrushAndRaise));
+        clean_special = true;
+        is_ok = false;
+        break;
+      case 72:
+        ceil.reset(new Ceiling(world_, sec, line, CeilingType::kLowerAndCrush));
+        clean_special = false;
+        is_ok = false;
+        break;
+      case 73:
+        ceil.reset(new Ceiling(world_, sec, line, CeilingType::kCrushAndRaise));
+        clean_special = false;
+        is_ok = false;
+        break;
+//    case 74:
+//        ceil.reset(new Ceiling(world_, sec, line, CeilingType::kLowerAndCrush));
+//        clean_special = false;
+//        is_ok = false;
+//        break;
+      case 77:
+        ceil.reset(new Ceiling(world_, sec, line, CeilingType::kFastCrushAndRaise));
+        clean_special = false;
+        is_ok = false;
+        break;
+
 
       default:
         #ifdef D_PRINT_UNPROCESSED_LINES
@@ -574,6 +1001,16 @@ void SpecialLinesController::UseCeiling(world::Line* line, [[maybe_unused]] mobj
   }
   if (is_ok && LineTextureSwitcher::IsSwitch(line)) {
     sobjs_.push_back(std::unique_ptr<LineTextureSwitcher>(new LineTextureSwitcher(line)));
+  }
+}
+
+void SpecialLinesController::StopPlatform(world::Line* line) {
+  for (auto& obj : sobjs_) {
+    obj->StopObject(line->tag);
+  }
+
+  if (line->specials == 54) {
+    line->specials = 0;
   }
 }
 

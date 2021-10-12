@@ -41,6 +41,8 @@ class SpecialLinesController {
   void UsePlatform(world::Line* line, [[maybe_unused]] mobj::MapObject* mobj);
   // Activate ceiling
   void UseCeiling(world::Line* line, [[maybe_unused]] mobj::MapObject* mobj);
+  // Stops the platform
+  void StopPlatform(world::Line* line);
 };
 
 } //  namespace sobj
