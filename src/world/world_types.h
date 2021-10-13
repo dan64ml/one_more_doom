@@ -146,7 +146,7 @@ struct IntersectedObject {
   int x;
   int y;
 
-  std::variant<const Line*, mobj::MapObject*> obj;
+  std::variant<Line*, mobj::MapObject*> obj;
 };
 
 // For hitscan etc...

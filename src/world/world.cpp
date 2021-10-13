@@ -429,81 +429,6 @@ std::vector<IntersectedObject> World::CreateIntersectedObjList(int from_x, int f
   return result;
 }
 
-void World::HitLineAttack(mobj::MapObject* parent, int damage, int distance, rend::BamAngle da) {
-  auto crossed_objects = CreateIntersectedObjList(parent->x, parent->y, parent->angle + da, distance);
-
-  Opening op;
-  op.view_line_z = parent->z + 42; // Weapon height, TODO!!!
-
-  // If bullet doesn't hit any monster, but hit a line on its original height,
-  // the bullet hole must be drawn on that first wall (NOT on the last wall)
-  bool save_first_wall = false;
-  int fw_x = 0, fw_y = 0;
-
-  for (auto elem : crossed_objects) {
-    int idx = elem.obj.index();
-
-    if (idx == 0) {
-      auto l = std::get<0>(elem.obj);
-      std::cout << "Hit line (" << l->x1 << ", " << l->y1 << ") -> (" << l->x2 << ", " << l->y2 << ")" << std::endl;
-
-      // Solid wall
-      if (!(l->flags & kLDFTwoSided)) {
-        if (save_first_wall) {
-          break;
-        } else {
-          auto [x, y] = math::ShiftToCenter(parent->x, parent->y, elem.x, elem.y, 2);
-          SpawnBulletPuff(x, y, op.view_line_z);
-          return;
-        }
-      }
-
-      bool is_open = math::CorrectOpening(op, l, elem.distance);
-
-      if (!save_first_wall && (op.view_line_z < op.low_z || op.view_line_z > op.high_z)) {
-        save_first_wall = true;
-        fw_x = elem.x;
-        fw_y = elem.y;
-      }
-
-      if (!is_open) {
-        if (save_first_wall) {
-          break;
-        } else {
-          auto [x, y] = math::ShiftToCenter(parent->x, parent->y, elem.x, elem.y, 2);
-          SpawnBulletPuff(x, y, op.view_line_z);
-          return;
-        }
-      }
-    } else if (idx == 1) {
-      // MapObject
-      auto mobj = std::get<1>(elem.obj);
-      std::cout << "Hit mobj (" << mobj->x << ", " << mobj->y << ")" << std::endl;
-
-      int high_z = op.view_line_z + elem.distance * op.coef_high_opening;
-      int low_z = op.view_line_z - elem.distance * op.coef_low_opening;
-
-      if (!((mobj->z > high_z) || (mobj->z + mobj->height < low_z))) {
-        mobj->CauseDamage(damage);
-
-        auto [x, y] = math::ShiftToCenter(parent->x, parent->y, elem.x, elem.y, 2);
-        if (mobj->flags & mobj::MF_NOBLOOD) {
-          SpawnBulletPuff(x, y, mobj->z + mobj->height / 2);
-        } else {
-          SpawnBulletBlood(x, y, mobj->z + mobj->height / 2);
-        }
-
-        return;
-      }
-    }
-  }
-
-  if (save_first_wall) {
-      auto [x, y] = math::ShiftToCenter(parent->x, parent->y, fw_x, fw_y, 2);
-      SpawnBulletPuff(x, y, op.view_line_z);
-  }
-}
-
 void World::HitAngleLineAttack(mobj::MapObject* parent, int damage, int distance,
                                rend::BamAngle dir_angle, rend::BamAngle vert_angle) {
   auto crossed_objects = CreateIntersectedObjList(parent->x, parent->y, dir_angle, distance);
@@ -529,6 +454,9 @@ void World::HitAngleLineAttack(mobj::MapObject* parent, int damage, int distance
       if (!(line->flags & kLDFTwoSided)) {
         auto [x, y] = math::ShiftToCenter(parent->x, parent->y, elem.x, elem.y, 2);
         SpawnBulletPuff(x, y, hit_line_height);
+        if (line->specials) {
+          HitLine(line, parent);
+        }
         return;
       }
 
@@ -545,6 +473,9 @@ void World::HitAngleLineAttack(mobj::MapObject* parent, int damage, int distance
 
         auto [x, y] = math::ShiftToCenter(parent->x, parent->y, elem.x, elem.y, 2);
         SpawnBulletPuff(x, y, hit_line_height);
+        if (line->specials) {
+          HitLine(line, parent);
+        }
         return;
       }
     } else if (idx == 1) {
