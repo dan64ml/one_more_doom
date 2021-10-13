@@ -99,17 +99,9 @@ struct MapObject {
   void UpdateOpening();
 
  private:
-//  struct Opening {
-//    int ceiling;
-//    int floor;
-//    int dropoff;
-//
-//    world::SubSector* ss;
-//  };
   double tmp_ceiling;
   double tmp_floor;
   double tmp_dropoff;
-  double tmp_opening;
 
   std::vector<world::Line*> spec_lines_;
 
@@ -132,7 +124,7 @@ struct MapObject {
   virtual bool ProcessLine(world::Line* line);
 
   // Applied to each crossed special line
-  virtual void ProcessSpecialLine(world::Line* line) {}
+  virtual void ProcessSpecialLine([[maybe_unused]] world::Line* line) {}
 
   // It looks like a candidate to be virtual...
   virtual void ZMove();

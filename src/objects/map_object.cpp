@@ -191,10 +191,11 @@ bool MapObject::TryMoveTo(double new_x, double new_y) {
   // Rebind the mobj and change x and y
   floor_z = tmp_floor;
   ceiling_z = tmp_ceiling;
+
+  world_->blocks_.MoveMapObject(this, new_x, new_y);
   x = new_x;
   y = new_y;
 
-  world_->blocks_.MoveMapObject(this, new_x, new_y);
   ChangeSubSector(ss);
 
   return true;
@@ -309,17 +310,8 @@ void MapObject::UpdateOpening(const world::Line* line) {
   double ceil = std::min(line->sides[0]->sector->ceiling_height, line->sides[1]->sector->ceiling_height);
 
   tmp_ceiling = std::min(tmp_ceiling, ceil);
-//  if (ceil < tmp_ceiling) {
-//    tmp_ceiling = ceil;
-//  }
   tmp_floor = std::max(tmp_floor, fl);
-//  if (fl > tmp_floor) {
-//    tmp_floor = fl;
-//  }
   tmp_dropoff = std::min(tmp_dropoff, low_fl);
-//  if (low_fl < tmp_dropoff) {
-//    tmp_dropoff = low_fl;
-//  }
 }
 
 bool MapObject::ChangeSubSector(world::SubSector* new_ss) {
