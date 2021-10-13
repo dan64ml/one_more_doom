@@ -341,7 +341,7 @@ void World::DoBlastDamage(int damage, int x, int y) {
     int dy = abs(y - obj->y);
     // Original algorithm uses max projection instead real distance. Keep it.
     int dist = std::max(dx, dy);
-    dist = std::max(0, dist - obj->radius);
+    dist = std::max<int>(0, dist - obj->radius);
     // The mobj too far
     if (dist >= damage) {
       continue;
@@ -354,7 +354,7 @@ void World::DoBlastDamage(int damage, int x, int y) {
 }
 
 bool World::IsMobjBlastVisible(int vp_x, int vp_y, const mobj::MapObject* obj) const {
-  auto crossed_objects = CreateIntersectedObjList(vp_x, vp_y, obj->x, obj->y);
+  auto crossed_objects = CreateIntersectedObjList(vp_x, vp_y, (int)obj->x, (int)obj->y);
 
   for (const auto item : crossed_objects) {
     int idx = item.obj.index();
@@ -541,8 +541,8 @@ rend::BamAngle World::GetTargetAngle(int from_x, int from_y, int from_z, rend::B
 
       if (!((mobj->z > high_z) || (mobj->z + mobj->height < low_z))) {
         // Found the target
-        int visible_top = std::min(mobj->z + mobj->height, high_z);
-        int visible_bottom = std::max(mobj->z, low_z);
+        int visible_top = std::min<int>(mobj->z + mobj->height, high_z);
+        int visible_bottom = std::max<int>(mobj->z, low_z);
 
         double target_center = (visible_top + visible_bottom) / 2;
 

@@ -75,14 +75,14 @@ LineRange BlockMap::GetLines(const BBox& bbox) const {
 }
 
 void BlockMap::AddMapObject(mobj::MapObject* mobj) {
-  int x_idx = (mobj->x - x_offset_) >> kBlockShift;
-  int y_idx = (mobj->y - y_offset_) >> kBlockShift;
+  int x_idx = static_cast<int>(mobj->x - x_offset_) >> kBlockShift;
+  int y_idx = static_cast<int>(mobj->y - y_offset_) >> kBlockShift;
   blocks_[y_idx][x_idx].mobjs.push_back(mobj);
 }
 
 bool BlockMap::DeleteMapObject(mobj::MapObject* mobj) {
-  int x_idx = (mobj->x - x_offset_) >> kBlockShift;
-  int y_idx = (mobj->y - y_offset_) >> kBlockShift;
+  int x_idx = static_cast<int>(mobj->x - x_offset_) >> kBlockShift;
+  int y_idx = static_cast<int>(mobj->y - y_offset_) >> kBlockShift;
 
   auto& ml = blocks_[y_idx][x_idx].mobjs;
   auto it = std::find(begin(ml), end(ml), mobj);

@@ -46,17 +46,17 @@ struct MapObject {
   MapObject(id::mobjtype_t type);
 
   // World coordinates of the object
-  int x;
-  int y;
-  int z;  
+  double x;
+  double y;
+  double z;  
 
   // View direction
   rend::BamAngle angle;
 
   // Sizes of the mobj for collisions detection
   // NB! Sizes for drawing are diffrent and must be get from texture sizes
-  int height;
-  int radius;
+  double height;
+  double radius;
 
   int speed;
   
@@ -72,8 +72,8 @@ struct MapObject {
 
   // The narrowest part over all contacted Sectors.
   // Calculated during checking lines intersection
-  int floor_z;
-  int ceiling_z;
+  double floor_z;
+  double ceiling_z;
   // The lowest floor. Necessary for falling check
   int dropoff_z;
 

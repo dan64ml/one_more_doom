@@ -22,6 +22,7 @@ void AppClass::InitInstance() {
                   // 23, 24 - animated floor and wall
                   // 29 - scrolling wall
                   // 22 - lots of barrels
+                  // 17 - good candidate for demo, lots of sobj etc... 
 
   world_.OpenWad("/home/dan/tmp/DOOM2.WAD");
   world_.LoadLevel(level); // 10 - wrong portal // 11 - wrong torch // 16 flying torch // 29 animated wall
