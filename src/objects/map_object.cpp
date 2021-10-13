@@ -82,20 +82,18 @@ void MapObject::XYMove() {
   
   double dx = mom_x;
   double dy = mom_y;
-  int x_dest;
-  int y_dest;
+  double x_dest;
+  double y_dest;
 
   do {
     if (dx > kMaxMove / 2 || dy > kMaxMove / 2) {
       dx /= 2;
       dy /= 2;
-
-      // TODO: controversial hack to avoid direction changing by very small values...
-      x_dest = std::round(x + dx);
-      y_dest = std::round(y + dy);
+      x_dest = x + dx;
+      y_dest = y + dy;
     } else {
-      x_dest = std::round(x + dx);
-      y_dest = std::round(y + dy);
+      x_dest = x + dx;
+      y_dest = y + dy;
 
       dx = dy = 0;
     }
@@ -152,58 +150,63 @@ bool MapObject::ProcessLine(world::Line* line) {
 // true if the position is clear. Also it updates lowest ceiling and 
 // highest floor. It's necessary for second step - heights check.
 // If both steps are OK, the foo changes current position of the mobs.
-bool MapObject::TryMoveTo(int new_x, int new_y) {
+bool MapObject::TryMoveTo(double new_x, double new_y) {
   #ifdef D_PRINT_STEPS
     std::cout << "TryMoveTo: (" << x << ", " << y << ") => (" 
               << new_x << ", " << new_y << "): " << std::endl;
   #endif
 
   // check if the new position empty
-  Opening op;
-  if (!CheckPosition(new_x, new_y, op)) {
+  if (!CheckPosition(new_x, new_y)) {
     return false;
   }
 
   // Check heights. Keep original behavior
-  if (op.ceiling - op.floor < height) {
+  if (tmp_ceiling - tmp_floor < height) {
     // mobj too high
     return false;
   }
-  if (!(flags & MF_TELEPORT) && (op.ceiling - z < height)) {
+  if (!(flags & MF_TELEPORT) && (tmp_ceiling - z < height)) {
     // hit the ceiling by the head :)))
     return false;
   }
-  if (!(flags & MF_TELEPORT) && (op.floor - z > kMaxStepSize)) {
+  if (!(flags & MF_TELEPORT) && (tmp_floor - z > kMaxStepSize)) {
     // The step too high
     return false;
   }
-  if (!(flags & (MF_DROPOFF|MF_FLOAT)) && (op.floor - op.dropoff > height)) {
+  if (!(flags & (MF_DROPOFF|MF_FLOAT)) && (tmp_floor - tmp_dropoff > height)) {
     // prevent falling
     return false;
   }
 
-  // New position is OK, update coordinates
-  floor_z = op.floor;
-  ceiling_z = op.ceiling;
+  // New position is OK, trigger special lines and update coordinates
+  for (auto line : spec_lines_) {
+    auto old_pos = math::LinePointPosition(line, x, y);
+    auto new_pos = math::LinePointPosition(line, new_x, new_y);
+    if (old_pos != new_pos) {
+      ProcessSpecialLine(line);
+    }
+  }
 
   // Rebind the mobj and change x and y
-  world_->blocks_.MoveMapObject(this, new_x, new_y);
+  floor_z = tmp_floor;
+  ceiling_z = tmp_ceiling;
   x = new_x;
   y = new_y;
-  ChangeSubSector(op.ss);
 
-  // TODO: ??? Act special lines ???
+  world_->blocks_.MoveMapObject(this, new_x, new_y);
+  ChangeSubSector(ss);
 
   return true;
 }
 
-bool MapObject::CheckPosition(int new_x, int new_y, Opening& op) {
+bool MapObject::CheckPosition(double new_x, double new_y) {
   int ss_idx = world_->bsp_.GetSubSectorIdx(new_x, new_y);
   auto* ss = &world_->sub_sectors_[ss_idx];
 
-  op.floor = op.dropoff = ss->sector->floor_height;
-  op.ceiling = ss->sector->ceiling_height;
-  op.ss = ss;
+  // Get initial values from destination point
+  tmp_floor = tmp_dropoff = ss->sector->floor_height;
+  tmp_ceiling = ss->sector->ceiling_height;
 
   // Possible area where collision of mobjs can happen
   int dist = kMaxRadius + radius;
@@ -242,6 +245,8 @@ bool MapObject::CheckPosition(int new_x, int new_y, Opening& op) {
   bbox.top = new_y + radius;
   bbox.bottom = new_y - radius;
 
+  spec_lines_.resize(0);
+
   for (auto line : world_->blocks_.GetLines(bbox)) {
     #ifdef D_PRINT_LINES
       std::cout << "Checking line (" << line->x1 << ", " << line->y1 << ") -> ("
@@ -267,37 +272,54 @@ bool MapObject::CheckPosition(int new_x, int new_y, Opening& op) {
       std::cout << "cross" << std::endl;
     #endif
 
+    // TMP!!!!!!!!!!!!!!!!!!!!
     if (!ProcessLine(line)) {
       return false;
     }
 
+    if (!line->sides[1]) {
+      // Wall
+      return false;
+    }
+    if (!(flags & MF_MISSILE)) {
+      // Check for bloking line flags
+      if (line->flags & world::kLDFBlockEveryOne) {
+        return false;
+      }
+      if ((mobj_type != id::MT_PLAYER) && (line->flags & world::kLDFBlockMonsters)) {
+        return false;
+      }
+    }
+
     // Every line can change current opening. We are looking for the smallest
-    UpdateOpening(op, line);
+    UpdateOpening(line);
+
+    // Collect special lines
+    if (line->specials) {
+      spec_lines_.push_back(line);
+    }
   }
 
   return true;
 }
 
-void MapObject::UpdateOpening(Opening& op, const world::Line* line) {
-  if (line->sides[1] == nullptr) {
-    // ProcessLine() should interrupt checking for a wall
-    assert(false);
-    return;
-  }
+void MapObject::UpdateOpening(const world::Line* line) {
+  double fl = std::max(line->sides[0]->sector->floor_height, line->sides[1]->sector->floor_height);
+  double low_fl = std::min(line->sides[0]->sector->floor_height, line->sides[1]->sector->floor_height);
+  double ceil = std::min(line->sides[0]->sector->ceiling_height, line->sides[1]->sector->ceiling_height);
 
-  int fl = std::max(line->sides[0]->sector->floor_height, line->sides[1]->sector->floor_height);
-  int low_fl = std::min(line->sides[0]->sector->floor_height, line->sides[1]->sector->floor_height);
-  int ceil = std::min(line->sides[0]->sector->ceiling_height, line->sides[1]->sector->ceiling_height);
-
-  if (ceil < op.ceiling) {
-    op.ceiling = ceil;
-  }
-  if (fl > op.floor) {
-    op.floor = fl;
-  }
-  if (low_fl < op.dropoff) {
-    op.dropoff = low_fl;
-  }
+  tmp_ceiling = std::min(tmp_ceiling, ceil);
+//  if (ceil < tmp_ceiling) {
+//    tmp_ceiling = ceil;
+//  }
+  tmp_floor = std::max(tmp_floor, fl);
+//  if (fl > tmp_floor) {
+//    tmp_floor = fl;
+//  }
+  tmp_dropoff = std::min(tmp_dropoff, low_fl);
+//  if (low_fl < tmp_dropoff) {
+//    tmp_dropoff = low_fl;
+//  }
 }
 
 bool MapObject::ChangeSubSector(world::SubSector* new_ss) {
@@ -338,12 +360,11 @@ void MapObject::CauseDamage(int damage) {
 
 // TODO: there is duplicate code with CheckPosition()
 void MapObject::UpdateOpening() {
-  Opening op;
   int ss_idx = world_->bsp_.GetSubSectorIdx(x, y);
   auto* ss = &world_->sub_sectors_[ss_idx];
 
-  op.floor = op.dropoff = ss->sector->floor_height;
-  op.ceiling = ss->sector->ceiling_height;
+  tmp_floor = tmp_dropoff = ss->sector->floor_height;
+  tmp_ceiling = ss->sector->ceiling_height;
   
   // Possible area where collision of mobj and line can happen
   world::BBox bbox;
@@ -382,12 +403,11 @@ void MapObject::UpdateOpening() {
     }
 
     // Every line can change current opening. We are looking for the smallest
-    UpdateOpening(op, line);
+    UpdateOpening(line);
   }
 
-  ceiling_z = op.ceiling;
-  floor_z = op.floor;
-  dropoff_z = op.dropoff;
+  ceiling_z = tmp_ceiling;
+  floor_z = tmp_floor;
 }
 
 void MapObject::DamageBySobj(int damage) {

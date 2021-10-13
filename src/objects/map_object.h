@@ -74,8 +74,6 @@ struct MapObject {
   // Calculated during checking lines intersection
   double floor_z;
   double ceiling_z;
-  // The lowest floor. Necessary for falling check
-  int dropoff_z;
 
   // Current subsector
   // TODO: !!!! CHANGE THE NAME !!!
@@ -101,28 +99,41 @@ struct MapObject {
   void UpdateOpening();
 
  private:
-  struct Opening {
-    int ceiling;
-    int floor;
-    int dropoff;
+//  struct Opening {
+//    int ceiling;
+//    int floor;
+//    int dropoff;
+//
+//    world::SubSector* ss;
+//  };
+  double tmp_ceiling;
+  double tmp_floor;
+  double tmp_dropoff;
+  double tmp_opening;
 
-    world::SubSector* ss;
-  };
-  
+  std::vector<world::Line*> spec_lines_;
+
  protected:
   // Invoked if the object run into sth. XYMove() will be interrupted
   // immediately if return false.
   // Defines common action after hit, e.g. sliding for player, missile explosion etc...
+  //  For others - just stop moving (???)
   virtual bool RunIntoAction();
+
   // Contains logic for object speed reducing
   virtual void SlowDown();
 
   // Applied to each touched MapObject until return false
+  // NB! Check for MF_SPECIAL flag
   virtual bool InfluenceObject(MapObject*) { return true; }
   
   // Applied to each crossed line until return false.
   // False means it's impossible to cross the line.
   virtual bool ProcessLine(world::Line* line);
+
+  // Applied to each crossed special line
+  virtual void ProcessSpecialLine(world::Line* line) {}
+
   // It looks like a candidate to be virtual...
   virtual void ZMove();
 
@@ -139,13 +150,16 @@ struct MapObject {
   void XYMove();
 
   // Check the position, interact with items and move
-  // the object to the new position if possible (and return true)
+  // the object to the new position if it's possible (and return true)
   // false if moving impossible
-  bool TryMoveTo(int new_x, int new_y);
-  // Iterates over all mobjs and lines in current and adjacent BlockMaps
-  bool CheckPosition(int new_x, int new_y, Opening& op);
+  bool TryMoveTo(double new_x, double new_y);
 
-  void UpdateOpening(Opening& op, const world::Line* line);
+  // Iterates over all mobjs and lines in current and adjacent BlockMaps
+  // Iterating lines updates opeining (tmp_* values)
+  bool CheckPosition(double new_x, double new_y);
+
+  // Updates tmp_* variables
+  void UpdateOpening(const world::Line* line);
   // Change current subsector
   bool ChangeSubSector(world::SubSector* new_ss);
 
