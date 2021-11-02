@@ -14,12 +14,12 @@ class World;
 
 // Just boundary box
 struct BBox {
-  int left;
-  int right;
-  int top;
-  int bottom;
+  double left;
+  double right;
+  double top;
+  double bottom;
 
-  void AddPoint(int x, int y) {
+  void AddPoint(double x, double y) {
     if (x < left) {
       left = x;
     } else if (x > right) {

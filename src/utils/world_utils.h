@@ -16,7 +16,7 @@ enum ObjPosition : int {
 };
 
 // Finds point position relative to line
-ObjPosition LinePointPosition(const world::Line* line, int x, int y);
+ObjPosition LinePointPosition(const world::Line* line, double x, double y);
 // Finds position of the BBox relative to the line
 ObjPosition LineBBoxPosition(const world::Line* line, const world::BBox* bbox);
 
@@ -24,9 +24,9 @@ ObjPosition LineBBoxPosition(const world::Line* line, const world::BBox* bbox);
 std::tuple<bool, double, double> GetMobjIntersection(double x1, double y1, double x2, double y2, const mobj::MapObject* mobj);
 
 // Returns intersection point of two LINES (not segments) if it exists.
-std::tuple<bool, double, double> GetLinesIntersection(int l1_x1, int l1_y1, int l1_x2, int l1_y2, 
-                                                      int l2_x1, int l2_y1, int l2_x2, int l2_y2);
-std::tuple<bool, double, double> GetLinesIntersection(int x1, int y1, int x2, int y2, const world::Line* line);
+std::tuple<bool, double, double> GetLinesIntersection(double l1_x1, double l1_y1, double l1_x2, double l1_y2, 
+                                                      double l2_x1, double l2_y1, double l2_x2, double l2_y2);
+std::tuple<bool, double, double> GetLinesIntersection(double x1, double y1, double x2, double y2, const world::Line* line);
 
 // Returns intersection point of two segments if it exists.
 std::tuple<bool, double, double> GetSegmentsIntersection(double x1, double y1, double x2, double y2, const world::Line* line);
@@ -58,7 +58,7 @@ double GetHighestCeilingHeight(const world::Sector* sec);
 world::Sector* GetOppositeSector(const world::Sector* sec, const world::Line* line);
 
 // Returns heights of floor and ceiling in opposite side
-std::pair<int, int> GetOppositeFloorCeilingHeight(const world::Line* line, int x, int y);
+std::pair<double, double> GetOppositeFloorCeilingHeight(const world::Line* line, double x, double y);
 
 } // namespace math
 

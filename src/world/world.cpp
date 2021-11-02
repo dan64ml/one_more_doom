@@ -393,8 +393,7 @@ std::vector<IntersectedObject> World::CreateIntersectedObjList(double from_x, do
 std::vector<IntersectedObject> World::CreateIntersectedObjList(double from_x, double from_y, double to_x, double to_y) const {
   std::vector<IntersectedObject> result;
 
-  BBox bb {static_cast<int>(from_x), static_cast<int>(to_x), 
-            static_cast<int>(to_y), static_cast<int>(from_y)};
+  BBox bb {from_x, to_x, to_y, from_y};
   if (bb.left > bb.right) {
     std::swap(bb.left, bb.right);
   }

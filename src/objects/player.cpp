@@ -48,32 +48,26 @@ world::IntersectedObject Player::GetClosestObstacle(double new_x, double new_y) 
   double dy = new_y - y;
 
   // Corners' coordinates
-  int eps = 0;
   double front_x, front_y, back_x, back_y;
   if (dx > 0) {
-    front_x = x + radius + eps;
-    back_x = x - radius - eps;
+    front_x = x + radius;
+    back_x = x - radius;
   } else {
-    front_x = x - radius - eps;
-    back_x = x + radius + eps;
+    front_x = x - radius;
+    back_x = x + radius;
   }
 
   if (dy > 0) {
-    front_y = y + radius + eps;
-    back_y = y - radius - eps;
+    front_y = y + radius;
+    back_y = y - radius;
   } else {
-    front_y = y - radius - eps;
-    back_y = y + radius + eps;
+    front_y = y - radius;
+    back_y = y + radius;
   }
 
   std::vector<std::pair<double, double>> corns = {{front_x, front_y}, {back_x, front_y}, {front_x, back_y}};
   world::IntersectedObject result {1'000'000, 0, 0, {}};
-//  for (auto [cx, cy] : corns) {
-//    auto ret = world_->CreateIntersectedObjList((int)cx, (int)cy, (int)(cx + dx), (int)(cy + dy));
-//    if (!ret.empty() && ret[0].distance < result.distance) {
-//      result = ret[0];
-//    }
-//  }
+
   for (auto [cx, cy] : corns) {
     auto ret = world_->CreateIntersectedObjList(cx, cy, cx + dx, cy + dy);
     for (auto& obj : ret) {
@@ -92,7 +86,7 @@ world::IntersectedObject Player::GetClosestObstacle(double new_x, double new_y) 
         } else {
           // portal. passable?
           auto [floor_h, ceiling_h] = math::GetOppositeFloorCeilingHeight(line, cx, cy);
-          if (floor_h - z > kMaxStepSize || ceiling_h < z + height) {
+          if ((line->flags & world::kLDFBlockEveryOne) || floor_h - z > kMaxStepSize || ceiling_h < z + height) {
             // obstacle
             if (obj.distance < result.distance) {
               result = obj;
@@ -108,7 +102,6 @@ world::IntersectedObject Player::GetClosestObstacle(double new_x, double new_y) 
 
 bool Player::RunIntoAction(double new_x, double new_y) {
   auto obstacle = GetClosestObstacle(new_x, new_y);
-  //assert(obstacle.distance <= 0);
 
   world::Line* line = nullptr;
 

@@ -3,7 +3,7 @@
 
 namespace math {
 
-ObjPosition LinePointPosition(const world::Line* line, int x, int y) {
+ObjPosition LinePointPosition(const world::Line* line, double x, double y) {
   int dx = line->x2 - line->x1;
   int dy = line->y2 - line->y1;
 
@@ -98,12 +98,12 @@ std::tuple<bool, double, double> GetMobjIntersection(double x1, double y1, doubl
 }
 
 
-std::tuple<bool, double, double> GetLinesIntersection(int x1, int y1, int x2, int y2, const world::Line* line) {
+std::tuple<bool, double, double> GetLinesIntersection(double x1, double y1, double x2, double y2, const world::Line* line) {
   return GetLinesIntersection(x1, y1, x2, y2, line->x1, line->y1, line->x2, line->y2);
 }
 
-std::tuple<bool, double, double> GetLinesIntersection(int l1_x1, int l1_y1, int l1_x2, int l1_y2, 
-                                                      int l2_x1, int l2_y1, int l2_x2, int l2_y2) {
+std::tuple<bool, double, double> GetLinesIntersection(double l1_x1, double l1_y1, double l1_x2, double l1_y2, 
+                                                      double l2_x1, double l2_y1, double l2_x2, double l2_y2) {
   const double kEps = 0.000001;
 
   double n1_x = l1_y2 - l1_y1;
@@ -133,7 +133,7 @@ std::tuple<bool, double, double> GetLinesIntersection(int l1_x1, int l1_y1, int 
 
 std::tuple<bool, double, double> GetSegmentsIntersection(double s1_x1, double s1_y1, double s1_x2, double s1_y2,
                                                          double s2_x1, double s2_y1, double s2_x2, double s2_y2) {
-  const double kEps = 0.5;
+  const double kEps = 0.0001;
 
   auto [cross, cx, cy] = GetLinesIntersection(s1_x1, s1_y1, s1_x2, s1_y2, s2_x1, s2_y1, s2_x2, s2_y2);
   if (!cross) {
@@ -283,7 +283,7 @@ world::Sector* GetOppositeSector(const world::Sector* sec, const world::Line* li
   return (sec == line->sides[0]->sector) ? line->sides[1]->sector : line->sides[0]->sector;
 }
 
-std::pair<int, int> GetOppositeFloorCeilingHeight(const world::Line* line, int x, int y) {
+std::pair<double, double> GetOppositeFloorCeilingHeight(const world::Line* line, double x, double y) {
   if (!(line->flags & world::kLDFTwoSided)) {
     return {0, 0};
   }

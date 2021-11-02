@@ -85,19 +85,15 @@ void MapObject::XYMove() {
   double x_dest;
   double y_dest;
 
-  double lsdx, lsdy;
-
   do {
     if (dx > kMaxMove / 2 || dy > kMaxMove / 2) {
-      lsdx = dx /= 2;
-      lsdy = dy /= 2;
+      dx /= 2;
+      dy /= 2;
       x_dest = x + dx;
       y_dest = y + dy;
     } else {
       x_dest = x + dx;
       y_dest = y + dy;
-      lsdx = dx;
-      lsdy = dy;
       dx = dy = 0;
     }
 
@@ -217,7 +213,7 @@ bool MapObject::CheckPosition(double new_x, double new_y) {
   mobj_obstacle_ = nullptr;
 
   // Possible area where collision of mobjs can happen
-  int dist = kMaxRadius + radius;
+  double dist = kMaxRadius + radius;
   world::BBox bbox;
   bbox.left = new_x - dist;
   bbox.right = new_x + dist;
@@ -233,8 +229,8 @@ bool MapObject::CheckPosition(double new_x, double new_y) {
       continue;
     }
 
-    int collision_dist = radius + mobj->radius;
-    if (abs(new_x - mobj->x) >= collision_dist || abs(new_y - mobj->y) >= collision_dist) {
+    double collision_dist = radius + mobj->radius;
+    if (std::abs(new_x - mobj->x) >= collision_dist || std::abs(new_y - mobj->y) >= collision_dist) {
       // Didn't hit
       continue;
     }
@@ -249,10 +245,10 @@ bool MapObject::CheckPosition(double new_x, double new_y) {
   }
 
   // Possible area where collision of mobj and line can happen
-  bbox.left = new_x - radius - 1;
-  bbox.right = new_x + radius + 1;
-  bbox.top = new_y + radius + 1;
-  bbox.bottom = new_y - radius - 1;
+  bbox.left = new_x - radius;
+  bbox.right = new_x + radius;
+  bbox.top = new_y + radius;
+  bbox.bottom = new_y - radius;
 
   spec_lines_.resize(0);
 

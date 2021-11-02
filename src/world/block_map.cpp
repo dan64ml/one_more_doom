@@ -34,10 +34,10 @@ void BlockMap::Load(std::ifstream& fin, int offset, int size, std::vector<Line>&
 
 MobjRange BlockMap::GetMapObjects(const BBox& bbox) const {
   MobjRange result;
-  int left_idx = (bbox.left - x_offset_) >> kBlockShift;
-  int right_idx = (bbox.right - x_offset_) >> kBlockShift;
-  int top_idx = (bbox.top - y_offset_) >> kBlockShift;
-  int bottom_idx = (bbox.bottom - y_offset_) >> kBlockShift;
+  int left_idx = (static_cast<int>(bbox.left - x_offset_) - 1) >> kBlockShift;
+  int right_idx = (static_cast<int>(bbox.right - x_offset_) + 1) >> kBlockShift;
+  int top_idx = (static_cast<int>(bbox.top - y_offset_) + 1) >> kBlockShift;
+  int bottom_idx = (static_cast<int>(bbox.bottom - y_offset_) - 1) >> kBlockShift;
   
   if (left_idx < 0) left_idx = 0;
   if (right_idx >= (int)blocks_.front().size()) right_idx = blocks_.front().size() - 1;
@@ -55,10 +55,10 @@ MobjRange BlockMap::GetMapObjects(const BBox& bbox) const {
 
 LineRange BlockMap::GetLines(const BBox& bbox) const {
   LineRange result;
-  int left_idx = (bbox.left - x_offset_) >> kBlockShift;
-  int right_idx = (bbox.right - x_offset_) >> kBlockShift;
-  int top_idx = (bbox.top - y_offset_) >> kBlockShift;
-  int bottom_idx = (bbox.bottom - y_offset_) >> kBlockShift;
+  int left_idx = (static_cast<int>(bbox.left - x_offset_) - 1) >> kBlockShift;
+  int right_idx = (static_cast<int>(bbox.right - x_offset_) + 1) >> kBlockShift;
+  int top_idx = (static_cast<int>(bbox.top - y_offset_) + 1) >> kBlockShift;
+  int bottom_idx = (static_cast<int>(bbox.bottom - y_offset_) - 1) >> kBlockShift;
   
   if (left_idx < 0) left_idx = 0;
   if (right_idx >= (int)blocks_.front().size()) right_idx = blocks_.front().size() - 1;
