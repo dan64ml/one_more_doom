@@ -18,7 +18,7 @@ class Projectile : public MapObject {
  protected:
   void SlowDown() override {}
   void ZMove() override;
-  bool RunIntoAction() override;
+  bool RunIntoAction(double new_x, double new_y) override;
   bool InfluenceObject(MapObject*) override;
   bool ProcessLine(world::Line* line) override;
 

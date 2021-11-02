@@ -21,7 +21,7 @@ ObjPosition LinePointPosition(const world::Line* line, int x, int y);
 ObjPosition LineBBoxPosition(const world::Line* line, const world::BBox* bbox);
 
 // Returns intersection point with mobj (if exist).
-std::tuple<bool, double, double> GetMobjIntersection(int x1, int y1, int x2, int y2, const mobj::MapObject* mobj);
+std::tuple<bool, double, double> GetMobjIntersection(double x1, double y1, double x2, double y2, const mobj::MapObject* mobj);
 
 // Returns intersection point of two LINES (not segments) if it exists.
 std::tuple<bool, double, double> GetLinesIntersection(int l1_x1, int l1_y1, int l1_x2, int l1_y2, 
@@ -29,9 +29,9 @@ std::tuple<bool, double, double> GetLinesIntersection(int l1_x1, int l1_y1, int 
 std::tuple<bool, double, double> GetLinesIntersection(int x1, int y1, int x2, int y2, const world::Line* line);
 
 // Returns intersection point of two segments if it exists.
-std::tuple<bool, double, double> GetSegmentsIntersection(int x1, int y1, int x2, int y2, const world::Line* line);
-std::tuple<bool, double, double> GetSegmentsIntersection(int s1_x1, int s1_y1, int s1_x2, int s1_y2,
-                                                         int s2_x1, int s2_y1, int s2_x2, int s2_y2);
+std::tuple<bool, double, double> GetSegmentsIntersection(double x1, double y1, double x2, double y2, const world::Line* line);
+std::tuple<bool, double, double> GetSegmentsIntersection(double s1_x1, double s1_y1, double s1_x2, double s1_y2,
+                                                         double s2_x1, double s2_y1, double s2_x2, double s2_y2);
 
 // "Shift" point closer to the center. 
 std::pair<int, int> ShiftToCenter(int cx, int cy, int x, int y, int shift = 1);
@@ -56,6 +56,9 @@ double GetHighestCeilingHeight(const world::Sector* sec);
 
 // Helper. Returns opposite sector for the line (if it exists)
 world::Sector* GetOppositeSector(const world::Sector* sec, const world::Line* line);
+
+// Returns heights of floor and ceiling in opposite side
+std::pair<int, int> GetOppositeFloorCeilingHeight(const world::Line* line, int x, int y);
 
 } // namespace math
 

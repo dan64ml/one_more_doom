@@ -85,21 +85,25 @@ void MapObject::XYMove() {
   double x_dest;
   double y_dest;
 
+  double lsdx, lsdy;
+
   do {
     if (dx > kMaxMove / 2 || dy > kMaxMove / 2) {
-      dx /= 2;
-      dy /= 2;
+      lsdx = dx /= 2;
+      lsdy = dy /= 2;
       x_dest = x + dx;
       y_dest = y + dy;
     } else {
       x_dest = x + dx;
       y_dest = y + dy;
-
+      lsdx = dx;
+      lsdy = dy;
       dx = dy = 0;
     }
 
     if (!TryMoveTo(x_dest, y_dest)) {
-      if (!RunIntoAction()) {
+      if (!RunIntoAction(x_dest, y_dest)) {
+        // TODO: return or break!???
         return;
       }
     }
@@ -128,7 +132,7 @@ void MapObject::ZMove() {
 }
 
 // By default - do nothing and continue
-bool MapObject::RunIntoAction() {
+bool MapObject::RunIntoAction(double new_x, double new_y) {
   return true;
 }
 
@@ -209,6 +213,9 @@ bool MapObject::CheckPosition(double new_x, double new_y) {
   tmp_floor = tmp_dropoff = ss->sector->floor_height;
   tmp_ceiling = ss->sector->ceiling_height;
 
+  line_obstacle_ = nullptr;
+  mobj_obstacle_ = nullptr;
+
   // Possible area where collision of mobjs can happen
   int dist = kMaxRadius + radius;
   world::BBox bbox;
@@ -236,15 +243,16 @@ bool MapObject::CheckPosition(double new_x, double new_y) {
     }
 
     if (!InfluenceObject(mobj)) {
+      mobj_obstacle_ = mobj;
       return false;
     }
   }
 
   // Possible area where collision of mobj and line can happen
-  bbox.left = new_x - radius;
-  bbox.right = new_x + radius;
-  bbox.top = new_y + radius;
-  bbox.bottom = new_y - radius;
+  bbox.left = new_x - radius - 1;
+  bbox.right = new_x + radius + 1;
+  bbox.top = new_y + radius + 1;
+  bbox.bottom = new_y - radius - 1;
 
   spec_lines_.resize(0);
 
@@ -275,19 +283,23 @@ bool MapObject::CheckPosition(double new_x, double new_y) {
 
     // TMP!!!!!!!!!!!!!!!!!!!!
     if (!ProcessLine(line)) {
+      line_obstacle_ = line;
       return false;
     }
 
     if (!line->sides[1]) {
       // Wall
+      line_obstacle_ = line;
       return false;
     }
     if (!(flags & MF_MISSILE)) {
       // Check for bloking line flags
       if (line->flags & world::kLDFBlockEveryOne) {
+        line_obstacle_ = line;
         return false;
       }
       if ((mobj_type != id::MT_PLAYER) && (line->flags & world::kLDFBlockMonsters)) {
+        line_obstacle_ = line;
         return false;
       }
     }

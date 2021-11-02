@@ -39,7 +39,7 @@ bool Projectile::TickTime() {
   }
 }
 
-bool Projectile::RunIntoAction() {
+bool Projectile::RunIntoAction(double new_x, double new_y) {
   if (hit_sky_) {
     return false;
   }

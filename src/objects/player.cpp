@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <variant>
+#include <cmath>
 
 #include "world/world.h"
 #include "utils/world_utils.h"
@@ -42,7 +43,110 @@ bool Player::TickTime() {
   return weapon_.TickTime();
 }
 
-bool Player::RunIntoAction() {
+world::IntersectedObject Player::GetClosestObstacle(double new_x, double new_y) {
+  double dx = new_x - x;
+  double dy = new_y - y;
+
+  // Corners' coordinates
+  int eps = 0;
+  double front_x, front_y, back_x, back_y;
+  if (dx > 0) {
+    front_x = x + radius + eps;
+    back_x = x - radius - eps;
+  } else {
+    front_x = x - radius - eps;
+    back_x = x + radius + eps;
+  }
+
+  if (dy > 0) {
+    front_y = y + radius + eps;
+    back_y = y - radius - eps;
+  } else {
+    front_y = y - radius - eps;
+    back_y = y + radius + eps;
+  }
+
+  std::vector<std::pair<double, double>> corns = {{front_x, front_y}, {back_x, front_y}, {front_x, back_y}};
+  world::IntersectedObject result {1'000'000, 0, 0, {}};
+//  for (auto [cx, cy] : corns) {
+//    auto ret = world_->CreateIntersectedObjList((int)cx, (int)cy, (int)(cx + dx), (int)(cy + dy));
+//    if (!ret.empty() && ret[0].distance < result.distance) {
+//      result = ret[0];
+//    }
+//  }
+  for (auto [cx, cy] : corns) {
+    auto ret = world_->CreateIntersectedObjList(cx, cy, cx + dx, cy + dy);
+    for (auto& obj : ret) {
+      if (obj.obj.index() == 1) {
+        // mobj
+        if (obj.distance < result.distance) {
+          result = obj;
+        }
+      } else {
+        auto line = std::get<0>(obj.obj);
+        if (!line->sides[1]) {
+          // wall
+          if (obj.distance < result.distance) {
+            result = obj;
+          }
+        } else {
+          // portal. passable?
+          auto [floor_h, ceiling_h] = math::GetOppositeFloorCeilingHeight(line, cx, cy);
+          if (floor_h - z > kMaxStepSize || ceiling_h < z + height) {
+            // obstacle
+            if (obj.distance < result.distance) {
+              result = obj;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return result;
+}
+
+bool Player::RunIntoAction(double new_x, double new_y) {
+  auto obstacle = GetClosestObstacle(new_x, new_y);
+  //assert(obstacle.distance <= 0);
+
+  world::Line* line = nullptr;
+
+  if (obstacle.obj.index() == 0) {
+    line = std::get<0>(obstacle.obj);
+  } else if (obstacle.obj.index() == 1) {
+    auto mobj = std::get<1>(obstacle.obj);
+  } else {
+    assert(false);
+  }
+
+
+  if (line) {
+    double mom_dx = new_x - x;
+    double mom_dy = new_y - y;
+
+    double lx = line->x1 - line->x2;
+    double ly = line->y1 - line->y2;
+
+    double llen = sqrt(lx*lx + ly*ly);
+    double nlx = lx / llen;
+    double nly = ly / llen;
+
+    double coef = nlx * mom_dx + nly * mom_dy;
+
+    double dx = nlx * std::abs(coef);
+    double dy = nly * std::abs(coef);
+
+    if (coef < 0) {
+      dx *= -1;
+      dy *= -1;
+    }
+
+    TryMoveTo(x + dx, y + dy);
+
+    return true;
+  }
+
   return true;
 }
 

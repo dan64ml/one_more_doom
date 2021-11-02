@@ -68,7 +68,7 @@ ObjPosition LineBBoxPosition(const world::Line* line, const world::BBox* bbox) {
   return kCross;
 }
 
-std::tuple<bool, double, double> GetMobjIntersection(int x1, int y1, int x2, int y2, const mobj::MapObject* mobj) {
+std::tuple<bool, double, double> GetMobjIntersection(double x1, double y1, double x2, double y2, const mobj::MapObject* mobj) {
   world::BBox bb {x1, x2, y1, y2};
   if (bb.left > bb.right) {
     std::swap(bb.left, bb.right);
@@ -131,8 +131,8 @@ std::tuple<bool, double, double> GetLinesIntersection(int l1_x1, int l1_y1, int 
   return {true, cx, cy};
 }
 
-std::tuple<bool, double, double> GetSegmentsIntersection(int s1_x1, int s1_y1, int s1_x2, int s1_y2,
-                                                         int s2_x1, int s2_y1, int s2_x2, int s2_y2) {
+std::tuple<bool, double, double> GetSegmentsIntersection(double s1_x1, double s1_y1, double s1_x2, double s1_y2,
+                                                         double s2_x1, double s2_y1, double s2_x2, double s2_y2) {
   const double kEps = 0.5;
 
   auto [cross, cx, cy] = GetLinesIntersection(s1_x1, s1_y1, s1_x2, s1_y2, s2_x1, s2_y1, s2_x2, s2_y2);
@@ -150,7 +150,7 @@ std::tuple<bool, double, double> GetSegmentsIntersection(int s1_x1, int s1_y1, i
 
 }
 
-std::tuple<bool, double, double> GetSegmentsIntersection(int x1, int y1, int x2, int y2, const world::Line* line) {
+std::tuple<bool, double, double> GetSegmentsIntersection(double x1, double y1, double x2, double y2, const world::Line* line) {
   return GetSegmentsIntersection(x1, y1, x2, y2, line->x1, line->y1, line->x2, line->y2);
 }
 
@@ -281,6 +281,22 @@ world::Sector* GetOppositeSector(const world::Sector* sec, const world::Line* li
   }
 
   return (sec == line->sides[0]->sector) ? line->sides[1]->sector : line->sides[0]->sector;
+}
+
+std::pair<int, int> GetOppositeFloorCeilingHeight(const world::Line* line, int x, int y) {
+  if (!(line->flags & world::kLDFTwoSided)) {
+    return {0, 0};
+  }
+
+  ObjPosition pos = LinePointPosition(line, x, y);
+  if (pos == kCross) {
+    return {0, 0};
+  }
+
+  int side = pos ^ 1;
+  auto sec = line->sides[side]->sector;
+
+  return {sec->floor_height, sec->ceiling_height};
 }
 
 } // namespace math

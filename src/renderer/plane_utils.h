@@ -54,7 +54,7 @@ int DefineVpSide(const world::Line* line, int vp_x, int vp_y);
 std::pair<int, int> CreateIntersection(int r1_left, int r1_right, int r2_left, int r2_right);
 
 // Calculate distance between two points
-double SegmentLength(int x1, int y1, int x2, int y2);
+double SegmentLength(double x1, double y1, double x2, double y2);
 double SegmentLength(DPoint p1, DPoint p2);
 
 } // namespace rend

@@ -122,12 +122,12 @@ private:
   void SpawnBulletBlood(int x, int y, int z);
 
   // Checks if the mobj is reachable for a blast from {vp_x, vp_y}
-  bool IsMobjBlastVisible(int vp_x, int vp_y, const mobj::MapObject* obj) const;
+  bool IsMobjBlastVisible(double vp_x, double vp_y, const mobj::MapObject* obj) const;
 
  public:
   // Returns sorted list of objects (lines and mobjs) that are projected on the section {from_x, from_y, angle, distance}
-  std::vector<IntersectedObject> CreateIntersectedObjList(int from_x, int from_y, rend::BamAngle angle, int distance) const;
-  std::vector<IntersectedObject> CreateIntersectedObjList(int from_x, int from_y, int to_x, int to_y) const;
+  std::vector<IntersectedObject> CreateIntersectedObjList(double from_x, double from_y, rend::BamAngle angle, double distance) const;
+  std::vector<IntersectedObject> CreateIntersectedObjList(double from_x, double from_y, double to_x, double to_y) const;
 
   friend class mobj::MapObject;
 };

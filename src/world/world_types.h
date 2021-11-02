@@ -143,8 +143,8 @@ struct RawVertex {
 struct IntersectedObject {
   double distance;
 
-  int x;
-  int y;
+  double x;
+  double y;
 
   std::variant<Line*, mobj::MapObject*> obj;
 };

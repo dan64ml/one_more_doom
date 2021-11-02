@@ -353,8 +353,8 @@ void World::DoBlastDamage(int damage, int x, int y) {
   }
 }
 
-bool World::IsMobjBlastVisible(int vp_x, int vp_y, const mobj::MapObject* obj) const {
-  auto crossed_objects = CreateIntersectedObjList(vp_x, vp_y, (int)obj->x, (int)obj->y);
+bool World::IsMobjBlastVisible(double vp_x, double vp_y, const mobj::MapObject* obj) const {
+  auto crossed_objects = CreateIntersectedObjList(vp_x, vp_y, obj->x, obj->y);
 
   for (const auto item : crossed_objects) {
     int idx = item.obj.index();
@@ -382,18 +382,19 @@ bool World::IsMobjBlastVisible(int vp_x, int vp_y, const mobj::MapObject* obj) c
   return true;
 }
 
-std::vector<IntersectedObject> World::CreateIntersectedObjList(int from_x, int from_y, 
-                                                               rend::BamAngle angle, int distance) const {
-  int to_x = from_x + distance * rend::BamCos(angle);
-  int to_y = from_y + distance * rend::BamSin(angle);
+std::vector<IntersectedObject> World::CreateIntersectedObjList(double from_x, double from_y, 
+                                                               rend::BamAngle angle, double distance) const {
+  double to_x = from_x + distance * rend::BamCos(angle);
+  double to_y = from_y + distance * rend::BamSin(angle);
 
   return CreateIntersectedObjList(from_x, from_y, to_x, to_y);
 }
 
-std::vector<IntersectedObject> World::CreateIntersectedObjList(int from_x, int from_y, int to_x, int to_y) const {
+std::vector<IntersectedObject> World::CreateIntersectedObjList(double from_x, double from_y, double to_x, double to_y) const {
   std::vector<IntersectedObject> result;
 
-  BBox bb {from_x, to_x, to_y, from_y};
+  BBox bb {static_cast<int>(from_x), static_cast<int>(to_x), 
+            static_cast<int>(to_y), static_cast<int>(from_y)};
   if (bb.left > bb.right) {
     std::swap(bb.left, bb.right);
   }
@@ -410,7 +411,7 @@ std::vector<IntersectedObject> World::CreateIntersectedObjList(int from_x, int f
     auto [cross, cx, cy] = math::GetMobjIntersection(from_x, from_y, to_x, to_y, obj);
     if (cross) {
       double dist = rend::SegmentLength(from_x, from_y, cx, cy);
-      result.push_back(IntersectedObject {dist, static_cast<int>(cx), static_cast<int>(cy), obj});
+      result.push_back(IntersectedObject {dist, cx, cy, obj});
     }
   }
 
@@ -419,7 +420,7 @@ std::vector<IntersectedObject> World::CreateIntersectedObjList(int from_x, int f
     auto [cross, cx, cy] = math::GetSegmentsIntersection(from_x, from_y, to_x, to_y, line);
     if (cross) {
       double dist = rend::SegmentLength(from_x, from_y, cx, cy);
-      result.push_back(IntersectedObject {dist, static_cast<int>(cx), static_cast<int>(cy), line});
+      result.push_back(IntersectedObject {dist, cx, cy, line});
     }
   }
 
@@ -431,7 +432,7 @@ std::vector<IntersectedObject> World::CreateIntersectedObjList(int from_x, int f
 
 void World::HitAngleLineAttack(mobj::MapObject* parent, int damage, int distance,
                                rend::BamAngle dir_angle, rend::BamAngle vert_angle) {
-  auto crossed_objects = CreateIntersectedObjList(parent->x, parent->y, dir_angle, distance);
+  auto crossed_objects = CreateIntersectedObjList((int)parent->x, (int)parent->y, dir_angle, (int)distance);
 
   double height_coef = rend::BamSin(vert_angle);
   int view_line_z = parent->z + mobj::kWeaponHeight; // Weapon height, TODO!!!

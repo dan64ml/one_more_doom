@@ -36,6 +36,9 @@ const int kMeleeRange = 64;
 
 const int kWeaponHeight = 42; // Why??!
 
+// Max passible step height
+const int kMaxStepSize = 24;
+
 /*=========================================================================
 Need access to:
 - BlockMap class data
@@ -98,19 +101,25 @@ struct MapObject {
   // Checks current position and updates floor_z, ceiling_z and dropoff_z;
   void UpdateOpening();
 
- private:
+ protected:
   double tmp_ceiling;
   double tmp_floor;
   double tmp_dropoff;
 
+  // Crossed last step special lines
   std::vector<world::Line*> spec_lines_;
+
+  // Pointers to obstacles that were the reason of fail of TryMoveTo()
+  world::Line* line_obstacle_;
+  MapObject* mobj_obstacle_;
 
  protected:
   // Invoked if the object run into sth. XYMove() will be interrupted
   // immediately if return false.
   // Defines common action after hit, e.g. sliding for player, missile explosion etc...
   //  For others - just stop moving (???)
-  virtual bool RunIntoAction();
+  // (new_x, new_y) - the position that XYMove() couldn't reach
+  virtual bool RunIntoAction(double new_x, double new_y);
 
   // Contains logic for object speed reducing
   virtual void SlowDown();
@@ -131,6 +140,11 @@ struct MapObject {
 
   virtual void CallStateFunction([[maybe_unused]] id::FuncId foo_id) {}
 
+  // Check the position, interact with items and move
+  // the object to the new position if it's possible (and return true)
+  // false if moving impossible
+  bool TryMoveTo(double new_x, double new_y);
+
   FSM fsm_;
 
   int health_;
@@ -144,7 +158,7 @@ struct MapObject {
   // Check the position, interact with items and move
   // the object to the new position if it's possible (and return true)
   // false if moving impossible
-  bool TryMoveTo(double new_x, double new_y);
+//  bool TryMoveTo(double new_x, double new_y);
 
   // Iterates over all mobjs and lines in current and adjacent BlockMaps
   // Iterating lines updates opeining (tmp_* values)
@@ -159,7 +173,6 @@ struct MapObject {
   bool delete_me_ = false;
 
   const double kMaxMove = 30;
-  const int kMaxStepSize = 24;
 
   friend class FSM;
 };

@@ -5,6 +5,7 @@
 #include "renderer/bam.h"
 #include "weapon/weapon.h"
 #include "weapon/ammunition.h"
+#include "world/world_types.h"
 
 #include <string>
 
@@ -45,12 +46,13 @@ class Player : public MapObject {
   void FireBFG();
 
  private:
-  virtual bool RunIntoAction() override;
+  virtual bool RunIntoAction(double new_x, double new_y) override;
 
   void ProcessSpecialLine(world::Line* line) override;
 
   world::Line* FindSpecialLine();
 
+  world::IntersectedObject GetClosestObstacle(double new_x, double new_y);
  private:
   wpn::Weapon weapon_;
   wpn::Ammo ammo_;
