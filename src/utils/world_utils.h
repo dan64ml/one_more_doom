@@ -50,7 +50,7 @@ double GetHighestFloorHeight(const world::Sector* sec);
 double GetLowestFloorHeight(const world::Sector* sec);
 // Looks for the sector that has minimal floor height larger then current_height.
 // Returns current_height if it's the highest.
-double GetNextHighestFloorHeight(const world::Sector* sec, int current_height);
+double GetNextHighestFloorHeight(const world::Sector* sec, double current_height);
 //
 double GetHighestCeilingHeight(const world::Sector* sec);
 

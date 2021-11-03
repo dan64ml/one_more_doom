@@ -110,6 +110,7 @@ struct MapObject {
   std::vector<world::Line*> spec_lines_;
 
   // Pointers to obstacles that were the reason of fail of TryMoveTo()
+  // TODO: obsolete???
   world::Line* line_obstacle_;
   MapObject* mobj_obstacle_;
 

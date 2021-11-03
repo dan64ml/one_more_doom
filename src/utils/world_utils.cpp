@@ -242,7 +242,7 @@ double GetHighestFloorHeight(const world::Sector* sec) {
   return height;
 }
 
-double GetNextHighestFloorHeight(const world::Sector* sec, int current_height) {
+double GetNextHighestFloorHeight(const world::Sector* sec, double current_height) {
   double height = std::numeric_limits<int>::max();
 
   for (const auto line : sec->lines) {
