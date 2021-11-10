@@ -9,3 +9,6 @@ requires to use ideas and small parts of the original DOOM code. Here is the ori
 News and the current state of the project you can find on the link:
 
 [Project site](https://dan64ml.github.io/one_more_doom/)
+
+Now the project is on the stage of reverse engineering, so the code and architecture in general are
+far from ideal. When all basic features have been explored, the project will be refactored.
