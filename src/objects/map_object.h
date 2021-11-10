@@ -28,6 +28,19 @@ enum CardType {
   kCardsNumber
 };
 
+// Mobj's zig-zag direction
+enum class ZZDir {
+  kEast,
+  kNorthEast,
+  kNorth,
+  kNorthWest,
+  kWest,
+  kSouthWest,
+  kSouth,
+  kSouthEast,
+  kNoDir
+};
+
 const int kMaxRadius = 32;
 const double kGravity = 1.0;
 
@@ -38,6 +51,9 @@ const int kWeaponHeight = 42; // Why??!
 
 // Max passible step height
 const int kMaxStepSize = 24;
+
+// Flying mobj's vertical speed;
+const int kFloatSpeed = 4;
 
 /*=========================================================================
 Need access to:
@@ -84,6 +100,24 @@ struct MapObject {
 
   world::World* world_;
 
+  // AI related  **************************************************************************
+  // Target for attack
+  MapObject* target_ = nullptr;
+  ZZDir move_dir_ = ZZDir::kNoDir;
+  // Random step count
+  int move_count_;  
+
+  // Fills move_dir_ and Co. Cand for common...
+  void NewChaseDirection();
+  // Both are candidates to be virtual...
+  virtual bool CheckMeleeAttack() { return false; }
+  virtual bool CheckMissileAttack() { return false; }
+  // Zig-zag movement
+  bool ZZMove();
+  rend::BamAngle ZZDirToBam(ZZDir dir);
+  // Attempts to move it the direction, if ok set random move_count_
+  bool TryWalk(ZZDir dir);
+
 
   // Returns false if the object should be deleted
   virtual bool TickTime();
@@ -102,9 +136,13 @@ struct MapObject {
   void UpdateOpening();
 
  protected:
+  // what's the difference with floor_z and ceiling_z ?????
+  // Just tmp values for calculating floor_z and ceiling_z.
   double tmp_ceiling;
   double tmp_floor;
   double tmp_dropoff;
+
+  bool float_ok;
 
   // Crossed last step special lines
   std::vector<world::Line*> spec_lines_;

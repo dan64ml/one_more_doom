@@ -742,4 +742,13 @@ bool World::TryToChangeSectorHeight(Sector* sec, int floor_h, int ceiling_h, boo
   return true;
 }
 
+
+mobj::MapObject* World::IsPlayerVisible(mobj::MapObject* mobj) {
+  return player_.get();
+}
+
+mobj::MapObject* World::LookForPlayer(mobj::MapObject* mobj, bool around) {
+  return player_.get();
+}
+
 } // namespace world

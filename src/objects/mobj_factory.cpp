@@ -3,6 +3,8 @@
 #include "map_object.h"
 #include "player.h"
 
+#include "trooper.h"
+
 namespace id {
 
 std::unique_ptr<mobj::MapObject> MobjFactory::Create(const wad::WadMapThing& thing) {
@@ -10,10 +12,22 @@ std::unique_ptr<mobj::MapObject> MobjFactory::Create(const wad::WadMapThing& thi
     return {};
   }
 
-  std::unique_ptr<mobj::MapObject> obj(new mobj::MapObject(mobjs_types_.at(thing.type)));
+  std::unique_ptr<mobj::MapObject> obj;
+
+  switch (id::mobjtype_t type = mobjs_types_.at(thing.type); type) {
+    case id::MT_POSSESSED:
+      if (thing.x != 1072) return {};
+      obj.reset(new mobj::Trooper(type));
+      break;
+
+    default:
+      return {};
+      obj.reset(new mobj::MapObject(type));
+      break;
+  }
+
   obj->x = thing.x;
   obj->y = thing.y;
-
   obj->angle = rend::DegreesToBam(thing.angle);
 
   return obj;

@@ -5,5 +5,6 @@ add_library(mobjs
     fsm.cpp
     mobj_factory.cpp
     projectile.cpp
+    trooper.cpp
     )
     

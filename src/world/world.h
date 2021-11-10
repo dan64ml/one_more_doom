@@ -74,6 +74,12 @@ class World {
    // Some game logic uses it...
   long long tick_counter_ = 0;
 
+  //**************************************************************************
+  // Returns valid pointer if the player is visible. nullptr otherwise
+  mobj::MapObject* IsPlayerVisible(mobj::MapObject* mobj);  // P_CheckSight
+  // Searches the player. If around == true, 360 degrees, else - 180
+  mobj::MapObject* LookForPlayer(mobj::MapObject* mobj, bool around);
+
 private:
   std::string wad_file_name_;
   // Level names and lumps

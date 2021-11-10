@@ -33,6 +33,29 @@ void FSM::ToSeeState(MapObject* obj) {
   SetState(see_state, obj);
 }
 
+void FSM::ToSpawnState(MapObject* obj) {
+  if (spawn_state == id::S_NULL) {
+    return;
+  }
+
+  SetState(spawn_state, obj);
+}
+void FSM::ToMeleeState(MapObject* obj) {
+  if (melee_state == id::S_NULL) {
+    return;
+  }
+
+  SetState(melee_state, obj);
+}
+
+void FSM::ToMissileState(MapObject* obj) {
+  if (missile_state == id::S_NULL) {
+    return;
+  }
+
+  SetState(missile_state, obj);
+}
+
 void FSM::ToDeathState(MapObject* obj) {
   if (death_state == id::S_NULL) {
     return;

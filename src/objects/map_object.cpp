@@ -433,4 +433,189 @@ void MapObject::DamageBySobj(int damage) {
   CauseDamage(damage);
 }
 
+rend::BamAngle MapObject::ZZDirToBam(ZZDir dir) {
+  using namespace rend;
+
+  switch (dir)
+  {
+  case ZZDir::kEast:
+    return kBamAngle0;
+  case ZZDir::kNorthEast:
+    return kBamAngle45;
+  case ZZDir::kNorth:
+    return kBamAngle90;
+  case ZZDir::kNorthWest:
+    return kBamAngle135;
+  case ZZDir::kWest:
+    return kBamAngle180;
+
+  case ZZDir::kSouthWest:
+    return kBamAngle180 + kBamAngle45;
+  case ZZDir::kSouth:
+    return kBamAngle180 + kBamAngle90;
+  case ZZDir::kSouthEast:
+    return kBamAngle180 + kBamAngle135;
+  
+  default:
+    return kBamAngle0;
+  }
+}
+
+bool MapObject::TryWalk(ZZDir dir) {
+  move_dir_ = dir;
+  if (!ZZMove()) {
+    return false;
+  }
+
+  move_count_ = rand() & 15;
+
+  return true;
+}
+
+// Keep original behavior !!! ******************************************************
+ZZDir opposite[] = {
+  ZZDir::kWest, ZZDir::kSouthWest, ZZDir::kSouth, ZZDir::kSouthEast,
+  ZZDir::kEast, ZZDir::kNorthEast, ZZDir::kNorth, ZZDir::kNorthWest, ZZDir::kNoDir
+};
+
+ZZDir diags[] = {
+  ZZDir::kNorthWest, ZZDir::kNorthEast, ZZDir::kSouthWest, ZZDir::kSouthEast
+};
+
+void MapObject::NewChaseDirection() {
+  assert(target_);
+
+  auto old_dir = move_dir_;
+  auto turn_around = opposite[static_cast<int>(old_dir)];
+
+  auto dx = target_->x - x;
+  auto dy = target_->y - y;
+
+  ZZDir d1, d2;
+  
+  if (dx > 10) {
+    d1 = ZZDir::kEast;
+  } else if (dx < -10) {
+    d1 = ZZDir::kWest;
+  } else {
+    d1 = ZZDir::kNoDir;
+  }
+
+  if (dy < -10) {
+    d2 = ZZDir::kSouth;
+  } else if (dy > 10) {
+    d2 = ZZDir::kNorth;
+  } else {
+    d2 = ZZDir::kNoDir;
+  }
+
+  // Try to move directly
+  if (d1 != ZZDir::kNoDir && d2 != ZZDir::kNoDir) {
+    // Funny and tricky :)
+    int dir_idx = ((dy < 0) << 1) + (dx > 0);
+    if (diags[dir_idx] != turn_around && TryWalk(diags[dir_idx])) {
+      return;
+    }
+  }
+
+  // Try another directions
+  if (rand() % 255 > 200 ||
+      std::abs(dy) > std::abs(dx)) {
+    std::swap(d1, d2);
+  }
+
+  if (d1 == turn_around) {
+    d1 = ZZDir::kNoDir;
+  }
+  if (d2 == turn_around) {
+    d2 = ZZDir::kNoDir;
+  }
+
+  if (d1 != ZZDir::kNoDir) {
+    if (TryWalk(d1)) {
+      return;
+    }
+  }
+  if (d2 != ZZDir::kNoDir) {
+    if (TryWalk(d2)) {
+      return;
+    }
+  }
+
+  // There is no direct path to the player...
+  if (old_dir != ZZDir::kNoDir) {
+    if (TryWalk(old_dir)) {
+      return;
+    }
+  }
+
+  // The worst case, random direction
+  if (rand() & 1) {
+    for (int dir = static_cast<int>(ZZDir::kEast); dir <= static_cast<int>(ZZDir::kSouthEast); ++dir) {
+      auto cand_dir = static_cast<ZZDir>(dir);
+      if (cand_dir != turn_around) {
+        if (TryWalk(cand_dir)) {
+          return;
+        }
+      }
+    }
+  } else {
+    for (int dir = static_cast<int>(ZZDir::kSouthEast); dir != static_cast<int>(ZZDir::kEast) - 1; --dir) {
+      auto cand_dir = static_cast<ZZDir>(dir);
+      if (cand_dir != turn_around) {
+        if (TryWalk(cand_dir)) {
+          return;
+        }
+      }
+    }
+  }
+
+  // The last chance
+  if (turn_around != ZZDir::kNoDir) {
+    if (TryWalk(old_dir)) {
+      return;
+    }
+  }
+
+  move_dir_ = ZZDir::kNoDir;
+}
+
+bool MapObject::ZZMove() {
+  if (move_dir_ == ZZDir::kNoDir) {
+    return false;
+  }
+
+  auto move_angle = ZZDirToBam(move_dir_);
+  double new_x = x + speed * rend::BamCos(move_angle);
+  double new_y = y + speed * rend::BamSin(move_angle);
+
+  if (!TryMoveTo(new_x, new_y)) {
+    // It's impossible to get the new position, but there are several options why not
+
+    // Unfitted height, but the monster can fly
+    if ((flags & mobj::MF_FLOAT) && float_ok) {
+      if (z < tmp_floor) {
+        z += kFloatSpeed;
+      } else {
+        z -= kFloatSpeed;
+      }
+
+      flags |= mobj::MF_INFLOAT;
+      return true;
+    }
+
+    // The monster met a door, TODO!!!!!
+    return false;
+  } else {
+    // TODO: What is it ???????
+    flags &= ~ mobj::MF_INFLOAT;
+  }
+
+  if (!(flags & mobj::MF_FLOAT)) {
+    z = floor_z;
+  }
+
+  return true;
+}
+
 } // namespace mobj

@@ -19,9 +19,12 @@ class FSM : public BaseFSM<MapObject> {
   std::string GetSpriteName() const;
   
   void ToSeeState(MapObject* obj);
+  void ToSpawnState(MapObject* obj);
   void ToDeathState(MapObject* obj);
   void ToXDeathState(MapObject* obj);
   void ToPainState(MapObject* obj);
+  void ToMeleeState(MapObject* obj);
+  void ToMissileState(MapObject* obj);
 
   void ToGibsState(MapObject* obj);
 
