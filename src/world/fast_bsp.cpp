@@ -29,7 +29,7 @@ void FastBsp::LoadBsp(std::ifstream& fin, int offset, int size) {
   fin.read(reinterpret_cast<char*>(nodes_.data()), size);
 }
 
-int FastBsp::GetSubSectorIdx(int x, int y) const {
+int FastBsp::GetSubSectorIdx(double x, double y) const {
   int node_num = nodes_.size() - 1;
 
   while (!(node_num & kNfSubsector)) {
@@ -40,7 +40,7 @@ int FastBsp::GetSubSectorIdx(int x, int y) const {
   return node_num & ~kNfSubsector;
 }
 
-int FastBsp::DefineVpSide(int x, int y, int node_idx) const {
+int FastBsp::DefineVpSide(double x, double y, int node_idx) const {
   const BspNode& node = nodes_[node_idx];
 
   if (!node.dx) {

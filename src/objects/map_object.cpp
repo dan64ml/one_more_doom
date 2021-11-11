@@ -196,7 +196,7 @@ bool MapObject::TryMoveTo(double new_x, double new_y) {
   x = new_x;
   y = new_y;
 
-  ChangeSubSector(ss);
+  ChangeSubSector(tmp_ss);
 
   return true;
 }
@@ -309,6 +309,7 @@ bool MapObject::CheckPosition(double new_x, double new_y) {
     }
   }
 
+  tmp_ss = ss;
   return true;
 }
 
@@ -323,16 +324,16 @@ void MapObject::UpdateOpening(const world::Line* line) {
 }
 
 bool MapObject::ChangeSubSector(world::SubSector* new_ss) {
-  auto it = std::find(begin(ss->mobjs), end(ss->mobjs), this);
-  if (it == end(ss->mobjs)) {
+  auto it = std::find(begin(ss_->mobjs), end(ss_->mobjs), this);
+  if (it == end(ss_->mobjs)) {
     return false;
   }
 
-  ss->mobjs.erase(it);
+  ss_->mobjs.erase(it);
 
   new_ss->mobjs.push_back(this);
 
-  ss = new_ss;
+  ss_ = new_ss;
 
   return true;
 }

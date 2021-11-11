@@ -8,10 +8,6 @@
 #include "world_types.h"
 #include "bsp_iterator.h"
 
-//namespace world {
-//  class BspIterator;
-//}
-
 namespace wad {
 
 class FastBsp {
@@ -21,9 +17,9 @@ class FastBsp {
   void LoadBsp(std::ifstream& fin, int offset, int size);
   void SetSubSectors(const std::vector<world::SubSector>* ss) { ss_ = ss; }
 
-  int GetSubSectorIdx(int x, int y) const;
+  int GetSubSectorIdx(double x, double y) const;
 
-  void SetViewPoint(int x, int y) const { vp_x_ = x; vp_y_ = y; }
+  void SetViewPoint(double x, double y) const { vp_x_ = x; vp_y_ = y; }
 
   world::BspIterator begin() const;
   world::BspIterator end() const;
@@ -51,12 +47,12 @@ class FastBsp {
   std::vector<BspNode> nodes_;
 
   const std::vector<world::SubSector>* ss_ = nullptr;
-  mutable int vp_x_ = 0;
-  mutable int vp_y_ = 0;
+  mutable double vp_x_ = 0;
+  mutable double vp_y_ = 0;
 
   // Defines the position of the view point (x, y) relatively the partition line. 
   // 0 - front(right), 1 - back(left)
-  int DefineVpSide(int x, int y, int node_idx) const;
+  int DefineVpSide(double x, double y, int node_idx) const;
 
   friend class world::BspIterator;
 };

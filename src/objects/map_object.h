@@ -95,8 +95,7 @@ struct MapObject {
   double ceiling_z;
 
   // Current subsector
-  // TODO: !!!! CHANGE THE NAME !!!
-  world::SubSector* ss;
+  world::SubSector* ss_;
 
   world::World* world_;
 
@@ -138,9 +137,11 @@ struct MapObject {
  protected:
   // what's the difference with floor_z and ceiling_z ?????
   // Just tmp values for calculating floor_z and ceiling_z.
+  // TODO: bad arch, ref!!!
   double tmp_ceiling;
   double tmp_floor;
   double tmp_dropoff;
+  world::SubSector* tmp_ss;
 
   bool float_ok;
 

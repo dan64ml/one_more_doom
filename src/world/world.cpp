@@ -118,7 +118,7 @@ void World::TickTime() {
     } else {
       // delete the mobj
       auto obj = it->get();
-      obj->ss->mobjs.remove(obj);
+      obj->ss_->mobjs.remove(obj);
       blocks_.DeleteMapObject(obj);
       it = mobjs_.erase(it);
     }
@@ -277,7 +277,7 @@ void World::CreateMapObjectList(std::ifstream& fin) {
 
       int ss_idx = bsp_.GetSubSectorIdx(player_->x, player_->y);
       player_->floor_z = player_->z = sub_sectors_[ss_idx].sector->floor_height;
-      player_->ss = &sub_sectors_[ss_idx];
+      player_->ss_ = &sub_sectors_[ss_idx];
 
       player_->angle = rend::DegreesToBam(items[i].angle);
       player_->world_ = this;
@@ -296,7 +296,7 @@ void World::CreateMapObjectList(std::ifstream& fin) {
 
 void World::PutMobjOnMap(std::unique_ptr<mobj::MapObject> obj, bool put_on_floor) {
   int ss_idx = bsp_.GetSubSectorIdx(obj->x, obj->y);
-  obj->ss = &sub_sectors_[ss_idx];
+  obj->ss_ = &sub_sectors_[ss_idx];
 
   obj->floor_z = sub_sectors_[ss_idx].sector->floor_height;
   if (put_on_floor) {

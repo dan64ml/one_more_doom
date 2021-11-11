@@ -908,7 +908,7 @@ bool Renderer::FillMobjMaskedObject(MaskedObject& msk, const mobj::MapObject* mo
     // TODO: might be it would be better to place this piece in spawn code but
     // it requires getting texture size...
     if (mobj->flags & mobj::MF_SPAWNCEILING) {
-      msk.z = mobj->ss->sector->ceiling_height - msk.height;
+      msk.z = mobj->ss_->sector->ceiling_height - msk.height;
     } else {
       msk.z = mobj->z;
     }
