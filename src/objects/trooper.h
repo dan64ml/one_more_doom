@@ -15,9 +15,13 @@ class Trooper : public MapObject {
   bool CheckMeleeAttack() override { return false; }
   bool CheckMissileAttack() override;
   
+  bool InfluenceObject(MapObject*) override { return false; }
+  
  private:
   void LookFoo();
   void ChaseFoo();
+  void FaceTargetFoo();
+  void Attack();
 };
 
 } // namespace mobj

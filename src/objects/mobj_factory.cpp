@@ -21,7 +21,7 @@ std::unique_ptr<mobj::MapObject> MobjFactory::Create(const wad::WadMapThing& thi
       break;
 
     default:
-      return {};
+      //return {};
       obj.reset(new mobj::MapObject(type));
       break;
   }

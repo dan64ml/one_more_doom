@@ -20,6 +20,14 @@ void Trooper::CallStateFunction([[maybe_unused]] id::FuncId foo_id) {
       ChaseFoo();
       break;
     
+    case id::A_FaceTarget:
+      FaceTargetFoo();
+      break;
+
+    case id::A_PosAttack:
+      Attack();
+      break;
+
     default:
       break;
   }
@@ -87,6 +95,29 @@ bool Trooper::CheckMissileAttack() {
   dist = std::min(dist, 200.0);
 
   return ((rand() % 255) < dist) ? false : true;
+}
+
+void Trooper::FaceTargetFoo() {
+  if (!target_) {
+    return;
+  }
+
+  flags &= ~mobj::MF_AMBUSH;
+
+  angle = rend::CalcAngle(x, y, target_->x, target_->y);
+}
+
+void Trooper::Attack() {
+  if (!target_) {
+    return;
+  }
+
+  // Keep original behavier
+  FaceTargetFoo();
+
+  rend::BamAngle vert_angle = world_->GetTargetAngle(x, y, z, angle, kMissileRange);
+  int damage = ((rand() % 5) + 1) * 3;
+  world_->HitAngleLineAttack(this, damage, kMissileRange, angle, vert_angle);
 }
 
 } // namespace mobj

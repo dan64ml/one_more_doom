@@ -76,8 +76,9 @@ struct MapObject {
   // NB! Sizes for drawing are diffrent and must be get from texture sizes
   double height;
   double radius;
-
   int speed;
+  // Makes no sense, damage is randome value...
+  //int damage_;
   
   // Original DOOM flags
   uint32_t flags;
@@ -194,11 +195,6 @@ struct MapObject {
  private:
   void MoveObject();
   void XYMove();
-
-  // Check the position, interact with items and move
-  // the object to the new position if it's possible (and return true)
-  // false if moving impossible
-//  bool TryMoveTo(double new_x, double new_y);
 
   // Iterates over all mobjs and lines in current and adjacent BlockMaps
   // Iterating lines updates opeining (tmp_* values)

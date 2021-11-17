@@ -16,7 +16,7 @@ const int kUseDistance = 48;
 
 class Player : public MapObject {
  public:
-  Player() : MapObject(id::MT_PLAYER), weapon_(this) {}
+  Player() : MapObject(id::MT_PLAYER), weapon_(this) { health_ = 999; }
   
   // Sets current button state
   void SetFireFlag(bool fire);

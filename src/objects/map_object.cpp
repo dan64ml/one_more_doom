@@ -27,7 +27,7 @@ MapObject::MapObject(id::mobjtype_t type) : fsm_(id::mobjinfo[type]) {
   height = id::mobjinfo[type].height;
   radius = id::mobjinfo[type].radius;
   speed = id::mobjinfo[type].speed;
-  
+
   spawn_health_ = health_ = id::mobjinfo[type].spawnhealth;
   pain_chance_ = id::mobjinfo[type].painchance;
 }
