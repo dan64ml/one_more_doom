@@ -2,12 +2,13 @@
 #define MONSTER_H_
 
 #include "map_object.h"
+#include "moving_object.h"
 
 #include "sounds.h"
 
 namespace mobj {
 
-class Monster : public MapObject {
+class Monster : public MovingObject {
  private:
   // Mobj's zig-zag direction
   enum ZZDir {

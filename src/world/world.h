@@ -137,6 +137,7 @@ private:
   std::vector<IntersectedObject> CreateIntersectedObjList(double from_x, double from_y, double to_x, double to_y) const;
 
   friend class mobj::MapObject;
+  friend class mobj::MovingObject;
 };
 
 } // namespace world

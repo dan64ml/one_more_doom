@@ -39,7 +39,7 @@ bool Player::TickTime() {
     }
   }
 
-  MapObject::TickTime();
+  MovingObject::TickTime();
   return weapon_.TickTime();
 }
 

@@ -4,10 +4,11 @@
 #include <vector>
 
 #include "map_object.h"
+#include "moving_object.h"
 
 namespace mobj {
 
-class Projectile : public MapObject {
+class Projectile : public MovingObject {
  public:
   Projectile(id::mobjtype_t type, MapObject* parent);
 

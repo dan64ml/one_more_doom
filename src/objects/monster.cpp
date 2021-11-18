@@ -8,7 +8,7 @@
 
 namespace mobj {
 
-Monster::Monster(id::mobjtype_t type) : MapObject(type) {
+Monster::Monster(id::mobjtype_t type) : MovingObject(type) {
   reaction_time_ = id::mobjinfo[type].reactiontime;
 
   see_sound_ = static_cast<id::sfxenum_t>(id::mobjinfo[type].seesound);

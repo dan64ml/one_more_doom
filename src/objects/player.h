@@ -2,6 +2,8 @@
 #define PLAYER_H_
 
 #include "map_object.h"
+#include "moving_object.h"
+
 #include "renderer/bam.h"
 #include "weapon/weapon.h"
 #include "weapon/ammunition.h"
@@ -14,9 +16,9 @@ namespace mobj {
 // Max distance to button or door to get it used
 const int kUseDistance = 48;
 
-class Player : public MapObject {
+class Player : public MovingObject {
  public:
-  Player() : MapObject(id::MT_PLAYER), weapon_(this) { health_ = 999; }
+  Player() : MovingObject(id::MT_PLAYER), weapon_(this) { health_ = 999; }
   
   // Sets current button state
   void SetFireFlag(bool fire);

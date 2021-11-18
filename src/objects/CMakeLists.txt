@@ -8,5 +8,6 @@ add_library(mobjs
     trooper.cpp
     monster.cpp
     cacodemon.cpp
+    moving_object.cpp
     )
     

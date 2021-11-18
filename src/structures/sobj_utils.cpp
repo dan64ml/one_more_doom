@@ -127,7 +127,7 @@ bool ChangeSectorHeight(world::Sector* sec, bool crush) {
 
   bool result = false;
   for (auto mobj : mobj_list) {
-    if (AdjustMobjHeight(mobj)) {
+    if (mobj->AdjustMobjHeight()) {
       continue;
     }
 
@@ -151,27 +151,12 @@ bool ChangeSectorHeight(world::Sector* sec, bool crush) {
     result = true;
 
     if (crush && !(sec->world->tick_counter_ & 3)) {
-      mobj->DamageBySobj(10);
+      mobj->CauseDamage(10);
       // TODO: Add blood spray
     }
   }
 
   return result;
-}
-
-bool AdjustMobjHeight(mobj::MapObject* mobj) {
-  bool is_on_floor = (abs(mobj->z - mobj->floor_z) < kEps);
-  mobj->UpdateOpening();
-
-  if (is_on_floor) {
-    mobj->z = mobj->floor_z;
-  } else {
-    if (mobj->z + mobj->height > mobj->ceiling_z) {
-      mobj->z = mobj->ceiling_z - mobj->height;
-    }
-  }
-
-  return (mobj->ceiling_z - mobj->floor_z < mobj->height) ? false : true;
 }
 
 } // namespace sobj

@@ -23,10 +23,6 @@ MoveResult MoveFloor(world::Sector* sec, double speed, double dest, bool crush, 
 // height back by calling this foo with old sector's params...
 bool ChangeSectorHeight(world::Sector* sec, bool crush);
 
-// Updates mobj's opening (*_z variables) and changes z if it's necessary.
-// Returns false if the mobj doesn't fit the space
-bool AdjustMobjHeight(mobj::MapObject* mobj);
-
 } // namespace sobj
 
 #endif  // SOBJ_UTILS_H_
