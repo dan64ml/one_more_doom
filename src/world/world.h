@@ -78,7 +78,7 @@ class World {
   // Searches the player. If around == true, 360 degrees, else - 180
   mobj::MapObject* LookForPlayer(mobj::MapObject* mobj, bool around);
   
-  // Check if there is no obstacle between two mobjs.
+  // Check if there is no obstacle between two mobjs. Optimize!!!
   bool CheckSight(mobj::MapObject* mobj1, mobj::MapObject* mobj2);
 
 private:

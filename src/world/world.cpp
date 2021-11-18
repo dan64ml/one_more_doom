@@ -743,7 +743,27 @@ bool World::TryToChangeSectorHeight(Sector* sec, int floor_h, int ceiling_h, boo
 }
 
 mobj::MapObject* World::LookForPlayer(mobj::MapObject* mobj, bool around) {
-  return player_.get();
+  if (!player_ || player_->GetHealth() <= 0) {
+    return nullptr;
+  }
+
+  // Check angle
+  if (!around) {
+    double dist = rend::SegmentLength(mobj->x, mobj->y, player_->x, player_->y);
+    
+    auto dir_angle = rend::CalcAngle(mobj->x, mobj->y, player_->x, player_->y);
+    auto da = dir_angle - mobj->angle;
+    // If the player is behind the monster but on distance of melee attack, attack anyway
+    if (da > rend::kBamAngle90 && da < rend::kBamAngle270 && dist > mobj::kMeleeRange) {
+      return nullptr;
+    }
+  }
+
+  if (CheckSight(mobj, player_.get())) {
+    return player_.get();
+  } else {
+    return nullptr;
+  }
 }
 
 bool World::CheckSight(mobj::MapObject* mobj1, mobj::MapObject* mobj2) {

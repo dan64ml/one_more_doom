@@ -16,6 +16,7 @@ const BamAngle kBamAngle45 = std::numeric_limits<BamAngle>::max() / 8;
 const BamAngle kBamAngle90 = std::numeric_limits<BamAngle>::max() / 4;
 const BamAngle kBamAngle135 = (std::numeric_limits<BamAngle>::max() / 8) * 3;
 const BamAngle kBamAngle180 = std::numeric_limits<BamAngle>::max() / 2;
+const BamAngle kBamAngle270 = (std::numeric_limits<BamAngle>::max() / 4) * 3;
 const BamAngle kBamAngle360 = std::numeric_limits<BamAngle>::max();
 
 // Convert degrees to BamAngle
