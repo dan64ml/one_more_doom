@@ -35,21 +35,32 @@ class Monster : public MapObject {
   Monster(id::mobjtype_t type);
 
  protected:
-  void CallStateFunction(id::FuncId foo_id) override;
-
- private:
-  // ORIGIN: if > 0 the target will be chased
-  int threshold_;
-  // ORIGIN: if non 0, don't attack yet.
-  int reaction_time_;
-
   // The target for chasing
   MapObject* target_ = nullptr;
 
+  // FSM's functions. Some of them are used directly by derived code.
+  // Some functions are common for all monsters, they are defined in
+  // this class.
+  // Some functions are unique for a specific monster, they should be
+  // overridden in derived classes.
+  void A_FaceTarget();
+  // Zombieman attack
+  virtual void A_PosAttack() {}
+
+ protected:
+  void CallStateFunction(id::FuncId foo_id) override;
+
+ private:
+  // Time while monster does't change its target
+  // ORIGIN: if > 0 the target will be chased. Spawn state = 0.
+  int threshold_ = 0;
+  // ORIGIN: if non 0, don't attack yet.
+  int reaction_time_;
+
   // Monsters move in a zig-zag way
-  ZZDir move_dir_;
+  ZZDir move_dir_ = kNoDir;
   // When 0, select a new direction
-  int move_count_;
+  int move_count_ = 0;
 
   id::sfxenum_t see_sound_;
   id::sfxenum_t attack_sound_;
@@ -58,9 +69,9 @@ class Monster : public MapObject {
   id::sfxenum_t active_sound_;
 
  private:
+  // FSM's functions
   void A_Look();
   void A_Chase();
-  void A_FaceTarget();
 
   // Temporary stub for sound subsystem
   void PlaySound([[maybe_unused]] id::sfxenum_t sound) {}

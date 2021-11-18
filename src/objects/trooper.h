@@ -2,26 +2,19 @@
 #define TROOPER_H_
 
 #include "map_object.h"
+#include "monster.h"
 
 namespace mobj {
 
-class Trooper : public MapObject {
+class Trooper : public Monster {
  public:
   Trooper(id::mobjtype_t type);
 
  protected:
-  void CallStateFunction([[maybe_unused]] id::FuncId foo_id) override;
-
-  bool CheckMeleeAttack() override { return false; }
-  bool CheckMissileAttack() override;
-  
   bool InfluenceObject(MapObject*) override { return false; }
+  void A_PosAttack() override;
   
  private:
-  void LookFoo();
-  void ChaseFoo();
-  void FaceTargetFoo();
-  void Attack();
 };
 
 } // namespace mobj

@@ -25,13 +25,14 @@ void Monster::CallStateFunction(id::FuncId foo_id) {
     case id::A_Look:
       A_Look();
       break;
-    
     case id::A_Chase:
       A_Chase();
       break;
-    
     case id::A_FaceTarget:
       A_FaceTarget();
+      break;
+    case id::A_PosAttack:
+      A_PosAttack();
       break;
     
     default:
@@ -112,6 +113,13 @@ void Monster::A_Chase() {
     fsm_.ToMissileState(this);
     flags |= mobj::MF_JUSTATTACKED;
     return;
+  }
+
+  if (!threshold_ && !world_->CheckSight(this, target_)) {
+    target_ = world_->LookForPlayer(this, true);
+    if (target_) {
+      return;
+    }
   }
 
   // Movement

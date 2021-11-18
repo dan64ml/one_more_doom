@@ -170,7 +170,7 @@ bool MapObject::TryMoveTo(double new_x, double new_y) {
   } else {
     float_ok_ = true;
   }
-  
+
   if (!(flags & MF_TELEPORT) && (tmp_ceiling - z < height)) {
     // hit the ceiling by the head :)))
     return false;
@@ -439,7 +439,7 @@ void MapObject::DamageBySobj(int damage) {
   CauseDamage(damage);
 }
 
-rend::BamAngle MapObject::ZZDirToBam(ZZDir dir) {
+/*rend::BamAngle MapObject::ZZDirToBam(ZZDir dir) {
   using namespace rend;
 
   switch (dir)
@@ -486,9 +486,9 @@ ZZDir opposite[] = {
 
 ZZDir diags[] = {
   ZZDir::kNorthWest, ZZDir::kNorthEast, ZZDir::kSouthWest, ZZDir::kSouthEast
-};
+};*/
 
-void MapObject::NewChaseDirection() {
+/*void MapObject::NewChaseDirection() {
   assert(target_);
 
   auto old_dir = move_dir_;
@@ -622,6 +622,6 @@ bool MapObject::ZZMove() {
   }
 
   return true;
-}
+}*/
 
 } // namespace mobj

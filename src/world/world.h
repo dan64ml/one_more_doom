@@ -81,7 +81,7 @@ class World {
   mobj::MapObject* LookForPlayer(mobj::MapObject* mobj, bool around);
   
   // Check if there is no obstacle between two mobjs.
-  bool CheckSight(mobj::MapObject* mobj1, mobj::MapObject* mobj2) {}
+  bool CheckSight(mobj::MapObject* mobj1, mobj::MapObject* mobj2) { return true; }
 
 private:
   std::string wad_file_name_;

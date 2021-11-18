@@ -5,11 +5,11 @@
 
 namespace mobj {
 
-Trooper::Trooper(id::mobjtype_t type) : MapObject(type) {
+Trooper::Trooper(id::mobjtype_t type) : Monster(type) {
 
 }
 
-void Trooper::CallStateFunction([[maybe_unused]] id::FuncId foo_id) {
+/*void Trooper::CallStateFunction([[maybe_unused]] id::FuncId foo_id) {
   switch (foo_id)
   {
     case id::A_Look:
@@ -79,9 +79,9 @@ void Trooper::ChaseFoo() {
   if (--move_count_ < 0 || !ZZMove()) {
     NewChaseDirection();
   }
-}
+}*/
 
-bool Trooper::CheckMissileAttack() {
+/*bool Trooper::CheckMissileAttack() {
   if (!world_->IsPlayerVisible(this)) {
     return false;
   }
@@ -105,15 +105,15 @@ void Trooper::FaceTargetFoo() {
   flags &= ~mobj::MF_AMBUSH;
 
   angle = rend::CalcAngle(x, y, target_->x, target_->y);
-}
+}*/
 
-void Trooper::Attack() {
+void Trooper::A_PosAttack() {
   if (!target_) {
     return;
   }
 
   // Keep original behavier
-  FaceTargetFoo();
+  A_FaceTarget();
 
   rend::BamAngle vert_angle = world_->GetTargetAngle(x, y, z, angle, kMissileRange);
   int damage = ((rand() % 5) + 1) * 3;

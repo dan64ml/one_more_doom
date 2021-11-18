@@ -102,21 +102,21 @@ struct MapObject {
 
   // AI related  **************************************************************************
   // Target for attack
-  MapObject* target_ = nullptr;
-  ZZDir move_dir_ = ZZDir::kNoDir;
+  //MapObject* target_ = nullptr;
+  //ZZDir move_dir_ = ZZDir::kNoDir;
   // Random step count
-  int move_count_;  
+  //int move_count_;  
 
   // Fills move_dir_ and Co. Cand for common...
-  void NewChaseDirection();
+  //void NewChaseDirection();
   // Both are candidates to be virtual...
-  virtual bool CheckMeleeAttack() { return false; }
-  virtual bool CheckMissileAttack() { return false; }
+  //virtual bool CheckMeleeAttack() { return false; }
+  //virtual bool CheckMissileAttack() { return false; }
   // Zig-zag movement
-  bool ZZMove();
-  rend::BamAngle ZZDirToBam(ZZDir dir);
+  //bool ZZMove();
+  //rend::BamAngle ZZDirToBam(ZZDir dir);
   // Attempts to move it the direction, if ok set random move_count_
-  bool TryWalk(ZZDir dir);
+  //bool TryWalk(ZZDir dir);
 
 
   // Returns false if the object should be deleted
