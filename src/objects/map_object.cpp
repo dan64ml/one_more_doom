@@ -156,6 +156,8 @@ bool MapObject::TryMoveTo(double new_x, double new_y) {
               << new_x << ", " << new_y << "): " << std::endl;
   #endif
 
+  float_ok_ = false;
+  
   // check if the new position empty
   if (!CheckPosition(new_x, new_y)) {
     return false;
@@ -165,7 +167,10 @@ bool MapObject::TryMoveTo(double new_x, double new_y) {
   if (tmp_ceiling - tmp_floor < height) {
     // mobj too high
     return false;
+  } else {
+    float_ok_ = true;
   }
+  
   if (!(flags & MF_TELEPORT) && (tmp_ceiling - z < height)) {
     // hit the ceiling by the head :)))
     return false;
@@ -594,7 +599,7 @@ bool MapObject::ZZMove() {
     // It's impossible to get the new position, but there are several options why not
 
     // Unfitted height, but the monster can fly
-    if ((flags & mobj::MF_FLOAT) && float_ok) {
+    if ((flags & mobj::MF_FLOAT) && float_ok_) {
       if (z < tmp_floor) {
         z += kFloatSpeed;
       } else {

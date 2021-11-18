@@ -143,8 +143,8 @@ struct MapObject {
   double tmp_floor;
   double tmp_dropoff;
   world::SubSector* tmp_ss;
-
-  bool float_ok;
+  // Flags that it possible to move within (!!!!TODO: tmp_ceiling - tmp_floor or ceiling_z - floor_z)
+  bool float_ok_;
 
   // Crossed last step special lines
   std::vector<world::Line*> spec_lines_;

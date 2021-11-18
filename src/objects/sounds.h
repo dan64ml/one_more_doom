@@ -23,7 +23,7 @@
 #ifndef __SOUNDS__
 #define __SOUNDS__
 
-
+namespace id {
 //
 // SoundFX struct.
 //
@@ -287,6 +287,8 @@ typedef enum
     sfx_radio,
     NUMSFX
 } sfxenum_t;
+
+} // namespace id
 
 #endif
 //-----------------------------------------------------------------------------

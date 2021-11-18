@@ -8,8 +8,6 @@
 namespace mobj {
 
 FSM::FSM(const id::mobjinfo_t& info) : BaseFSM(static_cast<id::statenum_t>(info.spawnstate)) {
-  //current_state = id::states[info.spawnstate];
-
   spawn_state = static_cast<id::statenum_t>(info.spawnstate);
   see_state = static_cast<id::statenum_t>(info.seestate);
   pain_state = static_cast<id::statenum_t>(info.painstate);
@@ -86,6 +84,14 @@ void FSM::ToGibsState(MapObject* obj) {
 
 void FSM::CallStateFunction([[maybe_unused]] id::FuncId foo_id, [[maybe_unused]] MapObject* obj) {
   obj->CallStateFunction(foo_id);
+}
+
+bool FSM::IsMeleeState() {
+  return melee_state != id::S_NULL;
+}
+
+bool FSM::IsMissileState() {
+  return missile_state != id::S_NULL;
 }
 
 } // namespace fsm

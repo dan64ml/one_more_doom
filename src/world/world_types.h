@@ -48,6 +48,10 @@ struct Sector {
 
   BBox bbox;
 
+  // Important stuff for monster's AI. They can hear shots and it points to the source.
+  // TODO: Add sound propagation
+  mobj::MapObject* sound_source = nullptr;
+
   // True if the sector has active StructureObject
   bool has_sobj;
   // Lines forming this sector

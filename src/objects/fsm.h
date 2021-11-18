@@ -28,6 +28,9 @@ class FSM : public BaseFSM<MapObject> {
 
   void ToGibsState(MapObject* obj);
 
+  bool IsMeleeState();
+  bool IsMissileState();
+  
  protected:
   virtual void CallStateFunction([[maybe_unused]] id::FuncId foo_id, [[maybe_unused]] MapObject* obj) override;
 

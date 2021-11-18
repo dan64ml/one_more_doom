@@ -79,6 +79,9 @@ class World {
   mobj::MapObject* IsPlayerVisible(mobj::MapObject* mobj);  // P_CheckSight
   // Searches the player. If around == true, 360 degrees, else - 180
   mobj::MapObject* LookForPlayer(mobj::MapObject* mobj, bool around);
+  
+  // Check if there is no obstacle between two mobjs.
+  bool CheckSight(mobj::MapObject* mobj1, mobj::MapObject* mobj2) {}
 
 private:
   std::string wad_file_name_;
