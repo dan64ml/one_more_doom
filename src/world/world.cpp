@@ -742,13 +742,52 @@ bool World::TryToChangeSectorHeight(Sector* sec, int floor_h, int ceiling_h, boo
   return true;
 }
 
-
-mobj::MapObject* World::IsPlayerVisible(mobj::MapObject* mobj) {
+mobj::MapObject* World::LookForPlayer(mobj::MapObject* mobj, bool around) {
   return player_.get();
 }
 
-mobj::MapObject* World::LookForPlayer(mobj::MapObject* mobj, bool around) {
-  return player_.get();
+bool World::CheckSight(mobj::MapObject* mobj1, mobj::MapObject* mobj2) {
+  if (!mobj1 || !mobj2 || (mobj1 == mobj2)) {
+    return false;
+  }
+
+  auto items = CreateIntersectedObjList(mobj1->x, mobj1->y, mobj2->x, mobj2->y);
+
+  double dist = rend::SegmentLength(mobj1->x, mobj1->y, mobj2->x, mobj2->y);
+  double eye_pos = mobj1->z + 0.75 * mobj1->height;
+
+  for (auto item : items) {
+    int idx = item.obj.index();
+
+    if (idx == 0) {
+      auto line = std::get<0>(item.obj);
+      if (!line->sides[1]) {
+        // Wall
+        return false;
+      } else {
+        // Check opening
+        int low_los = eye_pos + item.distance * (mobj2->z - eye_pos) / dist;
+        int high_los = eye_pos + item.distance * (mobj2->z + mobj2->height - eye_pos) / dist;
+
+        if (low_los > std::min(line->sides[0]->sector->ceiling_height, 
+                               line->sides[1]->sector->ceiling_height)) {
+          return false;
+        }
+        if (high_los < std::max(line->sides[0]->sector->floor_height, 
+                               line->sides[1]->sector->floor_height)) {
+          return false;
+        }
+      }
+    } else if (idx == 1) {
+      // Can a monster see throgh another mobjs?!
+      auto mobj = std::get<1>(item.obj);
+      if (mobj == mobj2) {
+        return true;
+      }
+    }
+  }
+
+  return false;
 }
 
 } // namespace world
