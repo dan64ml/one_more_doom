@@ -7,5 +7,6 @@ add_library(mobjs
     projectile.cpp
     trooper.cpp
     monster.cpp
+    cacodemon.cpp
     )
     

@@ -38,6 +38,7 @@ class Monster : public MapObject {
   // The target for chasing
   MapObject* target_ = nullptr;
 
+ protected:
   // FSM's functions. Some of them are used directly by derived code.
   // Some functions are common for all monsters, they are defined in
   // this class.
@@ -46,8 +47,14 @@ class Monster : public MapObject {
   void A_FaceTarget();
   // Zombieman attack
   virtual void A_PosAttack() {}
+  // Cacodemon attack
+  virtual void A_HeadAttack() {}
 
- protected:
+  // Check if monster is ready to distance attack
+  bool CheckMissileRange();
+  // Check the distance and obstacles
+  bool CheckMeleeRange();
+
   void CallStateFunction(id::FuncId foo_id) override;
 
  private:
@@ -83,10 +90,6 @@ class Monster : public MapObject {
   bool CheckMeleeAttack();
   // Checks missile attack existence, move_count_ and distance
   bool CheckMissileAttack();
-  // Check if monster is ready to distance attack
-  bool CheckMissileRange();
-  // Check the distance and obstacles
-  bool CheckMeleeRange();
   // Attempts to move it the direction, if ok set random move_count_
   bool TryWalk(ZZDir dir);
   // Tries to move according to zigzag params and to use special lines

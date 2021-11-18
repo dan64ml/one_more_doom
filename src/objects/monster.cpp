@@ -34,6 +34,9 @@ void Monster::CallStateFunction(id::FuncId foo_id) {
     case id::A_PosAttack:
       A_PosAttack();
       break;
+    case id::A_HeadAttack:
+      A_HeadAttack();
+      break;
     
     default:
       break;
@@ -116,8 +119,9 @@ void Monster::A_Chase() {
   }
 
   if (!threshold_ && !world_->CheckSight(this, target_)) {
-    target_ = world_->LookForPlayer(this, true);
-    if (target_) {
+    auto new_target = world_->LookForPlayer(this, true);
+    if (new_target) {
+      target_ = new_target;
       return;
     }
   }

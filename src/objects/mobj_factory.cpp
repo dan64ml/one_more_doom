@@ -4,6 +4,7 @@
 #include "player.h"
 
 #include "trooper.h"
+#include "cacodemon.h"
 
 namespace id {
 
@@ -16,12 +17,15 @@ std::unique_ptr<mobj::MapObject> MobjFactory::Create(const wad::WadMapThing& thi
 
   switch (id::mobjtype_t type = mobjs_types_.at(thing.type); type) {
     case id::MT_POSSESSED:
-      //if (thing.x != -112) return {};
+      if (thing.x != -112) return {};
       obj.reset(new mobj::Trooper(type));
+      break;
+    case id::MT_HEAD:
+      obj.reset(new mobj::Cacodemon(type));
       break;
 
     default:
-      //return {};
+      return {};
       obj.reset(new mobj::MapObject(type));
       break;
   }

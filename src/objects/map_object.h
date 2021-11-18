@@ -96,6 +96,7 @@ struct MapObject {
   void DamageBySobj(int damage);
 
   // In fact this foo makes sense only for player
+  // but it requires when monsters try to open doors
   virtual bool IsCardPresent([[maybe_unused]] CardType c) const { return false; }
 
   // Checks current position and updates floor_z, ceiling_z and dropoff_z;
