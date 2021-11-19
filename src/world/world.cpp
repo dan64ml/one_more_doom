@@ -283,15 +283,15 @@ void World::CreateMapObjectList(std::ifstream& fin) {
     } else {
       auto mobj = spawner_.Create(items[i]);
       if (mobj) {
-        PutMobjOnMap(std::move(mobj));
+        PutMobjOnMap(std::move(mobj), false);
       }
     }
   }
 }
 
-void World::PutMobjOnMap(std::unique_ptr<mobj::MapObject> obj) {
+void World::PutMobjOnMap(std::unique_ptr<mobj::MapObject> obj, bool keep_z) {
   int ss_idx = bsp_.GetSubSectorIdx(obj->x, obj->y);
-  obj->TieToMap(this, &sub_sectors_[ss_idx]);
+  obj->TieToMap(this, &sub_sectors_[ss_idx], keep_z);
 
   if (!(obj->flags & mobj::MF_NOSECTOR)) {
     sub_sectors_[ss_idx].mobjs.push_back(obj.get());
@@ -310,7 +310,7 @@ void World::SpawnProjectile(id::mobjtype_t type, mobj::MapObject* parent) {
   auto proj = std::unique_ptr<mobj::MapObject>(new mobj::Projectile(type, parent));
   //proj-> SetVerticalAngle(angle);
   proj->mom_z = proj->speed * rend::BamSin(angle);
-  PutMobjOnMap(std::move(proj));
+  PutMobjOnMap(std::move(proj), true);
 }
 
 void World::DoBlastDamage(int damage, int x, int y) {
@@ -591,7 +591,7 @@ void World::SpawnBulletPuff(int x, int y, int z) {
   bullet->z = z;
   bullet->flags |= mobj::MF_NOGRAVITY;
 
-  PutMobjOnMap(std::move(bullet));
+  PutMobjOnMap(std::move(bullet), true);
 }
 
 void World::SpawnBulletBlood(int x, int y, int z) {
@@ -602,7 +602,7 @@ void World::SpawnBulletBlood(int x, int y, int z) {
   bullet->z = z;
   bullet->flags |= mobj::MF_NOGRAVITY;
 
-  PutMobjOnMap(std::move(bullet));
+  PutMobjOnMap(std::move(bullet), true);
 }
 
 void World::SpawnBFGExplode(int x, int y, int z) {
@@ -613,7 +613,7 @@ void World::SpawnBFGExplode(int x, int y, int z) {
   bfg->z = z;
 //  bfg->flags |= mobj::MF_NOGRAVITY;
 
-  PutMobjOnMap(std::move(bfg));
+  PutMobjOnMap(std::move(bfg), true);
 }
 
 void World::UseLine(world::Line* line, mobj::MapObject* mobj) {

@@ -16,8 +16,6 @@ class Projectile : public MovingObject {
 
   void SetVerticalAngle(rend::BamAngle an);
 
-  void TieToMap(world::World* world, world::SubSector* ss) override;
-
  protected:
   void SlowDown() override {}
   void ZMove() override;

@@ -94,8 +94,6 @@ private:
 
   id::MobjFactory spawner_;
 
-  // TMP!!!!
-  //std::list<mobj::MapObject> mobjs_;
   std::list<std::unique_ptr<mobj::MapObject>> mobjs_;
   
   FlatWallAnimator flat_animator_;
@@ -115,7 +113,7 @@ private:
   // Fills Sector::lines and Sector::subsecs in all sectors.
   void FillSectorLines();
 
-  void PutMobjOnMap(std::unique_ptr<mobj::MapObject> obj);
+  void PutMobjOnMap(std::unique_ptr<mobj::MapObject> obj, bool keep_z);
 
   void SpawnBulletPuff(int x, int y, int z);
   void SpawnBulletBlood(int x, int y, int z);

@@ -152,13 +152,5 @@ void Projectile::BFGSpray() {
     }
   }
 }
- 
-void Projectile::TieToMap(world::World* world, world::SubSector* ss) {
-  world_ = world;
-  ss_ = ss;
-
-  floor_z = ss_->sector->floor_height;
-  ceiling_z = ss_->sector->ceiling_height;
-}
 
 } // namespace wpn

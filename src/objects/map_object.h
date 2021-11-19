@@ -57,7 +57,7 @@ struct MapObject {
   int GetHealth() const { return health_; }
 
   // Just created mobj should be "tied" to game world
-  virtual void TieToMap(world::World* world, world::SubSector* ss);
+  virtual void TieToMap(world::World* world, world::SubSector* ss, bool keep_z = false);
 
   void CauseDamage(int damage);
   // Structure objects influence in a bit different way.
