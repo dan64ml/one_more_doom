@@ -1,3 +1,9 @@
+// The base class for all types of map objects.
+// Objects of this class can be put in the game world,
+// can be drawn by the renderer and support animation.
+// This functionality is enough for almost all fixed 
+// objects.
+
 #ifndef MAP_OBJECT_
 #define MAP_OBJECT_
 
@@ -34,7 +40,8 @@ struct MapObject {
   // NB! Sizes for drawing are diffrent and must be get from texture sizes
   double height;
   double radius;
-  int speed;
+
+  double speed;
   
   // Original DOOM flags
   uint32_t flags;
@@ -49,6 +56,7 @@ struct MapObject {
 
   // Returns sprite name considering the view point
   std::string GetSpriteName(int vp_x, int vp_y) const;
+
   int GetHealth() const { return health_; }
 
   // Just created mobj should be "tied" to game world
@@ -78,8 +86,8 @@ struct MapObject {
 
   // The narrowest part over all contacted Sectors.
   // Calculated during checking lines intersection
-  double floor_z;
-  double ceiling_z;
+  double floor_z_;
+  double ceiling_z_;
 
   world::World* world_;
 

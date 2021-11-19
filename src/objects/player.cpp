@@ -12,7 +12,7 @@ namespace mobj {
 void Player::Move(rend::BamAngle delta_angle, double forward_move, double side_move) {
   angle += delta_angle;
 
-  if (z > floor_z) {
+  if (z > floor_z_) {
     // can't move when fly
     return;
   }

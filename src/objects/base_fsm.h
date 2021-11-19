@@ -1,3 +1,6 @@
+// Finite state machine class that encapsulates the base logic
+// of the original DOOM fsm.
+
 #ifndef BASE_FSM_H_
 #define BASE_FSM_H_
 

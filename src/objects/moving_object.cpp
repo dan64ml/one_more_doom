@@ -76,8 +76,8 @@ void MovingObject::ZMove() {
   // Flying objects have another behavior !!!
   z += mom_z;
 
-  if (z <= floor_z) {
-    z = floor_z;
+  if (z <= floor_z_) {
+    z = floor_z_;
 
     if (mom_z < 0) {
       mom_z = 0;
@@ -158,8 +158,8 @@ bool MovingObject::TryMoveTo(double new_x, double new_y) {
   }
 
   // Rebind the mobj and change x and y
-  floor_z = tmp_floor;
-  ceiling_z = tmp_ceiling;
+  floor_z_ = tmp_floor;
+  ceiling_z_ = tmp_ceiling;
 
   world_->blocks_.MoveMapObject(this, new_x, new_y);
   x = new_x;
@@ -340,23 +340,23 @@ void MovingObject::UpdateOpening() {
     UpdateOpening(line);
   }
 
-  ceiling_z = tmp_ceiling;
-  floor_z = tmp_floor;
+  ceiling_z_ = tmp_ceiling;
+  floor_z_ = tmp_floor;
 }
 
 bool MovingObject::AdjustMobjHeight() {
-  bool is_on_floor = (abs(z - floor_z) < kEps);
+  bool is_on_floor = (abs(z - floor_z_) < kEps);
   UpdateOpening();
 
   if (is_on_floor) {
-    z = floor_z;
+    z = floor_z_;
   } else {
-    if (z + height > ceiling_z) {
-      z = ceiling_z - height;
+    if (z + height > ceiling_z_) {
+      z = ceiling_z_ - height;
     }
   }
 
-  return (ceiling_z - floor_z < height) ? false : true;
+  return (ceiling_z_ - floor_z_ < height) ? false : true;
 }
 
 } // namespace mobj

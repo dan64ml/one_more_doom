@@ -406,7 +406,7 @@ bool Monster::ZZMove() {
   }
 
   if (!(flags & mobj::MF_FLOAT)) {
-    z = floor_z;
+    z = floor_z_;
   }
 
   return true;

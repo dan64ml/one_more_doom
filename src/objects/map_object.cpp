@@ -84,21 +84,21 @@ void MapObject::CauseDamage(int damage) {
 }
 
 bool MapObject::AdjustMobjHeight() {
-  bool is_on_floor = (abs(z - floor_z) < kEps);
+  bool is_on_floor = (abs(z - floor_z_) < kEps);
 
   // Simplified case: mobj can't change its (x, y) position
-  floor_z = ss_->sector->floor_height;
-  ceiling_z = ss_->sector->ceiling_height;
+  floor_z_ = ss_->sector->floor_height;
+  ceiling_z_ = ss_->sector->ceiling_height;
 
   if (is_on_floor) {
-    z = floor_z;
+    z = floor_z_;
   } else {
-    if (z + height > ceiling_z) {
-      z = ceiling_z - height;
+    if (z + height > ceiling_z_) {
+      z = ceiling_z_ - height;
     }
   }
 
-  return (ceiling_z - floor_z < height) ? false : true;
+  return (ceiling_z_ - floor_z_ < height) ? false : true;
 }
 
 void MapObject::DamageBySobj(int damage) {
@@ -129,8 +129,8 @@ void MapObject::TieToMap(world::World* world, world::SubSector* ss, bool keep_z)
   world_ = world;
   ss_ = ss;
 
-  floor_z = ss_->sector->floor_height;
-  ceiling_z = ss_->sector->ceiling_height;
+  floor_z_ = ss_->sector->floor_height;
+  ceiling_z_ = ss_->sector->ceiling_height;
   if (!keep_z) {
     z = ss_->sector->floor_height;
   }
