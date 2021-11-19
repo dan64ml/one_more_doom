@@ -63,14 +63,6 @@ class World {
   void HitLine(world::Line* line, mobj::MapObject* mobj);
   void CrossLine(world::Line* line, mobj::MapObject* mobj);
 
-  // Returns true if it's possible to set new floor/ceiling heights.
-  // If there any mobj that dont't fit new height, return false.
-  // If flying mobj must be put down to fit new height, it will be.
-  // z coordinate of standing mobj will be change too if it's necessary.
-  //
-  // If cause_damage == true and we have unfitted mobjs - they'll get damage.
-  bool TryToChangeSectorHeight(Sector* sec, int floor_h, int ceiling_h, bool cause_damage);
-
    // Some game logic uses it...
   long long tick_counter_ = 0;
 
@@ -123,7 +115,7 @@ private:
   // Fills Sector::lines and Sector::subsecs in all sectors.
   void FillSectorLines();
 
-  void PutMobjOnMap(std::unique_ptr<mobj::MapObject> obj, bool put_on_floor);
+  void PutMobjOnMap(std::unique_ptr<mobj::MapObject> obj);
 
   void SpawnBulletPuff(int x, int y, int z);
   void SpawnBulletBlood(int x, int y, int z);

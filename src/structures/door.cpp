@@ -163,8 +163,8 @@ bool Door::TickTime() {
   return true;
 }
 
-bool Door::CanChangeHeight(int ceiling_height) {
-  return world_->TryToChangeSectorHeight(sector_, sector_->floor_height, ceiling_height, false);
-}
+//bool Door::CanChangeHeight(int ceiling_height) {
+//  return world_->TryToChangeSectorHeight(sector_, sector_->floor_height, ceiling_height, false);
+//}
 
 } // namespace sobj

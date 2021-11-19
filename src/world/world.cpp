@@ -276,35 +276,22 @@ void World::CreateMapObjectList(std::ifstream& fin) {
       player_ = spawner_.CreatePlayer(items[i]);
 
       int ss_idx = bsp_.GetSubSectorIdx(player_->x, player_->y);
-      player_->floor_z = player_->z = sub_sectors_[ss_idx].sector->floor_height;
-      player_->ss_ = &sub_sectors_[ss_idx];
-
-      player_->angle = rend::DegreesToBam(items[i].angle);
-      player_->world_ = this;
+      player_->TieToMap(this, &sub_sectors_[ss_idx]);
 
       sub_sectors_[ss_idx].mobjs.push_back(player_.get());
       blocks_.AddMapObject(player_.get());
     } else {
       auto mobj = spawner_.Create(items[i]);
       if (mobj) {
-        // TODO: move??
-        PutMobjOnMap(std::move(mobj), true);
+        PutMobjOnMap(std::move(mobj));
       }
     }
   }
 }
 
-void World::PutMobjOnMap(std::unique_ptr<mobj::MapObject> obj, bool put_on_floor) {
+void World::PutMobjOnMap(std::unique_ptr<mobj::MapObject> obj) {
   int ss_idx = bsp_.GetSubSectorIdx(obj->x, obj->y);
-  obj->ss_ = &sub_sectors_[ss_idx];
-
-  obj->floor_z = sub_sectors_[ss_idx].sector->floor_height;
-  if (put_on_floor) {
-    // // Don't put projectiles on floor
-    obj->z = obj->floor_z;
-  }
-
-  obj->world_ = this;
+  obj->TieToMap(this, &sub_sectors_[ss_idx]);
 
   if (!(obj->flags & mobj::MF_NOSECTOR)) {
     sub_sectors_[ss_idx].mobjs.push_back(obj.get());
@@ -323,7 +310,7 @@ void World::SpawnProjectile(id::mobjtype_t type, mobj::MapObject* parent) {
   auto proj = std::unique_ptr<mobj::MapObject>(new mobj::Projectile(type, parent));
   //proj-> SetVerticalAngle(angle);
   proj->mom_z = proj->speed * rend::BamSin(angle);
-  PutMobjOnMap(std::move(proj), false);
+  PutMobjOnMap(std::move(proj));
 }
 
 void World::DoBlastDamage(int damage, int x, int y) {
@@ -604,7 +591,7 @@ void World::SpawnBulletPuff(int x, int y, int z) {
   bullet->z = z;
   bullet->flags |= mobj::MF_NOGRAVITY;
 
-  PutMobjOnMap(std::move(bullet), false);
+  PutMobjOnMap(std::move(bullet));
 }
 
 void World::SpawnBulletBlood(int x, int y, int z) {
@@ -615,7 +602,7 @@ void World::SpawnBulletBlood(int x, int y, int z) {
   bullet->z = z;
   bullet->flags |= mobj::MF_NOGRAVITY;
 
-  PutMobjOnMap(std::move(bullet), false);
+  PutMobjOnMap(std::move(bullet));
 }
 
 void World::SpawnBFGExplode(int x, int y, int z) {
@@ -626,7 +613,7 @@ void World::SpawnBFGExplode(int x, int y, int z) {
   bfg->z = z;
 //  bfg->flags |= mobj::MF_NOGRAVITY;
 
-  PutMobjOnMap(std::move(bfg), false);
+  PutMobjOnMap(std::move(bfg));
 }
 
 void World::UseLine(world::Line* line, mobj::MapObject* mobj) {
@@ -673,73 +660,6 @@ void World::FillSectorLines() {
       sec.bbox.AddPoint(line->x2, line->y2);
     }
   }
-}
-
-bool World::TryToChangeSectorHeight(Sector* sec, int floor_h, int ceiling_h, bool cause_damage) {
-  int max_height = ceiling_h - floor_h;
-
-  bool is_obstacle = false;
-  // Look for unfitted mobj and hit them
-  for (const SubSector* ss : sec->subsecs) {
-    for (auto mobj : ss->mobjs) {
-      if (mobj->height > max_height) {
-        is_obstacle = true;
-        if (cause_damage) {
-          // There can be many actions...
-          // TODO: Put all them into CauseDamage() ???
-
-          /*if (mobj->height <= 0) {
-            // Get giblets
-            mobj->flags &= ~mobj::MF_SOLID;
-            mobj->height = 0;
-            mobj->radius = 0;
-            continue;
-          }
-
-          if (mobj->flags & mobj::MF_DROPPED) {
-            // Delete such a stuff
-            //mobj->
-            continue;
-          }
-
-          if (!(mobj->flags & mobj::MF_SHOOTABLE)) {
-            //Can't be hit
-            continue;
-          }*/
-
-          if (!(tick_counter_ & 3)) {
-            mobj->CauseDamage(10);
-          }
-        }
-      }
-    }
-  }
-
-  if (is_obstacle) {
-    return false;
-  }
-
-  // Change mobjs' z
-  for (const SubSector* ss : sec->subsecs) {
-    for (auto mobj : ss->mobjs) {
-      // floor_z and ceiling_z make opening for this mobj
-      // These vars are used during moving
-      mobj->floor_z = floor_h;
-      mobj->ceiling_z = ceiling_h;
-
-      if (mobj->z == sec->floor_height) {
-        // The mobj is on floor
-        mobj->z = floor_h;
-      } else {
-        // ? flying mobj ?
-        if (mobj->z + mobj->height > ceiling_h) {
-          mobj->z = ceiling_h - mobj->height;
-        }
-      }
-    }
-  }
-
-  return true;
 }
 
 mobj::MapObject* World::LookForPlayer(mobj::MapObject* mobj, bool around) {

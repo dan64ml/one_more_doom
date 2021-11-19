@@ -15,7 +15,6 @@ bool MovingObject::TickTime() {
     return false;
   }
 
-  // TODO: should I use return value??? E.g. for deleting the mobj?
   fsm_.Tick(this);
   
   MoveObject();

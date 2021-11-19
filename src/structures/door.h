@@ -48,7 +48,7 @@ class Door : public StructureObject {
   // Counter
   int wait_counter_;
   
-  bool CanChangeHeight(int ceiling_height);
+  //bool CanChangeHeight(int ceiling_height);
 };
 
 } // sobj

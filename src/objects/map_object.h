@@ -19,11 +19,6 @@ namespace world {
 
 namespace mobj {
 
-/*=========================================================================
-Need access to:
-- BlockMap class data
-- FastBsp
-===========================================================================*/
 struct MapObject {
  public:
   MapObject(id::mobjtype_t type);
@@ -31,7 +26,7 @@ struct MapObject {
   // World coordinates of the object
   double x;
   double y;
-  double z;  
+  double z;
 
   // View direction
   rend::BamAngle angle;
@@ -55,17 +50,14 @@ struct MapObject {
   // Current subsector
   world::SubSector* ss_;
 
-  world::World* world_;
-  // The narrowest part over all contacted Sectors.
-  // Calculated during checking lines intersection
-  double floor_z;
-  double ceiling_z;
-
   // Returns false if the object should be deleted
   virtual bool TickTime();
 
   std::string GetSpriteName(int vp_x, int vp_y) const;
   int GetHealth() const { return health_; }
+
+  // Just created mobj should be "tied" to game world
+  virtual void TieToMap(world::World* world, world::SubSector* ss);
 
   void CauseDamage(int damage);
   // Structure objects influence in a bit different way.
@@ -91,13 +83,18 @@ struct MapObject {
 
   // Flag to delete the mobj
   bool delete_me_ = false;
+
   // Change current subsector
   bool ChangeSubSector(world::SubSector* new_ss);
 
   // The narrowest part over all contacted Sectors.
   // Calculated during checking lines intersection
-//  double floor_z;
-//  double ceiling_z;
+  double floor_z;
+  double ceiling_z;
+
+  world::World* world_;
+  // Current subsector
+//  world::SubSector* ss_;
 
 private:
 
