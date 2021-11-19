@@ -306,10 +306,7 @@ void World::PutMobjOnMap(std::unique_ptr<mobj::MapObject> obj, bool keep_z) {
 
 void World::SpawnProjectile(id::mobjtype_t type, mobj::MapObject* parent) {
   rend::BamAngle angle = GetTargetAngle(parent->x, parent->y, parent->z + mobj::kWeaponHeight, parent->angle, 1024);
-
-  auto proj = std::unique_ptr<mobj::MapObject>(new mobj::Projectile(type, parent));
-  //proj-> SetVerticalAngle(angle);
-  proj->mom_z = proj->speed * rend::BamSin(angle);
+  auto proj = std::unique_ptr<mobj::MapObject>(new mobj::Projectile(type, parent, angle));
   PutMobjOnMap(std::move(proj), true);
 }
 

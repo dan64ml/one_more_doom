@@ -7,7 +7,7 @@
 
 namespace mobj {
 
-Projectile::Projectile(id::mobjtype_t type, MapObject* parent) 
+Projectile::Projectile(id::mobjtype_t type, MapObject* parent, rend::BamAngle vert_angle) 
   : MovingObject(type) {
   // Spawn at the end of the barrel
   int dx = parent->radius * rend::BamCos(parent->angle);
@@ -22,9 +22,9 @@ Projectile::Projectile(id::mobjtype_t type, MapObject* parent)
   
   angle = parent->angle;
 
-  mom_x = speed * rend::BamCos(parent->angle);
-  mom_y = speed * rend::BamSin(parent->angle);
-  mom_z = 0;
+  mom_x = speed * rend::BamCos(angle);
+  mom_y = speed * rend::BamSin(angle);
+  mom_z = speed * rend::BamSin(vert_angle);
 }
 
 bool Projectile::TickTime() {

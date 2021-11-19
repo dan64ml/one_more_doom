@@ -10,11 +10,9 @@ namespace mobj {
 
 class Projectile : public MovingObject {
  public:
-  Projectile(id::mobjtype_t type, MapObject* parent);
+  Projectile(id::mobjtype_t type, MapObject* parent, rend::BamAngle vert_angle);
 
   bool TickTime() override;
-
-  void SetVerticalAngle(rend::BamAngle an);
 
  protected:
   void SlowDown() override {}
@@ -28,16 +26,12 @@ class Projectile : public MovingObject {
  private:
   void BFGSpray();
 
-  const int kRocketBlastDamage = 128;
-  const int kBarrelHeight = 32; // original value
-
   int damage_;
   int blast_damage_;
   
   bool met_obstacle = false;
   bool hit_sky_ = false;
 };
-
 
 } // namespace wpn
 

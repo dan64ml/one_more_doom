@@ -24,6 +24,10 @@ const int kFloatSpeed = 4;
 // To compare double values
 const double kEps = 0.0001;
 
+const int kRocketBlastDamage = 128;
+
+const int kBarrelHeight = 32; // original value
+
 enum CardType {
   kBlueCard,
   kYellowCard,

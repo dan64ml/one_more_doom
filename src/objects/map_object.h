@@ -42,11 +42,6 @@ struct MapObject {
   // Original DOOM type
   id::mobjtype_t mobj_type;
 
-  // Momentums, in fact speed in strange units
-  double mom_x = 0;
-  double mom_y = 0;
-  double mom_z = 0;
-
   // Current subsector
   world::SubSector* ss_;
 
@@ -92,11 +87,12 @@ struct MapObject {
   double floor_z;
   double ceiling_z;
 
-  world::World* world_;
-  // Current subsector
-//  world::SubSector* ss_;
+  // Momentums, in fact speed in strange units
+  double mom_x = 0;
+  double mom_y = 0;
+  double mom_z = 0;
 
-private:
+  world::World* world_;
 
   friend class FSM;
 };
