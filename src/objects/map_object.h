@@ -1,7 +1,6 @@
 #ifndef MAP_OBJECT_
 #define MAP_OBJECT_
 
-#include <cstdint>
 #include <string>
 
 #include "mobj_flags.h"
@@ -48,6 +47,7 @@ struct MapObject {
   // Returns false if the object should be deleted
   virtual bool TickTime();
 
+  // Returns sprite name considering the view point
   std::string GetSpriteName(int vp_x, int vp_y) const;
   int GetHealth() const { return health_; }
 
@@ -67,9 +67,6 @@ struct MapObject {
   virtual bool IsCardPresent([[maybe_unused]] CardType c) const { return false; }
 
  protected:
-  // TODO: Candidate to be removed
-  virtual void CallStateFunction([[maybe_unused]] id::FuncId foo_id) {}
-
   FSM fsm_;
 
   int health_;
@@ -79,20 +76,18 @@ struct MapObject {
   // Flag to delete the mobj
   bool delete_me_ = false;
 
-  // Change current subsector
-  bool ChangeSubSector(world::SubSector* new_ss);
-
   // The narrowest part over all contacted Sectors.
   // Calculated during checking lines intersection
   double floor_z;
   double ceiling_z;
 
-  // Momentums, in fact speed in strange units
-  double mom_x = 0;
-  double mom_y = 0;
-  double mom_z = 0;
-
   world::World* world_;
+
+  // Change current subsector
+  bool ChangeSubSector(world::SubSector* new_ss);
+
+  // TODO: Candidate to be removed
+  virtual void CallStateFunction([[maybe_unused]] id::FuncId foo_id) {}
 
   friend class FSM;
 };
