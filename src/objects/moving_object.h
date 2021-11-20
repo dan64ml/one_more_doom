@@ -69,7 +69,7 @@ class MovingObject : public MapObject {
   double tmp_ceiling;
   double tmp_floor;
   double tmp_dropoff;
-  world::SubSector* tmp_ss;
+  
    // Flags that it possible to move within (!!!!TODO: tmp_ceiling - tmp_floor or ceiling_z - floor_z)
   bool float_ok_;
 

@@ -1,8 +1,18 @@
 #include "moving_object.h"
 
+#include <iostream>
+
 #include "world/world_types.h"
 #include "world/world.h"
 #include "utils/world_utils.h"
+
+#define DEBUG_CODE
+
+#ifdef DEBUG_CODE
+  #define D_PRINT_STEPS
+  #define D_PRINT_MOBJS
+  #define D_PRINT_LINES
+#endif
 
 namespace mobj {
 
@@ -165,7 +175,7 @@ bool MovingObject::TryMoveTo(double new_x, double new_y) {
   x = new_x;
   y = new_y;
 
-  ChangeSubSector(tmp_ss);
+  ChangeSubSector(x, y);
 
   return true;
 }
@@ -278,7 +288,6 @@ bool MovingObject::CheckPosition(double new_x, double new_y) {
     }
   }
 
-  tmp_ss = ss;
   return true;
 }
 

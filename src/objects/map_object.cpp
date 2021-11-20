@@ -47,13 +47,16 @@ bool MapObject::TickTime() {
   return true;
 }
 
-bool MapObject::ChangeSubSector(world::SubSector* new_ss) {
+bool MapObject::ChangeSubSector(int new_x, int new_y) {
   auto it = std::find(begin(ss_->mobjs), end(ss_->mobjs), this);
   if (it == end(ss_->mobjs)) {
     return false;
   }
 
   ss_->mobjs.erase(it);
+
+  int ss_idx = world_->bsp_.GetSubSectorIdx(new_x, new_y);
+  auto* new_ss = &world_->sub_sectors_[ss_idx];
 
   new_ss->mobjs.push_back(this);
 

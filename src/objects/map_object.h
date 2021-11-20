@@ -92,7 +92,7 @@ struct MapObject {
   world::World* world_;
 
   // Change current subsector
-  bool ChangeSubSector(world::SubSector* new_ss);
+  bool ChangeSubSector(int new_x, int new_y);
 
   // TODO: Candidate to be removed
   virtual void CallStateFunction([[maybe_unused]] id::FuncId foo_id) {}
