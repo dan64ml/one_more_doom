@@ -151,6 +151,14 @@ void Player::FirePlasma() {
   world_->SpawnProjectile(id::MT_PLASMA, this);
 }
 
+void Player::SlowDown() {
+  if (z > floor_z_) {
+    return;
+  }
+
+  mom_x = mom_y = 0;
+}
+
 void Player::FirePistol(bool refire) {
   auto slope = world_->GetTargetAngle(x, y, z + kWeaponHeight, angle, kMissileRange);
   int damage = 5 * (rand() % 3 + 1);

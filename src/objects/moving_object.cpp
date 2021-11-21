@@ -108,7 +108,27 @@ bool MovingObject::RunIntoAction([[maybe_unused]] double new_x, [[maybe_unused]]
 
 // By defaul - stop the object
 void MovingObject::SlowDown() {
-  mom_x = mom_y = 0;
+  if (z > floor_z_) {
+    return;
+  }
+
+  // Original behavior
+  if (flags & MF_CORPSE) {
+    if (mom_x > 0.25 || mom_x < -0.25 ||
+        mom_y > 0.25 || mom_y < -.025) {
+      if (std::abs(floor_z_ - ss_->sector->floor_height) > kEps) {
+        return;
+      }
+    }
+  }
+
+  if (mom_x > -kStopSpeed && mom_x < kStopSpeed &&
+      mom_y > -kStopSpeed && mom_y < kStopSpeed) {
+    mom_x = mom_y = 0;
+  } else {
+    mom_x *= kFriction;
+    mom_y *= kFriction;
+  }
 }
 
 // By default - find walls and ignore portals

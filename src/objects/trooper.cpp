@@ -22,4 +22,12 @@ void Trooper::A_PosAttack() {
   world_->HitAngleLineAttack(this, damage, kMissileRange, angle, vert_angle);
 }
 
+bool Trooper::InfluenceObject(MapObject* obj) {
+  if (obj->flags & MF_SOLID) {
+    return false;
+  }
+
+  return true;
+}
+
 } // namespace mobj

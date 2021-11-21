@@ -59,7 +59,8 @@ class World {
   // Returns the target
   mobj::MapObject* GetTarget(int from_x, int from_y, int from_z, rend::BamAngle direction, int distance);
 
-  void DoBlastDamage(int damage, int x, int y);
+  //void DoBlastDamage(int damage, int x, int y);
+  void DoBlastDamage(int damage, mobj::MapObject* inflictor);
 
   void UseLine(world::Line* line, mobj::MapObject* mobj);
   void HitLine(world::Line* line, mobj::MapObject* mobj);

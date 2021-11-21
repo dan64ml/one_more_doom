@@ -47,6 +47,9 @@ class Player : public MovingObject {
   void FireSuperShotgun();
   void FireBFG();
 
+ protected:
+  void SlowDown() override;
+  
  private:
   virtual bool RunIntoAction(double new_x, double new_y) override;
 
@@ -55,6 +58,7 @@ class Player : public MovingObject {
   world::Line* FindSpecialLine();
 
   world::IntersectedObject GetClosestObstacle(double new_x, double new_y);
+
  private:
   wpn::Weapon weapon_;
   wpn::Ammo ammo_;

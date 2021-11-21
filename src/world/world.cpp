@@ -318,7 +318,37 @@ void World::SpawnMapObject(id::mobjtype_t type, int x, int y, uint32_t extra_fla
   PutMobjOnMap(std::move(new_mobj), !on_floor);
 }
 
-void World::DoBlastDamage(int damage, int x, int y) {
+void World::DoBlastDamage(int damage, mobj::MapObject* inflictor) {
+  int x = inflictor->x;
+  int y = inflictor->y;
+
+  BBox bb {x - damage, x + damage, y + damage, y - damage};
+  for (auto obj :blocks_.GetMapObjects(bb)) {
+    if (!(obj->flags & mobj::MF_SHOOTABLE)) {
+      continue;
+    }
+    // This monsters can't be hit by blast
+    if (obj->mobj_type == id::MT_CYBORG || obj->mobj_type == id::MT_SPIDER) {
+      continue;
+    }
+
+    int dx = abs(x - obj->x);
+    int dy = abs(y - obj->y);
+    // Original algorithm uses max projection instead real distance. Keep it.
+    int dist = std::max(dx, dy);
+    dist = std::max<int>(0, dist - obj->radius);
+    // The mobj too far
+    if (dist >= damage) {
+      continue;
+    }
+
+    if (IsMobjBlastVisible(x, y, obj)) {
+      obj->CauseDamage(damage - dist, inflictor, nullptr);
+    }
+  }
+}
+
+/*void World::DoBlastDamage(int damage, int x, int y) {
   BBox bb {x - damage, x + damage, y + damage, y - damage};
   for (auto obj :blocks_.GetMapObjects(bb)) {
     if (!(obj->flags & mobj::MF_SHOOTABLE)) {
@@ -343,7 +373,7 @@ void World::DoBlastDamage(int damage, int x, int y) {
       obj->CauseDamage(damage - dist, nullptr, nullptr);
     }
   }
-}
+}*/
 
 bool World::IsMobjBlastVisible(double vp_x, double vp_y, const mobj::MapObject* obj) const {
   auto crossed_objects = CreateIntersectedObjList(vp_x, vp_y, obj->x, obj->y);

@@ -20,6 +20,8 @@ const double kMaxMove = 30;
 
 // Flying mobj's vertical speed;
 const int kFloatSpeed = 4;
+const double kStopSpeed = 0.5;
+const double kFriction = 0.90625;
 
 const int kBaseThreshold = 100;
 

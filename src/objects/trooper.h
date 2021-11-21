@@ -11,7 +11,7 @@ class Trooper : public Monster {
   Trooper(id::mobjtype_t type);
 
  protected:
-  bool InfluenceObject(MapObject*) override { return false; }
+  bool InfluenceObject(MapObject* obj) override;// { return false; }
   void A_PosAttack() override;
   
  private:

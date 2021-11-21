@@ -49,7 +49,8 @@ bool Projectile::RunIntoAction(double new_x, double new_y) {
   fsm_.ToDeathState(this);
 
   if (blast_damage_ != 0) {
-    world_->DoBlastDamage(blast_damage_, x, y);
+    //world_->DoBlastDamage(blast_damage_, x, y);
+    world_->DoBlastDamage(blast_damage_, this);
   }
 
   return false;
