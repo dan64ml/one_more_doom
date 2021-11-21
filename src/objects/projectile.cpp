@@ -8,7 +8,7 @@
 namespace mobj {
 
 Projectile::Projectile(id::mobjtype_t type, MapObject* parent, rend::BamAngle vert_angle) 
-  : MovingObject(type), parent_(parent_) {
+  : MovingObject(type), parent_(parent) {
   // Spawn at the end of the barrel
   int dx = parent->radius * rend::BamCos(parent->angle);
   int dy = parent->radius * rend::BamSin(parent->angle);

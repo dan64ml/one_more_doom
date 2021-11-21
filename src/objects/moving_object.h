@@ -70,7 +70,7 @@ class MovingObject : public MapObject {
   double tmp_floor;
   double tmp_dropoff;
   
-   // Flags that it possible to move within (!!!!TODO: tmp_ceiling - tmp_floor or ceiling_z - floor_z)
+   // Flags that it's possible to move within (!!!!TODO: tmp_ceiling - tmp_floor or ceiling_z - floor_z)
   bool float_ok_;
 
 private:
