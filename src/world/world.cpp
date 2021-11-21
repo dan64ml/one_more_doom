@@ -340,7 +340,7 @@ void World::DoBlastDamage(int damage, int x, int y) {
     }
 
     if (IsMobjBlastVisible(x, y, obj)) {
-      obj->CauseDamage(damage - dist);
+      obj->CauseDamage(damage - dist, nullptr, nullptr);
     }
   }
 }
@@ -482,7 +482,7 @@ void World::HitAngleLineAttack(mobj::MapObject* parent, int damage, int distance
       int hit_line_height = view_line_z + elem.distance * height_coef;
 
       if (!((mobj->z > hit_line_height) || (mobj->z + mobj->height < hit_line_height))) {
-        mobj->CauseDamage(damage);
+        mobj->CauseDamage(damage, parent, parent);
 
         auto [x, y] = math::ShiftToCenter(parent->x, parent->y, elem.x, elem.y, 2);
         if (mobj->flags & mobj::MF_NOBLOOD) {

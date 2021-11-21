@@ -66,7 +66,7 @@ bool MapObject::ChangeSubSector(int new_x, int new_y) {
   return true;
 }
 
-void MapObject::CauseDamage(int damage) {
+/*void MapObject::CauseDamage(int damage) {
   health_ -= damage;
 
   if (health_ > 0) {
@@ -85,7 +85,7 @@ void MapObject::CauseDamage(int damage) {
     // TODO: flying objects must fall down
     flags &= ~(MF_SOLID | MF_SHOOTABLE);
   }
-}
+}*/
 
 void MapObject::CauseDamage(int damage, MapObject* inflictor, MapObject* source) {
   if (!(flags & MF_SHOOTABLE)) {
@@ -218,7 +218,7 @@ void MapObject::DamageBySobj(int damage) {
     return;
   }
 
-  CauseDamage(damage);
+  CauseDamage(damage, nullptr, nullptr);
 }
 
 void MapObject::TieToMap(world::World* world, world::SubSector* ss, bool keep_z) {

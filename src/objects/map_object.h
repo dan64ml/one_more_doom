@@ -62,7 +62,7 @@ struct MapObject {
   // Just created mobj should be "tied" to game world
   virtual void TieToMap(world::World* world, world::SubSector* ss, bool keep_z = false);
 
-  void CauseDamage(int damage);
+  //void CauseDamage(int damage);
 
   // Original terminology: inflictor - the thing that caused damage, creature or
   // missile. Can be nullptr, e.g. slime.

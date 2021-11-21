@@ -14,7 +14,7 @@ void Cacodemon::A_HeadAttack() {
 
   if (CheckMeleeRange()) {
     int damage = (rand() % 6 + 1) * 10;
-    target_->CauseDamage(damage);
+    target_->CauseDamage(damage, this, this);
     return;
   }
 

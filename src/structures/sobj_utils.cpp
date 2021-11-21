@@ -151,7 +151,7 @@ bool ChangeSectorHeight(world::Sector* sec, bool crush) {
     result = true;
 
     if (crush && !(sec->world->tick_counter_ & 3)) {
-      mobj->CauseDamage(10);
+      mobj->CauseDamage(10, nullptr, nullptr);
       // TODO: Add blood spray
     }
   }

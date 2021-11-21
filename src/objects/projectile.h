@@ -28,6 +28,8 @@ class Projectile : public MovingObject {
 
   int damage_;
   int blast_damage_;
+
+  MapObject* parent_;
   
   bool met_obstacle = false;
   bool hit_sky_ = false;

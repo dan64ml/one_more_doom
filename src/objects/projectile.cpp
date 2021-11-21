@@ -8,7 +8,7 @@
 namespace mobj {
 
 Projectile::Projectile(id::mobjtype_t type, MapObject* parent, rend::BamAngle vert_angle) 
-  : MovingObject(type) {
+  : MovingObject(type), parent_(parent_) {
   // Spawn at the end of the barrel
   int dx = parent->radius * rend::BamCos(parent->angle);
   int dy = parent->radius * rend::BamSin(parent->angle);
@@ -76,7 +76,7 @@ bool Projectile::InfluenceObject(MapObject* obj) {
   }
 
   int damage = damage_ * (rand() % 8 + 1);
-  obj->CauseDamage(damage);
+  obj->CauseDamage(damage, this, parent_);
 
   // Hit only one object
   return false;
@@ -148,7 +148,7 @@ void Projectile::BFGSpray() {
       for (int j = 0; j < 15; ++j) {
         damage += rand() % 7 + 1;
       }
-      target->CauseDamage(damage);
+      target->CauseDamage(damage, player, player);
     }
   }
 }
