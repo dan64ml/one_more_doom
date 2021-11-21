@@ -310,6 +310,14 @@ void World::SpawnProjectile(id::mobjtype_t type, mobj::MapObject* parent) {
   PutMobjOnMap(std::move(proj), true);
 }
 
+void World::SpawnMapObject(id::mobjtype_t type, int x, int y, uint32_t extra_flags, bool on_floor) {
+  auto new_mobj = std::unique_ptr<mobj::MapObject>(new mobj::MapObject(type));
+  new_mobj->x = x;
+  new_mobj->y = y;
+  new_mobj->flags |= extra_flags;
+  PutMobjOnMap(std::move(new_mobj), !on_floor);
+}
+
 void World::DoBlastDamage(int damage, int x, int y) {
   BBox bb {x - damage, x + damage, y + damage, y - damage};
   for (auto obj :blocks_.GetMapObjects(bb)) {

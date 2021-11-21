@@ -46,6 +46,8 @@ class World {
   void SpawnProjectile(id::mobjtype_t type, mobj::MapObject* parent);
   // Spawn BFG extra hit
   void SpawnBFGExplode(int x, int y, int z);
+  // Spawn a mobj
+  void SpawnMapObject(id::mobjtype_t type, int x, int y, uint32_t extra_flags, bool on_floor = true);
 
   // Line attack with horisontal (dir_angle) and vertical (vert_angle) angles.
   // Line attack has only two mobjtype_t: MT_BLOOD if hit and MT_PUFF if miss.

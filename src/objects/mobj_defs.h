@@ -15,11 +15,13 @@ const int kWeaponHeight = 42; // Why??!
 
 // Max passible step height
 const int kMaxStepSize = 24;
-
+// Max moving speed
 const double kMaxMove = 30;
 
 // Flying mobj's vertical speed;
 const int kFloatSpeed = 4;
+
+const int kBaseThreshold = 100;
 
 // To compare double values
 const double kEps = 0.0001;

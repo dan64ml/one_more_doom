@@ -77,6 +77,8 @@ class BaseFSM {
  protected:
   virtual void CallStateFunction([[maybe_unused]] id::FuncId foo_id, [[maybe_unused]] T* obj) {}
 
+  const id::state_t& CurrentState() const { return current_state_; }
+
  private:
   id::state_t current_state_;
   bool disable_ = true;

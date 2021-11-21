@@ -277,7 +277,8 @@ void Monster::NewChaseDirection() {
 }
 
 bool Monster::CheckMeleeAttack() {
-  if (!fsm_.IsMeleeState()) {
+//  if (!fsm_.IsMeleeState()) {
+  if (!fsm_.HasState(FsmState::kMelee)) {
     return false;
   }
 
@@ -285,7 +286,8 @@ bool Monster::CheckMeleeAttack() {
 }
 
 bool Monster::CheckMissileAttack() {
-  if (!fsm_.IsMissileState()) {
+//  if (!fsm_.IsMissileState()) {
+  if (!fsm_.HasState(FsmState::kMissile)) {
     return false;
   }
   if (move_count_) {
@@ -325,7 +327,8 @@ bool Monster::CheckMissileRange() {
   }
 
   double dist = rend::SegmentLength(x, y, target_->x, target_->y) - 64;
-  if (!fsm_.IsMeleeState()) {
+//  if (!fsm_.IsMeleeState()) {
+  if (!fsm_.HasState(FsmState::kMelee)) {
     dist -= 128;
   }
 

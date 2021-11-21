@@ -37,7 +37,7 @@ void MovingObject::MoveObject() {
 }
 
 void MovingObject::XYMove() {
-  if (!mom_x && ! mom_y) {
+  if (!mom_x && !mom_y) {
     return;
   }
 
@@ -102,7 +102,7 @@ void MovingObject::ZMove() {
 }
 
 // By default - do nothing and continue
-bool MovingObject::RunIntoAction(double new_x, double new_y) {
+bool MovingObject::RunIntoAction([[maybe_unused]] double new_x, [[maybe_unused]] double new_y) {
   return true;
 }
 

@@ -37,7 +37,7 @@ class Monster : public MovingObject {
 
  protected:
   // The target for chasing
-  MapObject* target_ = nullptr;
+//  MapObject* target_ = nullptr;
 
  protected:
   // FSM's functions. Some of them are used directly by derived code.
@@ -61,9 +61,9 @@ class Monster : public MovingObject {
  private:
   // Time while monster does't change its target
   // ORIGIN: if > 0 the target will be chased. Spawn state = 0.
-  int threshold_ = 0;
+//  int threshold_ = 0;
   // ORIGIN: if non 0, don't attack yet.
-  int reaction_time_;
+//  int reaction_time_;
 
   // Monsters move in a zig-zag way
   ZZDir move_dir_ = kNoDir;

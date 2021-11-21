@@ -73,18 +73,12 @@ class MovingObject : public MapObject {
    // Flags that it possible to move within (!!!!TODO: tmp_ceiling - tmp_floor or ceiling_z - floor_z)
   bool float_ok_;
 
-  // Momentums, in fact speed in strange units
-  double mom_x = 0;
-  double mom_y = 0;
-  double mom_z = 0;
-
 private:
   void MoveObject();
   void XYMove();
 
   // Checks current position and updates floor_z, ceiling_z and dropoff_z;
   void UpdateOpening();
-
 };
 
 } // namespace mobj

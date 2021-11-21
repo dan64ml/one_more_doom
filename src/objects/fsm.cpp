@@ -86,12 +86,33 @@ void FSM::CallStateFunction([[maybe_unused]] id::FuncId foo_id, [[maybe_unused]]
   obj->CallStateFunction(foo_id);
 }
 
-bool FSM::IsMeleeState() {
-  return melee_state != id::S_NULL;
+bool FSM::HasState(FsmState state) const {
+  switch (state)
+  {
+    case FsmState::kSee:
+      return see_state != id::S_NULL;
+    case FsmState::kSpawn:
+      return spawn_state != id::S_NULL;
+    case FsmState::kMelee:
+      return melee_state != id::S_NULL;
+    case FsmState::kMissile:
+      return missile_state != id::S_NULL;
+    case FsmState::kPain:
+      return pain_state != id::S_NULL;
+    case FsmState::kDeath:
+      return death_state != id::S_NULL;
+    case FsmState::kXDeath:
+      return xdeath_state != id::S_NULL;
+    
+    default:
+      break;
+  }
+  return false;
 }
 
-bool FSM::IsMissileState() {
-  return missile_state != id::S_NULL;
+bool FSM::IsSpawnState() const {
+  const id::state_t* cur = &CurrentState();
+  return cur == &id::states[spawn_state];
 }
 
 } // namespace fsm

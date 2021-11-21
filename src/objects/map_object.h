@@ -63,6 +63,14 @@ struct MapObject {
   virtual void TieToMap(world::World* world, world::SubSector* ss, bool keep_z = false);
 
   void CauseDamage(int damage);
+
+  // Original terminology: inflictor - the thing that caused damage, creature or
+  // missile. Can be nullptr, e.g. slime.
+  // source - new target after taking damage. Creature or nullptr.
+  // NB! Chainsaw shouldn't cause thrust, so set inflictor = nullptr for such case.
+  // NB! Player, Vile and Skull have special behavior.
+  virtual void CauseDamage(int damage, MapObject* inflictor, MapObject* source);
+
   // Structure objects influence in a bit different way.
   void DamageBySobj(int damage);
 
@@ -80,6 +88,7 @@ struct MapObject {
   int health_;
   int spawn_health_;
   int pain_chance_;
+  int mass_;
 
   // Flag to delete the mobj
   bool delete_me_ = false;
@@ -91,8 +100,27 @@ struct MapObject {
 
   world::World* world_;
 
+  // Momentums, in fact speed in strange units
+  double mom_x = 0;
+  double mom_y = 0;
+  double mom_z = 0;
+
+  // The target for chasing
+  MapObject* target_ = nullptr;
+
+  // Time while monster does't change its target
+  // ORIGIN: if > 0 the target will be chased. Spawn state = 0.
+  int threshold_ = 0;
+  // ORIGIN: if non 0, don't attack yet.
+  int reaction_time_;
+
+
   // Change current subsector
   bool ChangeSubSector(int new_x, int new_y);
+
+  // Called when health_ become <= 0. Some mobjs can have
+  // specific behavior, so, virtual...
+  virtual void KillMobj(MapObject* source);
 
   // TODO: Candidate to be removed
   virtual void CallStateFunction([[maybe_unused]] id::FuncId foo_id) {}
