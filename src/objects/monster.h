@@ -48,6 +48,11 @@ class Monster : public MovingObject {
   virtual void A_HeadAttack() {}
   // Imp attack
   virtual void A_TroopAttack() {}
+  // Mancubus specific
+  virtual void A_FatRaise() {}
+  virtual void A_FatAttack1() {}
+  virtual void A_FatAttack2() {}
+  virtual void A_FatAttack3() {}
 
   // Check if monster is ready to distance attack
   bool CheckMissileRange();

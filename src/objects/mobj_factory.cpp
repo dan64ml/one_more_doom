@@ -6,6 +6,7 @@
 #include "trooper.h"
 #include "cacodemon.h"
 #include "imp.h"
+#include "mancubus.h"
 
 namespace id {
 
@@ -18,17 +19,17 @@ std::unique_ptr<mobj::MapObject> MobjFactory::Create(const wad::WadMapThing& thi
 
   switch (id::mobjtype_t type = mobjs_types_.at(thing.type); type) {
     case id::MT_POSSESSED:
-      return {};
-      //if (thing.x != -112) return {};
       obj.reset(new mobj::Trooper(type));
       break;
     case id::MT_HEAD:
-      //if (thing.x != 1504) return {};
       obj.reset(new mobj::Cacodemon(type));
       break;
     case id::MT_TROOP:
-      //if (thing.x != 1504) return {};
       obj.reset(new mobj::Imp(type));
+      break;
+    case id::MT_FATSO:
+      //if (thing.x != 1504) return {};
+      obj.reset(new mobj::Mancubus(type));
       break;
 
     default:
@@ -47,10 +48,10 @@ std::unique_ptr<mobj::MapObject> MobjFactory::Create(const wad::WadMapThing& thi
 std::unique_ptr<mobj::Player> MobjFactory::CreatePlayer(const wad::WadMapThing& thing) {
   std::unique_ptr<mobj::Player> ret(new mobj::Player());
   
-//  ret->x = thing.x;
-//  ret->y = thing.y;
-  ret->x = 1100;
-  ret->y = 1100;
+  ret->x = thing.x;
+  ret->y = thing.y;
+//  ret->x = 1100;
+//  ret->y = 1100;
   
   ret->angle = rend::DegreesToBam(thing.angle);
   

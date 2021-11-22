@@ -10,5 +10,6 @@ add_library(mobjs
     cacodemon.cpp
     moving_object.cpp
     imp.cpp
+    mancubus.cpp
     )
     
