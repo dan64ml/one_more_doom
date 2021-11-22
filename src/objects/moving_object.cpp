@@ -86,6 +86,7 @@ void MovingObject::ZMove() {
   // Flying objects have another behavior !!!
   z += mom_z;
 
+  // Below the floow?
   if (z <= floor_z_) {
     z = floor_z_;
 
@@ -94,10 +95,18 @@ void MovingObject::ZMove() {
     } 
   } else if (!(flags & MF_NOGRAVITY)) {
     if (mom_z == 0) {
-      mom_z = -kGravity;
+      mom_z = -2 * kGravity;
     } else {
       mom_z -= kGravity;
     }
+  }
+
+  // Above the ceiling?
+  if (z + height > ceiling_z_) {
+    if (mom_z > 0) {
+      mom_z = 0;
+    }
+    z = ceiling_z_ - height;
   }
 }
 
@@ -173,17 +182,19 @@ bool MovingObject::TryMoveTo(double new_x, double new_y) {
     // The step too high
     return false;
   }
-  if (!(flags & (MF_DROPOFF|MF_FLOAT)) && (tmp_floor - tmp_dropoff > height)) {
+  if (!(flags & (MF_DROPOFF|MF_FLOAT)) && (tmp_floor - tmp_dropoff > kMaxStepSize)) {
     // prevent falling
     return false;
   }
 
   // New position is OK, trigger special lines and update coordinates
-  for (auto line : spec_lines_) {
-    auto old_pos = math::LinePointPosition(line, x, y);
-    auto new_pos = math::LinePointPosition(line, new_x, new_y);
-    if (old_pos != new_pos) {
-      ProcessSpecialLine(line);
+  if (!(flags & MF_TELEPORT)) {
+    for (auto line : spec_lines_) {
+      auto old_pos = math::LinePointPosition(line, x, y);
+      auto new_pos = math::LinePointPosition(line, new_x, new_y);
+      if (old_pos != new_pos) {
+        ProcessSpecialLine(line);
+      }
     }
   }
 
@@ -207,9 +218,6 @@ bool MovingObject::CheckPosition(double new_x, double new_y) {
   // Get initial values from destination point
   tmp_floor = tmp_dropoff = ss->sector->floor_height;
   tmp_ceiling = ss->sector->ceiling_height;
-
-  line_obstacle_ = nullptr;
-  mobj_obstacle_ = nullptr;
 
   // Possible area where collision of mobjs can happen
   double dist = kMaxRadius + radius;
@@ -238,7 +246,6 @@ bool MovingObject::CheckPosition(double new_x, double new_y) {
     }
 
     if (!InfluenceObject(mobj)) {
-      mobj_obstacle_ = mobj;
       return false;
     }
   }
@@ -278,23 +285,19 @@ bool MovingObject::CheckPosition(double new_x, double new_y) {
 
     // TMP!!!!!!!!!!!!!!!!!!!!
     if (!ProcessLine(line)) {
-      line_obstacle_ = line;
       return false;
     }
 
     if (!line->sides[1]) {
       // Wall
-      line_obstacle_ = line;
       return false;
     }
     if (!(flags & MF_MISSILE)) {
       // Check for bloking line flags
       if (line->flags & world::kLDFBlockEveryOne) {
-        line_obstacle_ = line;
         return false;
       }
       if ((mobj_type != id::MT_PLAYER) && (line->flags & world::kLDFBlockMonsters)) {
-        line_obstacle_ = line;
         return false;
       }
     }

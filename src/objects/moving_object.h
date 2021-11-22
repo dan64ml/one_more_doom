@@ -55,29 +55,24 @@ class MovingObject : public MapObject {
 
   // Crossed last step special lines
   std::vector<world::Line*> spec_lines_;
-  // Pointers to obstacles that were the reason of fail of TryMoveTo()
-  // TODO: obsolete???
-  world::Line* line_obstacle_;
-  MapObject* mobj_obstacle_;
 
   // Updates tmp_* variables
   void UpdateOpening(const world::Line* line);
 
-  // what's the difference with floor_z and ceiling_z ?????
-  // Just tmp values for calculating floor_z and ceiling_z.
-  // TODO: bad arch, ref!!!
+  // Context filled by UpdateOpening(const world::Line*). In fact,
+  // the result of CheckPosition().
   double tmp_ceiling;
   double tmp_floor;
   double tmp_dropoff;
   
-   // Flags that it's possible to move within (!!!!TODO: tmp_ceiling - tmp_floor or ceiling_z - floor_z)
+   // Flags that it's possible to move within
   bool float_ok_;
 
 private:
   void MoveObject();
   void XYMove();
 
-  // Checks current position and updates floor_z, ceiling_z and dropoff_z;
+  // Checks current position and updates floor_z, ceiling_z
   void UpdateOpening();
 };
 
