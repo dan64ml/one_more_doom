@@ -28,6 +28,9 @@ void Monster::CallStateFunction(id::FuncId foo_id) {
     case id::A_Chase:
       A_Chase();
       break;
+    case id::A_Fall:
+      A_Fall();
+      break;
     case id::A_FaceTarget:
       A_FaceTarget();
       break;
@@ -65,6 +68,10 @@ void Monster::A_Look() {
   PlaySound(see_sound_);
 
   fsm_.ToSeeState(this);
+}
+
+void Monster::A_Fall() {
+  flags &= ~MF_SOLID;
 }
 
 void Monster::A_Chase() {

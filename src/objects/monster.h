@@ -80,6 +80,7 @@ class Monster : public MovingObject {
   // FSM's functions
   void A_Look();
   void A_Chase();
+  void A_Fall();
 
   // Temporary stub for sound subsystem
   void PlaySound([[maybe_unused]] id::sfxenum_t sound) {}

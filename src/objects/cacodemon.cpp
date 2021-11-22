@@ -26,6 +26,12 @@ void Cacodemon::ZMove() {
   if (z <= floor_z_) {
     z = floor_z_;
     mom_z = std::max(0.0, mom_z);
+  } else if (!(flags & MF_NOGRAVITY)) {
+    if (mom_z == 0) {
+      mom_z = -2 * kGravity;
+    } else {
+      mom_z -= kGravity;
+    }
   }
 
   if (z + height > ceiling_z_) {

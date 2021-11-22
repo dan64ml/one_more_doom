@@ -66,27 +66,6 @@ bool MapObject::ChangeSubSector(int new_x, int new_y) {
   return true;
 }
 
-/*void MapObject::CauseDamage(int damage) {
-  health_ -= damage;
-
-  if (health_ > 0) {
-    if (rand() % 256 < pain_chance_) {
-      fsm_.ToPainState(this);
-    }
-    return;
-  } else {
-    if (health_ < -spawn_health_) {
-      fsm_.ToXDeathState(this);
-    } else {
-      fsm_.ToDeathState(this);
-    }
-
-    // remains are visible but not interactable
-    // TODO: flying objects must fall down
-    flags &= ~(MF_SOLID | MF_SHOOTABLE);
-  }
-}*/
-
 void MapObject::CauseDamage(int damage, MapObject* inflictor, MapObject* source) {
   if (!(flags & MF_SHOOTABLE)) {
     return;
