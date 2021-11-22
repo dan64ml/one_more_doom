@@ -760,9 +760,15 @@ bool World::CheckSight(mobj::MapObject* mobj1, mobj::MapObject* mobj2) {
       }
     } else if (idx == 1) {
       // Can a monster see throgh another mobjs?!
+      // NO!!! They start shot each other!
       auto mobj = std::get<1>(item.obj);
+      if (mobj == mobj1) {
+        continue;
+      }
       if (mobj == mobj2) {
         return true;
+      } else {
+        return false;
       }
     }
   }

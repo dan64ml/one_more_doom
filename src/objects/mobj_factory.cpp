@@ -28,7 +28,7 @@ std::unique_ptr<mobj::MapObject> MobjFactory::Create(const wad::WadMapThing& thi
       obj.reset(new mobj::Imp(type));
       break;
     case id::MT_FATSO:
-      //if (thing.x != 1504) return {};
+      //if (thing.x != -320) return {};
       obj.reset(new mobj::Mancubus(type));
       break;
 
