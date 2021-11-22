@@ -7,6 +7,7 @@
 #include "cacodemon.h"
 #include "imp.h"
 #include "mancubus.h"
+#include "shotguy.h"
 
 namespace id {
 
@@ -31,9 +32,13 @@ std::unique_ptr<mobj::MapObject> MobjFactory::Create(const wad::WadMapThing& thi
       //if (thing.x != -320) return {};
       obj.reset(new mobj::Mancubus(type));
       break;
+    case id::MT_SHOTGUY:
+      //if (thing.x != -320) return {};
+      obj.reset(new mobj::ShotGuy(type));
+      break;
 
     default:
-      return {};
+      //return {};
       obj.reset(new mobj::MapObject(type));
       break;
   }

@@ -53,6 +53,8 @@ class Monster : public MovingObject {
   virtual void A_FatAttack1() {}
   virtual void A_FatAttack2() {}
   virtual void A_FatAttack3() {}
+  // Shotguy
+  virtual void A_SPosAttack() {}
 
   // Check if monster is ready to distance attack
   bool CheckMissileRange();

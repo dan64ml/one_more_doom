@@ -55,6 +55,9 @@ void Monster::CallStateFunction(id::FuncId foo_id) {
     case id::A_FatAttack3:
       A_FatAttack3();
       break;
+    case id::A_SPosAttack:
+      A_SPosAttack();
+      break;
     
     default:
       break;

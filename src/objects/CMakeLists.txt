@@ -11,5 +11,6 @@ add_library(mobjs
     moving_object.cpp
     imp.cpp
     mancubus.cpp
+    shotguy.cpp
     )
     
