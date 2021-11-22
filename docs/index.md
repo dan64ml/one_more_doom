@@ -14,14 +14,17 @@ Also here is the project blog: [Blog](https://dan64ml.github.io/one_more_doom/bl
 Below I posted some demo videos showing the current state of the project. I'll update these videos as the project progresses.
 
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/FE00b4nc0kk" title="YouTube video player" 
-frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+Almost fully functional map 01. Secrets, monsters and moving structures are all done. The only unrealised features
+are intermission screen and sound propagation.
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/pgtBAy0Bn28" title="YouTube video player" 
+frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
 allowfullscreen></iframe>
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/ASUJaNaOnDw" title="YouTube video player" 
-frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+<iframe width="560" height="315" src="https://www.youtube.com/embed/CrEg1VKnY2s" title="YouTube video player"
+frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
 allowfullscreen></iframe>
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/rrCvioSVvFI" title="YouTube video player" 
-frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+<iframe width="560" height="315" src="https://www.youtube.com/embed/692Hoe6x-Qg" title="YouTube video player"
+frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
 allowfullscreen></iframe>
