@@ -4,6 +4,7 @@
 
 #include "world/world.h"
 #include "utils/world_utils.h"
+#include "renderer/plane_utils.h"
 
 namespace mobj {
 
@@ -25,6 +26,25 @@ Projectile::Projectile(id::mobjtype_t type, MapObject* parent, rend::BamAngle ve
   mom_x = speed * rend::BamCos(angle);
   mom_y = speed * rend::BamSin(angle);
   mom_z = speed * rend::BamSin(vert_angle);
+}
+
+Projectile::Projectile(id::mobjtype_t type, MapObject* source, MapObject* target)
+  : MovingObject(type), parent_(source) {
+  target_ = target;
+  x = source->x;
+  y = source->y;
+  z = source->z + kProjectileSpawnHeight;
+
+  angle = rend::CalcAngle(source->x, source->y, target->x, target->y);
+
+  mom_x = speed * rend::BamCos(angle);
+  mom_y = speed * rend::BamSin(angle);
+
+  double dist = rend::SegmentLength(source->x, source->y, target_->x, target_->y);
+  mom_z = speed * (target_->z - source->z) / dist;
+
+  damage_ = id::mobjinfo[type].damage;
+  blast_damage_ = (type == id::MT_ROCKET) ? kRocketBlastDamage : 0;
 }
 
 bool Projectile::TickTime() {
@@ -57,10 +77,13 @@ bool Projectile::RunIntoAction(double new_x, double new_y) {
 }
 
 bool Projectile::InfluenceObject(MapObject* obj) {
-  if (obj->mobj_type == id::MT_PLAYER) {
-    // Hack to prevent crushing into the player. Bad for multiplayer...
+  if (obj == parent_) {
     return true;
   }
+//  if (obj->mobj_type == id::MT_PLAYER) {
+//    // Hack to prevent crushing into the player. Bad for multiplayer...
+//    return true;
+//  }
   // check z position
   if (obj->z > (z + height)) {
     return true;

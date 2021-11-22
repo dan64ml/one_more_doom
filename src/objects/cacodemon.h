@@ -11,6 +11,8 @@ class Cacodemon : public Monster {
 
  protected:
   void A_HeadAttack() override;
+
+  void ZMove() override;
 };
 
 } // namespace mobj

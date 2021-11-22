@@ -44,6 +44,8 @@ class World {
 
   // Spawn plasma ball or missile.
   void SpawnProjectile(id::mobjtype_t type, mobj::MapObject* parent);
+  // Spawn plasma ball or missile.
+  void SpawnProjectile(id::mobjtype_t type, mobj::MapObject* source, mobj::MapObject* target);
   // Spawn BFG extra hit
   void SpawnBFGExplode(int x, int y, int z);
   // Spawn a mobj

@@ -40,8 +40,10 @@ std::unique_ptr<mobj::MapObject> MobjFactory::Create(const wad::WadMapThing& thi
 std::unique_ptr<mobj::Player> MobjFactory::CreatePlayer(const wad::WadMapThing& thing) {
   std::unique_ptr<mobj::Player> ret(new mobj::Player());
   
-  ret->x = thing.x;
-  ret->y = thing.y;
+//  ret->x = thing.x;
+//  ret->y = thing.y;
+  ret->x = 1100;
+  ret->y = 1100;
   
   ret->angle = rend::DegreesToBam(thing.angle);
   

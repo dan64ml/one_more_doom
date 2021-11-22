@@ -11,6 +11,7 @@ namespace mobj {
 class Projectile : public MovingObject {
  public:
   Projectile(id::mobjtype_t type, MapObject* parent, rend::BamAngle vert_angle);
+  Projectile(id::mobjtype_t type, MapObject* source, MapObject* target);
 
   bool TickTime() override;
 

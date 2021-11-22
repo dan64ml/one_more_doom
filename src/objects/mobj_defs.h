@@ -12,6 +12,7 @@ const int kMissileRange = 32 * 64;
 const int kMeleeRange = 64;
 
 const int kWeaponHeight = 42; // Why??!
+const int kProjectileSpawnHeight = 32; // Original value
 
 // Max passible step height
 const int kMaxStepSize = 24;
