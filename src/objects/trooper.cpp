@@ -14,8 +14,10 @@ void Trooper::A_PosAttack() {
     return;
   }
 
-  // Keep original behavier
+  // Keep original behavior
   A_FaceTarget();
+
+  PlaySound(id::sfx_pistol);
 
   rend::BamAngle vert_angle = world_->GetTargetAngle(x, y, z, angle, kMissileRange);
   int damage = ((rand() % 5) + 1) * 3;

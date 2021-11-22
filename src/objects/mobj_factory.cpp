@@ -5,6 +5,7 @@
 
 #include "trooper.h"
 #include "cacodemon.h"
+#include "imp.h"
 
 namespace id {
 
@@ -24,6 +25,10 @@ std::unique_ptr<mobj::MapObject> MobjFactory::Create(const wad::WadMapThing& thi
     case id::MT_HEAD:
       //if (thing.x != 1504) return {};
       obj.reset(new mobj::Cacodemon(type));
+      break;
+    case id::MT_TROOP:
+      //if (thing.x != 1504) return {};
+      obj.reset(new mobj::Imp(type));
       break;
 
     default:

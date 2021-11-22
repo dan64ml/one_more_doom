@@ -36,10 +36,6 @@ class Monster : public MovingObject {
   Monster(id::mobjtype_t type);
 
  protected:
-  // The target for chasing
-//  MapObject* target_ = nullptr;
-
- protected:
   // FSM's functions. Some of them are used directly by derived code.
   // Some functions are common for all monsters, they are defined in
   // this class.
@@ -50,6 +46,8 @@ class Monster : public MovingObject {
   virtual void A_PosAttack() {}
   // Cacodemon attack
   virtual void A_HeadAttack() {}
+  // Imp attack
+  virtual void A_TroopAttack() {}
 
   // Check if monster is ready to distance attack
   bool CheckMissileRange();
@@ -58,13 +56,10 @@ class Monster : public MovingObject {
 
   void CallStateFunction(id::FuncId foo_id) override;
 
- private:
-  // Time while monster does't change its target
-  // ORIGIN: if > 0 the target will be chased. Spawn state = 0.
-//  int threshold_ = 0;
-  // ORIGIN: if non 0, don't attack yet.
-//  int reaction_time_;
+  // Temporary stub for sound subsystem
+  void PlaySound([[maybe_unused]] id::sfxenum_t sound) {}
 
+ private:
   // Monsters move in a zig-zag way
   ZZDir move_dir_ = kNoDir;
   // When 0, select a new direction
@@ -77,13 +72,10 @@ class Monster : public MovingObject {
   id::sfxenum_t active_sound_;
 
  private:
-  // FSM's functions
+  // FSM's common functions
   void A_Look();
   void A_Chase();
   void A_Fall();
-
-  // Temporary stub for sound subsystem
-  void PlaySound([[maybe_unused]] id::sfxenum_t sound) {}
 
   rend::BamAngle ZZDirToBam(ZZDir dir);
   // Looks for new move direction. Messy original algorithm
