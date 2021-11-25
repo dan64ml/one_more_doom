@@ -64,6 +64,9 @@ void Monster::CallStateFunction(id::FuncId foo_id) {
     case id::A_CPosRefire:
       A_CPosRefire();
       break;
+    case id::A_SargAttack:
+      A_SargAttack();
+      break;
     
     default:
       break;

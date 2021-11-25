@@ -58,6 +58,8 @@ class Monster : public MovingObject {
   // ChainGuy
   virtual void A_CPosAttack() {}
   virtual void A_CPosRefire() {}
+  // Demon and Spectre
+  virtual void A_SargAttack() {}
 
   // Check if monster is ready to distance attack
   bool CheckMissileRange();

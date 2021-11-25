@@ -9,6 +9,7 @@
 #include "mancubus.h"
 #include "shotguy.h"
 #include "heavy_dude.h"
+#include "demon.h"
 
 namespace id {
 
@@ -21,12 +22,15 @@ std::unique_ptr<mobj::MapObject> MobjFactory::Create(const wad::WadMapThing& thi
 
   switch (id::mobjtype_t type = mobjs_types_.at(thing.type); type) {
     case id::MT_POSSESSED:
+      //return {};
       obj.reset(new mobj::Trooper(type));
       break;
     case id::MT_HEAD:
+      //return {};
       obj.reset(new mobj::Cacodemon(type));
       break;
     case id::MT_TROOP:
+      //return {};
       obj.reset(new mobj::Imp(type));
       break;
     case id::MT_FATSO:
@@ -41,9 +45,14 @@ std::unique_ptr<mobj::MapObject> MobjFactory::Create(const wad::WadMapThing& thi
       //if (thing.x != -320) return {};
       obj.reset(new mobj::HeavyDude(type));
       break;
+    case id::MT_SERGEANT:
+    case id::MT_SHADOWS:
+      //if (thing.x != 1184) return {};
+      obj.reset(new mobj::Demon(type));
+      break;
 
     default:
-      //return {};
+      return {};
       obj.reset(new mobj::MapObject(type));
       break;
   }
