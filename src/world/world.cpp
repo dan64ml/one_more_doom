@@ -726,6 +726,10 @@ mobj::MapObject* World::LookForPlayer(mobj::MapObject* mobj, bool around) {
   }
 }
 
+void World::BossDeath(id::mobjtype_t type) {
+  // TODO: !!!!
+}
+
 bool World::CheckSight(mobj::MapObject* mobj1, mobj::MapObject* mobj2) {
   if (!mobj1 || !mobj2 || (mobj1 == mobj2)) {
     return false;
@@ -775,5 +779,6 @@ bool World::CheckSight(mobj::MapObject* mobj1, mobj::MapObject* mobj2) {
 
   return false;
 }
+
 
 } // namespace world

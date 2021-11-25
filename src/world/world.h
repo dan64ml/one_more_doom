@@ -68,6 +68,9 @@ class World {
   void HitLine(world::Line* line, mobj::MapObject* mobj);
   void CrossLine(world::Line* line, mobj::MapObject* mobj);
 
+  // Boss's death can be a trigger on some maps
+  void BossDeath(id::mobjtype_t type);
+
    // Some game logic uses it...
   long long tick_counter_ = 0;
 

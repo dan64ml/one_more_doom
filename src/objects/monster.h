@@ -55,6 +55,9 @@ class Monster : public MovingObject {
   virtual void A_FatAttack3() {}
   // Shotguy
   virtual void A_SPosAttack() {}
+  // ChainGuy
+  virtual void A_CPosAttack() {}
+  virtual void A_CPosRefire() {}
 
   // Check if monster is ready to distance attack
   bool CheckMissileRange();
@@ -83,6 +86,7 @@ class Monster : public MovingObject {
   void A_Look();
   void A_Chase();
   void A_Fall();
+  void A_BossDeath();
 
   rend::BamAngle ZZDirToBam(ZZDir dir);
   // Looks for new move direction. Messy original algorithm

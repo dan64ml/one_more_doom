@@ -12,5 +12,6 @@ add_library(mobjs
     imp.cpp
     mancubus.cpp
     shotguy.cpp
+    heavy_dude.cpp
     )
     

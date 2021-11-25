@@ -8,6 +8,7 @@
 #include "imp.h"
 #include "mancubus.h"
 #include "shotguy.h"
+#include "heavy_dude.h"
 
 namespace id {
 
@@ -35,6 +36,10 @@ std::unique_ptr<mobj::MapObject> MobjFactory::Create(const wad::WadMapThing& thi
     case id::MT_SHOTGUY:
       //if (thing.x != -320) return {};
       obj.reset(new mobj::ShotGuy(type));
+      break;
+    case id::MT_CHAINGUY:
+      //if (thing.x != -320) return {};
+      obj.reset(new mobj::HeavyDude(type));
       break;
 
     default:

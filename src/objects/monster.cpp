@@ -58,6 +58,12 @@ void Monster::CallStateFunction(id::FuncId foo_id) {
     case id::A_SPosAttack:
       A_SPosAttack();
       break;
+    case id::A_CPosAttack:
+      A_CPosAttack();
+      break;
+    case id::A_CPosRefire:
+      A_CPosRefire();
+      break;
     
     default:
       break;
@@ -175,6 +181,10 @@ void Monster::A_FaceTarget() {
     // Is the angle right???
     angle += (rand() - rand()) % (255 * 32);
   }
+}
+
+void Monster::A_BossDeath() {
+  world_->BossDeath(mobj_type);
 }
 
 rend::BamAngle Monster::ZZDirToBam(ZZDir dir) {
