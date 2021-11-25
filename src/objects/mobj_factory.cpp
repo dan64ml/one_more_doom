@@ -10,6 +10,7 @@
 #include "shotguy.h"
 #include "heavy_dude.h"
 #include "demon.h"
+#include "revenant.h"
 
 namespace id {
 
@@ -49,6 +50,10 @@ std::unique_ptr<mobj::MapObject> MobjFactory::Create(const wad::WadMapThing& thi
     case id::MT_SHADOWS:
       //if (thing.x != 1184) return {};
       obj.reset(new mobj::Demon(type));
+      break;
+    case id::MT_UNDEAD:
+      //if (thing.x != 1184) return {};
+      obj.reset(new mobj::Revenant(type));
       break;
 
     default:

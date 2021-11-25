@@ -60,6 +60,11 @@ class Monster : public MovingObject {
   virtual void A_CPosRefire() {}
   // Demon and Spectre
   virtual void A_SargAttack() {}
+  // Revenant
+  virtual void A_SkelWhoosh() {}
+  virtual void A_SkelFist() {}
+  virtual void A_SkelMissile() {}
+
 
   // Check if monster is ready to distance attack
   bool CheckMissileRange();
