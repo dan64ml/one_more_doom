@@ -76,6 +76,18 @@ void Monster::CallStateFunction(id::FuncId foo_id) {
     case id::A_SkelMissile:
       A_SkelMissile();
       break;
+    case id::A_VileChase:
+      A_VileChase();
+      break;
+    case id::A_VileStart:
+      A_VileStart();
+      break;
+    case id::A_VileTarget:
+      A_VileTarget();
+      break;
+    case id::A_VileAttack:
+      A_VileAttack();
+      break;
     
     default:
       break;
@@ -199,7 +211,7 @@ void Monster::A_BossDeath() {
   world_->BossDeath(mobj_type);
 }
 
-rend::BamAngle Monster::ZZDirToBam(ZZDir dir) {
+rend::BamAngle Monster::ZZDirToBam(ZZDir dir) const {
   using namespace rend;
 
   switch (dir)
@@ -374,7 +386,6 @@ bool Monster::CheckMissileRange() {
   }
 
   double dist = rend::SegmentLength(x, y, target_->x, target_->y) - 64;
-//  if (!fsm_.IsMeleeState()) {
   if (!fsm_.HasState(FsmState::kMelee)) {
     dist -= 128;
   }

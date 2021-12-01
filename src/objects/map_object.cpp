@@ -211,4 +211,29 @@ void MapObject::TieToMap(world::World* world, world::SubSector* ss, bool keep_z)
   }
 }
 
+bool MapObject::IsResurrectable() const {
+  if (!(flags & MF_CORPSE)) {
+    // A thing or still alive
+    return false;
+  }
+
+  if (!fsm_.HasState(FsmState::kRaise) || !fsm_.IsSpinState()) {
+    return false;
+  }
+
+  return true;
+}
+
+void MapObject::Resurrect() {
+  flags = id::mobjinfo[mobj_type].flags;
+  height = id::mobjinfo[mobj_type].height;
+  health_ = id::mobjinfo[mobj_type].spawnhealth;
+
+  mom_x = mom_y = mom_z = 0;
+
+  target_ = nullptr;
+
+  fsm_.SetState(static_cast<id::statenum_t>(id::mobjinfo[mobj_type].raisestate), this);
+}
+
 } // namespace mobj

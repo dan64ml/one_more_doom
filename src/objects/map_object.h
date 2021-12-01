@@ -27,6 +27,7 @@ namespace mobj {
 struct MapObject {
  public:
   MapObject(id::mobjtype_t type);
+  virtual ~MapObject() = default;
 
   // World coordinates of the object
   double x;
@@ -58,6 +59,10 @@ struct MapObject {
   std::string GetSpriteName(int vp_x, int vp_y) const;
 
   int GetHealth() const { return health_; }
+
+  // Used by Arch-vile
+  virtual bool IsResurrectable() const;
+  virtual void Resurrect();
 
   // Just created mobj should be "tied" to game world
   virtual void TieToMap(world::World* world, world::SubSector* ss, bool keep_z = false);

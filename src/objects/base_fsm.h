@@ -41,6 +41,9 @@ class BaseFSM {
     return true;
   }
 
+  // Flags that fsm reached the last state
+  bool IsSpinState() const { return current_state_.tics == -1; }
+
   void SetState(id::statenum_t new_state, T* obj) {
     do {
       if (new_state == id::S_NULL) {

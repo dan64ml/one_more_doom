@@ -15,5 +15,6 @@ add_library(mobjs
     heavy_dude.cpp
     demon.cpp
     revenant.cpp
+    archvile.cpp
     )
     

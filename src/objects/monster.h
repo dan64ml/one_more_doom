@@ -9,7 +9,7 @@
 namespace mobj {
 
 class Monster : public MovingObject {
- private:
+ protected:
   // Mobj's zig-zag direction
   enum ZZDir {
     kEast,
@@ -41,6 +41,7 @@ class Monster : public MovingObject {
   // this class.
   // Some functions are unique for a specific monster, they should be
   // overridden in derived classes.
+  void A_Chase();
   void A_FaceTarget();
   // Zombieman attack
   virtual void A_PosAttack() {}
@@ -64,12 +65,20 @@ class Monster : public MovingObject {
   virtual void A_SkelWhoosh() {}
   virtual void A_SkelFist() {}
   virtual void A_SkelMissile() {}
+  // Arch-vile
+  virtual void A_VileChase() {};
+  virtual void A_VileStart() {};
+  virtual void A_VileTarget() {};
+  virtual void A_VileAttack() {};
 
 
   // Check if monster is ready to distance attack
   bool CheckMissileRange();
   // Check the distance and obstacles
   bool CheckMeleeRange();
+
+  ZZDir GetMoveDirection() const { return move_dir_; }
+  rend::BamAngle ZZDirToBam(ZZDir dir) const;
 
   void CallStateFunction(id::FuncId foo_id) override;
 
@@ -91,11 +100,9 @@ class Monster : public MovingObject {
  private:
   // FSM's common functions
   void A_Look();
-  void A_Chase();
   void A_Fall();
   void A_BossDeath();
 
-  rend::BamAngle ZZDirToBam(ZZDir dir);
   // Looks for new move direction. Messy original algorithm
   void NewChaseDirection();
   // Checks if melee attack exists and the distance is ok
